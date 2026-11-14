@@ -12,7 +12,8 @@ const LESSON: Record<string, string> = {
   air: "Air is the most important supply — people can't last even a few minutes without it. Real space teams pack lots of extra air and spare air machines.",
   food: "Growing food takes lots of power for the lights. Real Mars trips will bring most of their food from Earth and grow fresh plants as a treat.",
   dose: "Radiation adds up day after day, and storms add a lot all at once. That's why NASA watches the Sun all day and night, and plans safe shelters for crews.",
-  success: "You shared power between air, food, radiation walls and science. That juggling act is exactly what real NASA teams practice.",
+  power: "When power runs out, air machines, plant lights and heaters cannot work. NASA teams bring spare power and protect their solar panels.",
+  success: "Your choices kept air, food, power and radiation safety above zero. Real NASA teams practice these kinds of choices too.",
 };
 
 export function MissionReport({

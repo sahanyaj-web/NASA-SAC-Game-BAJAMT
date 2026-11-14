@@ -236,7 +236,9 @@ export function stormEvent(ctx: Pick<SolContext, "space" | "prevSpace">, _oneWay
 export function drawDeckEvent(s: GameState, oneWayMin: number): GameEvent | null {
   if (s.sol === 1) return firstDayEvent(s);
   const rng = mulberry32(s.seed * 31 + s.sol * 977);
-  const pool = DECK.filter((c) => !s.seenEvents.includes(c.id) && (!c.when || c.when(s)))
+  const eligible = DECK.filter((c) => !c.when || c.when(s));
+  const unseen = eligible.filter((c) => !s.seenEvents.includes(c.id));
+  const pool = (unseen.length ? unseen : eligible)
     .map((c) => ({ c, e: c.build(s, oneWayMin) }));
   if (!pool.length) return null;
   const total = pool.reduce((t, p) => t + p.c.weight, 0);
@@ -295,6 +297,7 @@ export function checkOver(s: GameState): GameState {
   if (s.over) return s;
   if (s.air <= 0) return { ...s, over: { result: "air", message: "The air ran out. The crew had to fly home early in their rocket." } };
   if (s.food <= 0) return { ...s, over: { result: "food", message: "The food ran out. The crew had to fly home early." } };
+  if (s.battery <= 0) return { ...s, over: { result: "power", message: "The power ran out. The base cannot keep the crew warm, so everyone had to fly home early." } };
   if (s.dose >= s.doseLimit)
     return { ...s, over: { result: "dose", message: "The crew got too much radiation. The space doctor sent everyone home to stay safe." } };
   if (s.sol > s.totalSols) return { ...s, over: { result: "success", message: `Your crew made it through every day ${placeWords(s.place).on}!` } };
@@ -307,9 +310,17 @@ export function markSeen(s: GameState, id: string): GameState {
 
 /** Play one story choice: remember it for the end-of-trip story, then apply what it costs and gives. */
 export function chooseOption(s: GameState, event: GameEvent, opt: EventOption): GameState {
+  if (s.over) return s;
   const seen = markSeen(s, event.id);
   const told = { ...seen, story: [...seen.story, { sol: s.sol, emoji: event.emoji, title: event.title, choice: opt.label }] };
   return applyEffect(told, opt.effect);
+}
+
+/** The base runs its daily machines automatically; players decide through stories, not a power planner. */
+export function endStoryDay(s: GameState, ctx: SolContext) {
+  if (s.over) return { state: s, report: { forecast: forecast(s, emptyAlloc(), ctx), notes: [] } };
+  const automatic = fitAlloc({ air: 2, greenhouse: 3, shield: 1, science: 1 }, powerToday(s).available);
+  return endSol(s, automatic, ctx);
 }
 
 /** Short, kid-friendly list of what a choice changed, e.g. "−0.5 days of air". */
