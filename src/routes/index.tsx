@@ -49,7 +49,7 @@ function Index() {
             <p className="text-data text-sm uppercase tracking-[0.3em] text-primary">A Moon or Mars mission game · ages 7–12</p>
             <h1 className="mt-3 max-w-4xl text-4xl font-bold leading-tight sm:text-6xl">Junior Astronaut Mission Trainer</h1>
             <p className="mt-4 max-w-2xl text-lg sm:text-xl">
-              Lead a Moon or Mars crew for 15 days. Each problem has two choices. Keep air, food, power and radiation safety above zero! The Sun's storms come
+              How long can your Moon or Mars crew survive? Start every system at 100%. Each problem has two choices. Keep air, food, power, radiation safety and research above zero! The Sun's storms come
               from <strong>real NASA records</strong>.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">

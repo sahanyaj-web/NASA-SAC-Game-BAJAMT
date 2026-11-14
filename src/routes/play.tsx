@@ -13,9 +13,9 @@ export const Route = createFileRoute("/play")({
   head: () => ({
     meta: [
       { title: "Play a mission | Junior Astronaut Mission Trainer" },
-      { name: "description", content: "Pick a real Sun from NASA records, pack your rocket and keep your Moon or Mars crew alive for 15 days." },
+      { name: "description", content: "Pick a real Sun from NASA records, pack your rocket and keep every system above 0% to survive as long as you can." },
       { property: "og:title", content: "Play a mission | Junior Astronaut Mission Trainer" },
-      { property: "og:description", content: "Pick a real Sun from NASA records, pack your rocket and keep your Moon or Mars crew alive for 15 days." },
+      { property: "og:description", content: "Pick a real Sun from NASA records, pack your rocket and keep every system above 0% to survive as long as you can." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

@@ -9,9 +9,9 @@ export const Route = createFileRoute("/science")({
   head: () => ({
     meta: [
       { title: "NASA facts | Junior Astronaut Mission Trainer" },
-      { name: "description", content: "Where every fact in the Mars base game comes from — all from NASA — and what we made simpler." },
+      { name: "description", content: "Where every fact in the Moon and Mars game comes from — all from NASA — and what we made simpler." },
       { property: "og:title", content: "NASA facts | Junior Astronaut Mission Trainer" },
-      { property: "og:description", content: "Where every fact in the Mars base game comes from — all from NASA — and what we made simpler." },
+      { property: "og:description", content: "Where every fact in the Moon and Mars game comes from — all from NASA — and what we made simpler." },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -27,7 +27,7 @@ const SOURCES = [
     tag: "LIVE + SAVED",
     url: "https://ccmc.gsfc.nasa.gov/DONKI/",
     what: "NASA writes down every Sun flash, radiation storm and giant Sun cloud, every single day.",
-    how: "Each day of your trip is one real day from this log. If NASA saw a real radiation storm that day, you get a radiation alarm. If a fast Sun cloud flew off, you get a warning and it shows up a day or two later. \"Today's Sun\" and \"Surprise me\" ask NASA right when you start. The famous storms were saved from NASA on 14 Nov 2026.",
+    how: "Your trip replays real days from this log. When the records run out, their original dates repeat; repeats are labeled SAVED, never new live observations. If NASA saw a real radiation storm that day, you get a radiation alarm. If a fast Sun cloud flew off, you get a warning and it shows up a day or two later. \"Today's Sun\" and \"Surprise me\" ask NASA right when you start. The famous storms were saved from NASA on 14 Nov 2026.",
     grownups: "DONKI (Space Weather Database Of Notifications, Knowledge, Information), NASA Goddard CCMC — FLR, SEP and CME records. CMEs ≥ 800 km/s count; travel time uses the real Sun–Mars distance.",
   },
   {
@@ -36,7 +36,7 @@ const SOURCES = [
     tag: "SAVED",
     url: "https://science.nasa.gov/mission/msl-curiosity/",
     what: "NASA's Curiosity rover has measured how hot and cold it gets on Mars every day since 2012.",
-    how: "Each trip uses 15 real Mars days of temperatures. The colder the real night, the more battery your heater needs (2⚡, 3⚡ or 4⚡).",
+    how: "Each trip repeats a saved set of real Mars temperatures. The colder the real night, the more battery your heater needs (2⚡, 3⚡ or 4⚡).",
     grownups: "Curiosity REMS daily min/max air temperature and pressure, Gale Crater, sols 223–4714.",
   },
   {
@@ -79,11 +79,11 @@ const SOURCES = [
 
 const SIMPLER = [
   "Power is counted in simple ⚡ points, and air and food in \"days\", so you can do the math in your head.",
-  "The base runs its air maker, plant lights and water walls by itself. Your story choices change supplies and how well the machines work. If air, food, stored power or radiation safety reaches zero, the mission ends. Science is a score, not a supply you need to stay alive.",
+  "The base runs its air maker, plant lights and water walls by itself. Your story choices change supplies and how well the machines work. If air, food, stored power, radiation safety or research reaches 0%, the mission ends. Research wears down each day and recovers through your choices. The goal is to survive as many full days as possible, with no time limit.",
   "NASA saw the Sun flashes and radiation storms from near Earth. Mars is usually in a different spot, so in the game we pretend the Sun was pointing at Mars too.",
   "Storm radiation in the game is a \"be ready for the worst\" amount. Mars's air blocks some radiation, and real storms can be bigger or smaller.",
   "The danger line of 25 radiation units is just for this game. NASA's real lifetime limit for an astronaut is 600.",
-  "Dust piles up on the panels much faster than in real life, so you notice it in just 15 days.",
+  "Dust piles up on the panels much faster than in real life, so you notice it during play.",
   "Dust storms and surprises are picked by chance. The Sun, the Mars weather and the message wait are real.",
 ];
 
