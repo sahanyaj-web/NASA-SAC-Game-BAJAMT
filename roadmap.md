@@ -1,4 +1,7 @@
 # Roadmap
+- [ ] Start all five systems at 100% and cap increases at 100%
+- [ ] Continue missions without a day limit; end when any system including research reaches zero
+- [ ] Update choices, reports and NASA record labels; test survival on both worlds
 - [x] End the game when air, food, power or radiation safety reaches zero
 - [x] Replace the power plan with daily story decisions and automatic supply changes
 - [x] Rename the home-screen game Junior Astronaut Mission Trainer
