@@ -50,6 +50,7 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
   const [shelter, setShelter] = useState<Shelter>("none");
   const [summary, setSummary] = useState<{ sol: number; report: SolReport } | null>(null);
   const [showReport, setShowReport] = useState(false);
+  const [askRestart, setAskRestart] = useState(false);
 
   // Bring back a saved mission after the page loads (runs once, in the browser only).
   useEffect(() => {
@@ -166,6 +167,8 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
     setSummary(null);
     setShowReport(false);
     setEvent(null);
+    setShelter("none");
+    setAskRestart(false);
   };
 
   if (!mission || !state || !ctx) {
