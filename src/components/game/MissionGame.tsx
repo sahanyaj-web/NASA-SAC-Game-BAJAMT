@@ -184,12 +184,13 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
         <Gauge tone="power" emoji="🔋" label="Power" value={pct.power} unit="%" max={100} danger={pct.power < 25} />
         <Gauge
           tone="radiation"
-          emoji="☢️"
+          emoji="🛡️"
           label="Radiation safety"
           value={pct.safety}
           unit="%"
           max={100}
           danger={pct.safety < 25}
+          hint={<Term k="waterwall">Water walls block radiation</Term>}
         />
         <Gauge tone="science" emoji="🔬" label="Research" value={pct.research} unit="%" max={100} danger={pct.research < 25} hint="The crew's science work" />
       </div>

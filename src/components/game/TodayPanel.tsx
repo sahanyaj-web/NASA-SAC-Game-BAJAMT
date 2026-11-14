@@ -53,8 +53,8 @@ export function TodayPanel({
         ))}
         {upcoming.length > 0 && (
           <div className="mt-3 rounded-lg border border-power/50 bg-power/10 p-2 text-sm">
-            ⏳ A Sun cloud is coming on {upcoming.map((u) => `day ${u.sol}`).join(", ")}. Get your{" "}
-            <Term k="waterwall">water walls</Term> ready!
+            ⏳ A Sun cloud is coming on {upcoming.map((u) => `day ${u.sol}`).join(", ")}. Protect your{" "}
+            <Term k="waterwall">radiation safety</Term>!
           </div>
         )}
         <a
