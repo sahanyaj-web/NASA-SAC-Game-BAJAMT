@@ -56,7 +56,7 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
       }
     } catch {
       sun = randomArchived(rand);
-      notice = "We couldn't reach NASA's live server just now, so this mission uses saved real NASA records instead.";
+      notice = "We couldn't reach NASA just now, so this trip uses saved real NASA records instead.";
     }
     const weather = MARS_WEATHER[Math.floor(rand() * MARS_WEATHER.length)]!;
     const schedule = buildSchedule(sun);
@@ -159,9 +159,9 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
     <div className="mx-auto max-w-7xl px-3 py-4 sm:px-6">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-data text-xs uppercase tracking-widest text-primary">Outpost Ares · Gale Crater, Mars</p>
+          <p className="text-data text-xs uppercase tracking-widest text-primary">Outpost Ares · on Mars</p>
           <h1 className="text-3xl font-bold sm:text-4xl">
-            <Term k="sol">Sol</Term> {Math.min(state.sol, state.totalSols)} <span className="text-muted-foreground">of {state.totalSols}</span>
+            <Term k="sol">Mars day</Term> {Math.min(state.sol, state.totalSols)} <span className="text-muted-foreground">of {state.totalSols}</span>
           </h1>
         </div>
         <SourceBadge sun={mission.sun} />
@@ -172,25 +172,25 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
       {mission.notice && <p className="mb-4 rounded-xl border border-power/50 bg-power/10 p-3 text-sm">{mission.notice}</p>}
       {shelter !== "none" && (
         <p className="mb-4 rounded-xl border border-radiation/60 bg-radiation/10 p-3 text-sm font-semibold">
-          🛡️ {shelter === "full" ? "Crew is in the storm shelter today: storm radiation blocked, but no science and half greenhouse care." : "Crew reached the shelter late: some storm radiation got through."}
+          🛡️ {shelter === "full" ? "The crew is hiding in the storm shelter today: most storm radiation is blocked, but no science and the plants get half the care." : "The crew got to the shelter late: some storm radiation got through."}
         </p>
       )}
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
-        <Gauge tone="air" emoji="🫁" label="Air" value={state.air} unit="days" max={10} danger={state.air < 2} hint="Crew breathes 1 a sol" />
-        <Gauge tone="food" emoji="🥬" label="Food" value={state.food} unit="days" max={12} danger={state.food < 2} hint="Crew eats 1 a sol" />
-        <Gauge tone="power" emoji="🔋" label="Battery" value={state.battery} unit={`/ ${state.batteryCap}⚡`} max={state.batteryCap} hint="Saved for nights" />
+        <Gauge tone="air" emoji="🫁" label="Air" value={state.air} unit="days" max={10} danger={state.air < 2} hint="The crew uses 1 a day" />
+        <Gauge tone="food" emoji="🥬" label="Food" value={state.food} unit="days" max={12} danger={state.food < 2} hint="The crew eats 1 a day" />
+        <Gauge tone="power" emoji="🔋" label="Battery" value={state.battery} unit={`/ ${state.batteryCap}⚡`} max={state.batteryCap} hint="Saved for the cold nights" />
         <Gauge
           tone="radiation"
           emoji="☢️"
           label="Radiation"
           value={+state.dose.toFixed(1)}
-          unit={`/ ${state.doseLimit} mSv`}
+          unit={`/ ${state.doseLimit}`}
           max={state.doseLimit}
           danger={state.dose > state.doseLimit * 0.75}
-          hint={<Term k="msv">What's mSv?</Term>}
+          hint={<>Danger line: {state.doseLimit} · <Term k="msv">What is this?</Term></>}
         />
-        <Gauge tone="science" emoji="🔬" label="Science" value={state.science} unit="pts" max={30} hint="15 = ⭐⭐ · 30 = ⭐⭐⭐" />
+        <Gauge tone="science" emoji="🔬" label="Science" value={state.science} unit="points" max={30} hint="15 = ⭐⭐ · 30 = ⭐⭐⭐" />
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-[22rem_1fr]">
@@ -211,7 +211,7 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
 
       <div className="mt-6 flex justify-center">
         <Button variant="link" asChild>
-          <Link to="/science">Where does this data come from?</Link>
+          <Link to="/science">Where do these facts come from?</Link>
         </Button>
       </div>
 

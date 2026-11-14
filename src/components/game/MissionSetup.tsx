@@ -31,20 +31,20 @@ export function MissionSetup({
         <p className="text-data text-xs uppercase tracking-widest text-primary">Step 1 of 2</p>
         <h2 className="mt-1 text-3xl font-bold sm:text-4xl">Pick your Sun ☀️</h2>
         <p className="mt-2 max-w-2xl text-muted-foreground">
-          Every sol of your mission uses what the <strong>real Sun</strong> did on a real day, from NASA's space
-          weather records (called DONKI). Solar flares and particle storms in the game really happened.
+          Each day of your trip uses what the <strong>real Sun</strong> did on a real day. NASA keeps a log of
+          everything the Sun does. Every Sun flash and radiation storm in the game really happened!
         </p>
         <div className="mt-5 grid gap-3 md:grid-cols-2">
           <button type="button" className={sunCard(sun.kind === "recent")} onClick={() => setSun({ kind: "recent" })}>
             <p className="font-display text-xl font-semibold">📡 Today's Sun</p>
-            <p className="mt-1 text-sm text-muted-foreground">Live from NASA: the last 15 days of real solar activity.</p>
+            <p className="mt-1 text-sm text-muted-foreground">Straight from NASA: what the Sun did in the last 15 days.</p>
           </button>
           <button type="button" className={sunCard(sun.kind === "random")} onClick={() => setSun({ kind: "random" })}>
             <p className="font-display text-xl font-semibold">🎲 Surprise me</p>
-            <p className="mt-1 text-sm text-muted-foreground">Live from NASA: 15 random real days since 2012. New every time!</p>
+            <p className="mt-1 text-sm text-muted-foreground">Straight from NASA: 15 real days picked by chance since 2012. New every time!</p>
           </button>
         </div>
-        <p className="mt-6 text-sm font-bold text-muted-foreground">…or survive a famous real solar storm:</p>
+        <p className="mt-6 text-sm font-bold text-muted-foreground">…or survive a famous real Sun storm:</p>
         <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {ARCHIVED_SUN.map((w) => (
             <button
@@ -65,7 +65,7 @@ export function MissionSetup({
         <p className="text-data text-xs uppercase tracking-widest text-primary">Step 2 of 2</p>
         <h2 className="mt-1 text-3xl font-bold sm:text-4xl">Pack your rocket 🚀</h2>
         <p className="mt-2 max-w-2xl text-muted-foreground">
-          Rockets can only carry so much weight. Choose <strong>{CRATE_PICKS} cargo crates</strong>. Every crate you
+          Rockets can only carry so much. Choose <strong>{CRATE_PICKS} boxes</strong> to bring. Every box you
           pick means another one stays on Earth.
         </p>
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -88,7 +88,7 @@ export function MissionSetup({
                   </span>
                 </div>
                 <p className="mt-2 text-sm">{c.what}</p>
-                <p className="mt-1 text-xs text-muted-foreground">Real: {c.real}</p>
+                <p className="mt-1 text-xs text-muted-foreground">True fact: {c.real}</p>
               </button>
             );
           })}
@@ -102,10 +102,10 @@ export function MissionSetup({
           disabled={crates.length !== CRATE_PICKS || loading}
           onClick={() => onLaunch(sun, crates)}
         >
-          {loading ? "Contacting NASA…" : "🚀 Launch the mission"}
+          {loading ? "Asking NASA about the Sun…" : "🚀 Blast off!"}
         </Button>
         {crates.length !== CRATE_PICKS && (
-          <p className="text-sm text-muted-foreground">Pick {CRATE_PICKS - crates.length} more crate{CRATE_PICKS - crates.length === 1 ? "" : "s"}.</p>
+          <p className="text-sm text-muted-foreground">Pick {CRATE_PICKS - crates.length} more box{CRATE_PICKS - crates.length === 1 ? "" : "es"}.</p>
         )}
       </div>
     </div>

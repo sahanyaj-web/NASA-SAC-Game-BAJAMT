@@ -4,13 +4,13 @@ import { cn } from "@/lib/utils";
 export function sourceLabel(sun: SunWindow) {
   switch (sun.source) {
     case "live-recent":
-      return { tag: "LIVE", text: `NASA DONKI · the real Sun, ${sun.start} → ${sun.end}` };
+      return { tag: "LIVE", text: `From NASA right now · the real Sun, ${sun.start} → ${sun.end}` };
     case "live-random":
-      return { tag: "LIVE", text: `NASA DONKI · fetched now · real Sun from ${sun.start} → ${sun.end}` };
+      return { tag: "LIVE", text: `From NASA right now · the real Sun from ${sun.start} → ${sun.end}` };
     case "archived":
-      return { tag: "ARCHIVED", text: `NASA DONKI records · ${sun.name} (${sun.start} → ${sun.end})` };
+      return { tag: "SAVED", text: `Saved NASA records · ${sun.name} (${sun.start} → ${sun.end})` };
     default:
-      return { tag: "ARCHIVED", text: `Couldn't reach NASA, so using saved DONKI records · ${sun.name}` };
+      return { tag: "SAVED", text: `Couldn't reach NASA, so using saved NASA records · ${sun.name}` };
   }
 }
 

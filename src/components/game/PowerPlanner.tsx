@@ -10,10 +10,10 @@ import { Term } from "./Term";
 type Key = keyof Allocation;
 
 const ROWS: { key: Key; emoji: string; name: ReactNode; rule: string; dot: string }[] = [
-  { key: "air", emoji: "🫁", name: <Term k="moxie">Oxygen maker</Term>, rule: "2⚡ = 1 day of air. The crew breathes 1 day every sol.", dot: "bg-air" },
-  { key: "greenhouse", emoji: "🌱", name: "Greenhouse lights", rule: "3⚡ = 1 day of food. The crew eats 1 day every sol.", dot: "bg-food" },
-  { key: "shield", emoji: "🛡️", name: <Term k="waterwall">Water walls</Term>, rule: "Each ⚡ keeps more shielding water from freezing.", dot: "bg-radiation" },
-  { key: "science", emoji: "🔬", name: "Science lab", rule: "1⚡ = 1 science point. Science is why you came!", dot: "bg-science" },
+  { key: "air", emoji: "🫁", name: <Term k="moxie">Oxygen maker</Term>, rule: "2⚡ makes 1 day of air. The crew uses 1 day of air every day.", dot: "bg-air" },
+  { key: "greenhouse", emoji: "🌱", name: "Plant room lights", rule: "3⚡ grows 1 day of food. The crew eats 1 day of food every day.", dot: "bg-food" },
+  { key: "shield", emoji: "🛡️", name: <Term k="waterwall">Water walls</Term>, rule: "Each ⚡ keeps more water from freezing, so it can block radiation.", dot: "bg-radiation" },
+  { key: "science", emoji: "🔬", name: "Science lab", rule: "1⚡ makes 1 science point. Discovering things is why you came!", dot: "bg-science" },
 ];
 
 export function PowerPlanner({
@@ -48,8 +48,8 @@ export function PowerPlanner({
   };
   const preview: Record<Key, string> = {
     air: `+${forecast.airMade.toFixed(1)} days of air${state.statuses.airClog ? " (clogged: half speed)" : ""}`,
-    greenhouse: `+${forecast.foodMade.toFixed(1)} days of food${shelter === "full" ? " (half care: crew in shelter)" : ""}`,
-    shield: `Shield level ${forecast.shieldLevel}${state.shieldBonus ? ` (${state.shieldBonus} free from water)` : ""} · radiation today ${forecast.doseToday.toFixed(2)} mSv`,
+    greenhouse: `+${forecast.foodMade.toFixed(1)} days of food${shelter === "full" ? " (half care: the crew is hiding)" : ""}`,
+    shield: `Blocking level ${forecast.shieldLevel}${state.shieldBonus ? ` (${state.shieldBonus} free from your water)` : ""} · radiation today: ${forecast.doseToday.toFixed(2)} units`,
     science: shelter === "full" ? "No science while hiding in the shelter" : `+${forecast.scienceMade} science`,
   };
 
@@ -58,7 +58,7 @@ export function PowerPlanner({
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h2 id="planner-title" className="text-2xl font-bold">⚡ Power plan for today</h2>
-          <p className="text-sm text-muted-foreground">Share out your power. Whatever is left charges the battery for tonight.</p>
+          <p className="text-sm text-muted-foreground">Share out your power ⚡. Whatever is left goes into the battery for tonight.</p>
         </div>
         <div className="text-right">
           <p className="text-data text-3xl font-bold text-power">{left}⚡</p>
@@ -69,11 +69,11 @@ export function PowerPlanner({
       <div className="mt-4 grid grid-cols-3 gap-2 text-center text-sm">
         <div className="panel-raised p-2">
           <p className="text-data text-lg font-bold text-power">{power.solar}⚡</p>
-          <p className="text-xs text-muted-foreground">sunlight{state.statuses.dustStorm ? " (dust storm!)" : ""}</p>
+          <p className="text-xs text-muted-foreground">from sunlight{state.statuses.dustStorm ? " (dust storm!)" : ""}</p>
         </div>
         <div className="panel-raised p-2">
           <p className="text-data text-lg font-bold text-power">{power.reactor}⚡</p>
-          <p className="text-xs text-muted-foreground">reactor</p>
+          <p className="text-xs text-muted-foreground">from nuclear power</p>
         </div>
         <div className="panel-raised p-2">
           <p className="text-data text-lg font-bold text-power">{state.battery}⚡</p>
@@ -139,38 +139,38 @@ export function PowerPlanner({
             🔆 Solar panels are <span className="text-power">{Math.round(state.panel * 100)}%</span> clean
           </p>
           <p className="text-xs text-muted-foreground">
-            <Term k="dust">Dust</Term> builds up every sol. Brushing needs a spacewalk: −0.5 day of air, +0.3 mSv.
+            <Term k="dust">Dust</Term> piles up every day. Brushing means going outside in spacesuits: costs half a day of air and 0.3 radiation units.
           </p>
         </div>
         <Button variant="panel" disabled={cleanedToday || state.panel >= 0.99} onClick={onClean}>
-          {cleanedToday ? "Brushed today ✓" : "Spacewalk: brush panels"}
+          {cleanedToday ? "Brushed today ✓" : "Go outside and brush panels"}
         </Button>
       </div>
 
       <div className={cn("mt-4 rounded-xl border p-4", forecast.coldNight ? "border-radiation bg-radiation/10" : "border-border")}>
         <p className="font-display text-lg font-semibold">🌙 Tonight</p>
         <p className="text-sm">
-          Curiosity measured <strong className="text-air">{weather.min}°C</strong> tonight at Gale Crater (warmest today:{" "}
-          {weather.max}°C). The heater needs <strong className="text-power">{forecast.heat}⚡</strong> from the battery.
+          It will be <strong className="text-air">{weather.min}°C</strong> tonight — colder than any freezer! (Real reading from
+          NASA's Curiosity rover.) The heater needs <strong className="text-power">{forecast.heat}⚡</strong> from the battery.
         </p>
         <p className="mt-1 text-sm">
-          Battery after today: <strong>{forecast.batteryAfterDay}⚡</strong> → after the night:{" "}
+          Battery at bedtime: <strong>{forecast.batteryAfterDay}⚡</strong> → in the morning:{" "}
           <strong>{forecast.batteryAfterNight}⚡</strong>
           {forecast.wasted > 0 && <span className="text-muted-foreground"> · {forecast.wasted}⚡ wasted (battery full)</span>}
         </p>
         {forecast.coldNight && (
-          <p className="mt-1 text-sm font-bold text-radiation">⚠️ Not enough battery for the heater! Plants will freeze (−1 day of food).</p>
+          <p className="mt-1 text-sm font-bold text-radiation">⚠️ Not enough battery for the heater! Some plants will freeze (you lose 1 day of food).</p>
         )}
       </div>
 
       <div className="mt-4 grid grid-cols-3 gap-2 text-center text-sm">
-        <Prediction label="Air at bedtime" value={forecast.airAfter} unit="days" warn={forecast.airAfter < 2} tone="text-air" />
-        <Prediction label="Food at bedtime" value={forecast.foodAfter} unit="days" warn={forecast.foodAfter < 2} tone="text-food" />
-        <Prediction label="Radiation total" value={state.dose + forecast.doseToday} unit="mSv" warn={state.dose + forecast.doseToday > state.doseLimit * 0.75} tone="text-radiation" />
+        <Prediction label="Air left tonight" value={forecast.airAfter} unit="days" warn={forecast.airAfter < 2} tone="text-air" />
+        <Prediction label="Food left tonight" value={forecast.foodAfter} unit="days" warn={forecast.foodAfter < 2} tone="text-food" />
+        <Prediction label="Radiation so far" value={state.dose + forecast.doseToday} unit="units" warn={state.dose + forecast.doseToday > state.doseLimit * 0.75} tone="text-radiation" />
       </div>
 
       <Button variant="mission" size="xl" className="mt-6 w-full" onClick={onEndSol}>
-        🌙 End sol {state.sol}
+        🌙 End Mars day {state.sol}
       </Button>
     </section>
   );
