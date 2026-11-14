@@ -347,7 +347,7 @@ export function effectChips(e: Effect, s?: GameState): { text: string; good: boo
   if (e.dose) out.push({ text: `☢️ ${change(-e.dose, s?.doseLimit ?? MISSION_DOSE_LIMIT)} radiation safety`, good: e.dose < 0 });
   if (e.panel && e.panel < 0) out.push({ text: "🔆 Dirty, scratched panels", good: false });
   if (e.setPanel === 1) out.push({ text: "🔆 Clean panels", good: true });
-  if (e.shieldBonus) out.push({ text: "🛡️ Thicker water walls", good: true });
+  if (e.shieldBonus) out.push({ text: "🛡️ Radiation safety: thicker water walls slow future drops", good: true });
   if (e.batteryCap) out.push({ text: "🔋 Smaller battery: less power saved for nights", good: e.batteryCap > 0 });
   for (const st of e.status ?? []) {
     const label: Record<string, [string, boolean]> = {

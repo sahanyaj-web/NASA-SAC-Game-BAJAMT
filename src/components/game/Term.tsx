@@ -32,8 +32,8 @@ export const GLOSSARY = {
     text: "A machine that pulls oxygen (the part of air we breathe) out of Mars's air. NASA tested a small one called MOXIE on the Perseverance rover.",
   },
   waterwall: {
-    word: "Water walls",
-    text: "Tanks of water inside the walls of your base. Water is great at blocking radiation. But Mars nights are colder than a freezer, so the water needs power to keep from freezing.",
+    word: "Radiation safety",
+    text: "Water tanks inside the base walls block some harmful radiation. They are part of your radiation safety system, not a separate supply. Thicker water walls help your safety percentage drop more slowly. At 0%, the crew must go home.",
   },
   conjunction: {
     word: "Sun in the way",
