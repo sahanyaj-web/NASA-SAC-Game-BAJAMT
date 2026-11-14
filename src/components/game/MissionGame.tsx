@@ -111,7 +111,7 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
 
   const delays = useMemo<[number, number]>(() => {
     if (!mission) return [0, 0];
-    const m = mission.schedule.map((d) => (state?.place === "moon" ? earthMoon() : earthMars(new Date(d.date + "T12:00:00Z")).oneWayMinutes));
+    const m = mission.schedule.map((d) => (state?.place === "moon" ? earthMoon() : earthMars(new Date(d.date + "T12:00:00Z"))).oneWayMinutes);
     return [Math.min(...m), Math.max(...m)];
   }, [mission, state?.place]);
 
