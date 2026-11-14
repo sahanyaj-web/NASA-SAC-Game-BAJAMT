@@ -1684,7 +1684,7 @@ export const ARCHIVED_SUN: SunWindowRaw[] = [
 "v": 535
 }
 ],
-"blurb": "Near solar maximum, the Sun fired off an X9-class flare (Oct 3) \u2014 one of the strongest of its 11-year cycle."
+"blurb": "The Sun gets extra busy every 11 years. In this busy time it made one of its biggest flashes ever seen (Oct 3)."
 },
 {
 "id": "feb-2022",
@@ -2155,7 +2155,7 @@ export const ARCHIVED_SUN: SunWindowRaw[] = [
 "v": 2715
 }
 ],
-"blurb": "Curiosity was flying to Mars. On July 23 a super-fast plasma cloud blasted out \u2014 luckily it missed Earth."
+"blurb": "NASA's Curiosity rover was flying to Mars. On July 23 a super-fast Sun cloud blasted out \u2014 luckily it missed Earth."
 },
 {
 "id": "dec-2019",
