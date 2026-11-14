@@ -119,6 +119,7 @@ export function randomArchived(rand: () => number): SunWindow {
   return archived(ARCHIVED_SUN[Math.floor(rand() * ARCHIVED_SUN.length)]!.id, "archived-fallback");
 }
 
-export function donkiBrowseUrl(date: string) {
-  return `https://kauai.ccmc.gsfc.nasa.gov/DONKI/search/?startDate=${date}&endDate=${date}`;
+/** NASA's public DONKI page (the date is shown next to the link so players can look it up). */
+export function donkiBrowseUrl(_date: string) {
+  return "https://ccmc.gsfc.nasa.gov/DONKI/";
 }
