@@ -43,6 +43,13 @@ export function MissionSetup({
 
   return (
     <div className="mx-auto max-w-5xl space-y-10 px-4 py-8 animate-float-in">
+      {changed && (
+        <div className="flex justify-end">
+          <Button variant="panel" size="sm" onClick={resetPicks}>
+            🔄 Reset choices
+          </Button>
+        </div>
+      )}
       <section>
         <p className="text-data text-xs uppercase tracking-widest text-primary">Step 1 of 3</p>
         <h2 className="mt-1 text-3xl font-bold sm:text-4xl">Where is your base? 🚀</h2>
