@@ -95,3 +95,16 @@ export function formatMinutes(min: number) {
   const s = Math.round((min - m) * 60);
   return s === 0 ? `${m} min` : `${m} min ${s} s`;
 }
+
+/** The Moon is always about the same distance away: ~1.3 light-seconds (NASA Moon Fact Sheet). */
+export function earthMoon(): EarthMarsInfo {
+  const distanceAU = EARTH_MOON_KM / KM_PER_AU;
+  return {
+    distanceAU,
+    distanceKm: EARTH_MOON_KM,
+    oneWayMinutes: (distanceAU * LIGHT_SECONDS_PER_AU) / 60,
+    marsSunAU: 1,
+    elongationDeg: 180,
+    conjunction: false,
+  };
+}

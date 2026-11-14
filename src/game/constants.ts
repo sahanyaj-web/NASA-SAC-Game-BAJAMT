@@ -12,6 +12,13 @@ export const O2_KG_PER_PERSON_DAY = 0.84;
 
 /** Average radiation on Mars's surface ≈ 0.64 mSv per sol. Source: Curiosity RAD (NASA: science.nasa.gov/resource/radiation-measurements-on-mars). */
 export const MARS_SURFACE_MSV_PER_SOL = 0.64;
+/** Moon surface ≈ 1.37 mSv per day, about twice Mars, because the Moon has no air at all.
+ *  Measured by the Chang'e-4 LND instrument (Zhang et al., Science Advances 2020); NASA's LRO CRaTER instrument reports similar levels. */
+export const MOON_SURFACE_MSV_PER_DAY = 1.37;
+/** One-way light time Earth→Moon: 384,400 km average distance (NASA Moon Fact Sheet) ÷ speed of light ≈ 1.28 s. */
+export const EARTH_MOON_KM = 384_400;
+/** Moon dust is not blown around by wind, so panels get dusty more slowly (game scale). */
+export const MOON_DUST_PER_DAY = 0.02;
 /** Natural background on Earth ≈ 3 mSv per year ≈ 0.008 per day (NASA Space Math, science.gsfc.nasa.gov). */
 export const EARTH_MSV_PER_DAY = 0.008;
 /** NASA's career limit for astronauts: 600 mSv (NASA-STD-3001, 2022). */

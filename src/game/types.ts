@@ -43,6 +43,8 @@ export interface SolSpaceWeather {
   cmeArrival: { speed: number } | null;
 }
 
+export type Place = "mars" | "moon";
+
 export type CrateId = "solar" | "reactor" | "water" | "battery" | "food" | "rover";
 
 export interface Allocation {
@@ -125,4 +127,5 @@ export interface GameState {
   log: SolLog[];
   over: null | { result: "success" | "air" | "food" | "dose"; message: string };
   seed: number;
+  place: Place;
 }
