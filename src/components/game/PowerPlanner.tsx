@@ -84,8 +84,8 @@ export function PowerPlanner({
       <ul className="mt-5 space-y-3">
         {ROWS.map((r) => (
           <li key={r.key} className="panel-raised p-3 sm:p-4">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="min-w-0 flex-1">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0 sm:flex-1">
                 <p className="font-display text-lg font-semibold">
                   <span aria-hidden className="mr-2">{r.emoji}</span>
                   {r.name}
@@ -110,7 +110,7 @@ export function PowerPlanner({
                       tabIndex={-1}
                       onClick={() => set(r.key, alloc[r.key] === i + 1 ? i : i + 1)}
                       className={cn(
-                        "size-5 rounded-md border transition-colors sm:size-6",
+                        "size-4 rounded-md border transition-colors sm:size-6",
                         i < alloc[r.key] ? cn(r.dot, "border-transparent") : "border-border bg-muted",
                       )}
                     />

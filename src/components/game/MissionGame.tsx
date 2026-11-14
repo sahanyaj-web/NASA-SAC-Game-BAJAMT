@@ -210,7 +210,7 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
       </div>
 
       <div className="mt-6 flex justify-center">
-        <Button variant="ghost" asChild>
+        <Button variant="link" asChild>
           <Link to="/science">Where does this data come from?</Link>
         </Button>
       </div>
