@@ -10,9 +10,9 @@ export const SOL_LENGTH_TEXT = "24 hours 39 minutes";
 /** Each astronaut breathes about 0.84 kg of oxygen per day. Source: NASA Baseline Values & Assumptions Document (BVAD, NASA/TP-2015-218570). */
 export const O2_KG_PER_PERSON_DAY = 0.84;
 
-/** Average radiation on Mars's surface ≈ 0.64 mSv per sol. Source: Curiosity RAD, Hassler et al., Science 2014. */
+/** Average radiation on Mars's surface ≈ 0.64 mSv per sol. Source: Curiosity RAD (NASA: science.nasa.gov/resource/radiation-measurements-on-mars). */
 export const MARS_SURFACE_MSV_PER_SOL = 0.64;
-/** Natural background on Earth ≈ 3 mSv per year ≈ 0.008 per day (US NRC). */
+/** Natural background on Earth ≈ 3 mSv per year ≈ 0.008 per day (NASA Space Math, science.gsfc.nasa.gov). */
 export const EARTH_MSV_PER_DAY = 0.008;
 /** NASA's career limit for astronauts: 600 mSv (NASA-STD-3001, 2022). */
 export const NASA_CAREER_LIMIT_MSV = 600;
