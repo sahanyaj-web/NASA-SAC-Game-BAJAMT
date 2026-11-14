@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MARS_WEATHER } from "@/game/data/mars-weather";
 import { MOON_WEATHER } from "@/game/data/moon-weather";
@@ -29,6 +29,19 @@ interface Mission {
   notice?: string | undefined;
 }
 
+// Progress is kept in the browser so leaving for "Real facts" and coming back
+// does not lose the mission. Cleared when a mission ends and a new one starts.
+const SAVE_KEY = "jam-mission-save";
+
+interface SaveData {
+  mission: Mission;
+  state: GameState;
+  shelter: Shelter;
+  summary: { sol: number; report: SolReport } | null;
+  showReport: boolean;
+  event: GameEvent | null;
+}
+
 export function MissionGame({ initialStorm }: { initialStorm?: string | undefined }) {
   const [mission, setMission] = useState<Mission | null>(null);
   const [loading, setLoading] = useState(false);
@@ -37,6 +50,38 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
   const [shelter, setShelter] = useState<Shelter>("none");
   const [summary, setSummary] = useState<{ sol: number; report: SolReport } | null>(null);
   const [showReport, setShowReport] = useState(false);
+
+  // Bring back a saved mission after the page loads (runs once, in the browser only).
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(SAVE_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw) as SaveData;
+      if (saved.mission && saved.state && !saved.state.over) {
+        setMission(saved.mission);
+        setState(saved.state);
+        setShelter(saved.shelter);
+        setSummary(saved.summary);
+        setEvent(saved.event);
+      }
+    } catch {
+      // A broken or old save is ignored.
+    }
+  }, []);
+
+  // Save progress whenever it changes.
+  useEffect(() => {
+    try {
+      if (!mission || !state) {
+        window.localStorage.removeItem(SAVE_KEY);
+        return;
+      }
+      const data: SaveData = { mission, state, shelter, summary, showReport, event };
+      window.localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+    } catch {
+      // Storage full or unavailable: the game still works, it just won't save.
+    }
+  }, [mission, state, shelter, summary, showReport, event]);
 
   const launch = async (place: Place, choice: SunChoice, crates: CrateId[]) => {
     setLoading(true);
