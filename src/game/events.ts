@@ -21,7 +21,7 @@ export interface DeckCard {
   build: (s: GameState, oneWayMin: number) => GameEvent;
 }
 
-const walkCost = `${EVA_AIR} day of air for the spacesuits, and ${EVA_DOSE} radiation units from being outside`;
+const walkCost = "Spacesuit air is used up, and radiation safety drops outside";
 const wait = (m: number) => (m < 1 ? `${Math.max(1, Math.round(m * 60))} second${Math.round(m * 60) > 1 ? "s" : ""}` : `${Math.round(m)} minutes`);
 const moon = (s: GameState) => s.place === "moon";
 
@@ -50,17 +50,17 @@ export function firstDayEvent(s: GameState): GameEvent {
       {
         id: "plants",
         label: "Set up the plant room",
-        cost: "The science lab stays in boxes: no science from it today",
-        gain: "+1.5 days of food",
-        effect: { food: 1.5 },
+        cost: "The research system waits while the crew sets up the plants",
+        gain: "Refill some food (up to 100%)",
+        effect: { food: 1.5, science: -2 },
         outcome: "The crew plants tiny lettuce seeds under bright lights. In a few days there will be fresh salad!",
       },
       {
         id: "lab",
         label: "Set up the science lab",
-        cost: "The plant room stays in boxes: no extra food",
-        gain: "+3 science",
-        effect: { science: 3 },
+        cost: "The plant room waits, so the crew eats stored food",
+        gain: "Restore some research (up to 100%)",
+        effect: { science: 3, food: -0.5 },
         outcome: `The scientist looks at ${P.name} dirt under a microscope on the very first day. Exciting!`,
       },
     ],
@@ -167,13 +167,13 @@ export const DECK: DeckCard[] = [
           }),
       options: [
         {
-          id: "eva", label: "Put on spacesuits and go look", cost: walkCost, gain: "+4 science",
+          id: "eva", label: "Put on spacesuits and go look", cost: walkCost, gain: "Restore some research (up to 100%)",
           effect: { air: -EVA_AIR, dose: EVA_DOSE, science: 4 },
           outcome: "The scientist scoops it up with thick space gloves. Up close, it's even more amazing!",
         },
         {
-          id: "drone", label: "Send the little robot car", cost: "The robot's camera isn't as good as eyes: only half the science", gain: "+2 science, and nobody goes outside",
-          effect: { science: 2 },
+          id: "drone", label: "Send the little robot car", cost: "The crew uses some air getting the robot ready", gain: "Restore some research (up to 100%), and nobody goes outside",
+          effect: { science: 2, air: -0.2 },
           outcome: "The robot car beeps its way over and takes photos. Nobody had to go outside.",
         },
       ],
@@ -202,12 +202,12 @@ export const DECK: DeckCard[] = [
           },
       options: [
         {
-          id: "push", label: "Go out and push it free", cost: walkCost, gain: "+2 science (the car gets back to work today)",
+          id: "push", label: "Go out and push it free", cost: walkCost, gain: "Restore some research (up to 100%) (the car gets back to work today)",
           effect: { air: -EVA_AIR, dose: EVA_DOSE, science: 2 },
           outcome: "Heave-ho! Two astronauts dig out the wheels with shovels. The car rolls free and keeps exploring.",
         },
         {
-          id: "earth", label: "Ask the robot drivers on Earth", cost: `Each message takes ${wait(m)} to fly there, so the car sits still and you lose 1 science`, gain: "Experts plan a safe way out. Nobody goes outside.",
+          id: "earth", label: "Ask the robot drivers on Earth", cost: `Each message takes ${wait(m)} to fly there, so the car sits still and you lose some research`, gain: "Experts plan a safe way out. Nobody goes outside.",
           effect: { science: -1 }, askEarth: true,
           outcome: "The drivers on Earth send careful steps. Wiggle left, wiggle right… the car slowly crawls out.",
         },
@@ -237,7 +237,7 @@ export const DECK: DeckCard[] = [
           },
       options: [
         {
-          id: "fix", label: "Take it apart and fix it ourselves", cost: "3 science (the crew is busy all day)", gain: "Works again right away",
+          id: "fix", label: "Take it apart and fix it ourselves", cost: "some research (the crew is busy all day)", gain: "Works again right away",
           effect: { science: -3 },
           outcome: "The engineer opens the machine and blows out the dust with a tiny air pump. It hums back to life!",
         },
@@ -262,12 +262,12 @@ export const DECK: DeckCard[] = [
       fact: { text: "NASA checked lettuce grown on the Space Station for germs. It was safe to eat, because astronauts kept it clean.", source: "NASA study OSD-268", url: osdrUrl("OSD-268") },
       options: [
         {
-          id: "clean", label: "Throw out the spotty plants", cost: "1 day of food", gain: "The rest of the plants stay safe",
+          id: "clean", label: "Throw out the spotty plants", cost: "Some stored food", gain: "The rest of the plants stay safe",
           effect: { food: -1 },
           outcome: "The crew wipes every shelf clean. The plant room smells fresh again.",
         },
         {
-          id: "ignore", label: "Keep them and hope", cost: "The mold might spread and ruin 2 days of food", gain: "Keep all the plants (for now)",
+          id: "ignore", label: "Keep them and hope", cost: "The mold might spread and ruin Some stored food", gain: "Keep all the plants (for now)",
           effect: { status: [{ id: "moldRisk", sols: 4 }] },
           outcome: "The crew keeps the plants. The doctor says she'll keep an eye on those fuzzy spots…",
         },
@@ -294,9 +294,9 @@ export const DECK: DeckCard[] = [
           outcome: "The crew fills the walls with melted ice. Now the base is a thicker radiation blanket.",
         },
         {
-          id: "o2", label: "Turn it into air", cost: "Digging takes all day: 2 science", gain: "+2 days of air",
+          id: "o2", label: "Turn it into air", cost: "Digging takes all day: some research", gain: "Refill some air (up to 100%)",
           effect: { science: -2, air: 2 },
-          outcome: "A machine splits the water into oxygen to breathe. Fresh air for 2 more days!",
+          outcome: "A machine splits the water into oxygen to breathe. The air tanks fill up again!",
         },
       ],
     }),
@@ -314,12 +314,12 @@ export const DECK: DeckCard[] = [
       fact: { text: "NASA studied mice on the Space Station to find ways to keep muscles and bones strong in space.", source: "NASA study OSD-342", url: osdrUrl("OSD-342") },
       options: [
         {
-          id: "gym", label: "Everyone exercises today", cost: "2 science today", gain: "The crew stays strong",
+          id: "gym", label: "Everyone exercises today", cost: "some research today", gain: "The crew stays strong",
           effect: { science: -2 },
           outcome: `Jumping jacks ${placeWords(s.place).on}! Everyone bounces extra high and feels great.`,
         },
         {
-          id: "skip", label: "Keep working", cost: "Tired crew: 1 less science every day for 3 days", gain: "No time lost today",
+          id: "skip", label: "Keep working", cost: "Tired crew: research drops each day for 3 days", gain: "No time lost today",
           effect: { status: [{ id: "fatigue", sols: 3 }] },
           outcome: "The crew keeps working, but by evening everyone is yawning and slow.",
         },
@@ -369,13 +369,13 @@ export const DECK: DeckCard[] = [
         : { text: "NASA's Perseverance rover is filling real tubes with Mars rock right now.", source: "NASA — Perseverance rover", url: "https://science.nasa.gov/mission/mars-2020-perseverance/" },
       options: [
         {
-          id: "drill", label: "Go out and drill", cost: walkCost, gain: "+3 science",
+          id: "drill", label: "Go out and drill", cost: walkCost, gain: "Restore some research (up to 100%)",
           effect: { air: -EVA_AIR, dose: EVA_DOSE, science: 3 },
           outcome: "Bzzzzz! Five shiny tubes of rock are packed and ready for Earth.",
         },
         {
-          id: "skip", label: "Not today", cost: "No new science from the rocks", gain: "Nobody goes outside",
-          effect: {},
+          id: "skip", label: "Not today", cost: "Research drops while the rock study waits", gain: "Nobody goes outside",
+          effect: { science: -1 },
           outcome: "The drill stays in its box. Everyone stays safe inside.",
         },
       ],
@@ -396,12 +396,12 @@ export const DECK: DeckCard[] = [
         : { text: `You can't video-chat with Mars. Right now each message takes about ${wait(m)} to get there, so astronauts send recorded videos instead.`, source: "Worked out from where NASA says the planets are" },
       options: [
         {
-          id: "party", label: "Party with special food", cost: "Half a day of food", gain: "Happy crew: +1 science for 2 days",
+          id: "party", label: "Party with special food", cost: "Some stored food", gain: "Happy crew: Restore some research (up to 100%) for 2 days",
           effect: { food: -0.5, status: [{ id: "happyCrew", sols: 2 }] },
           outcome: "Surprise! A space-cake with a glow-stick candle. The commander laughs and laughs.",
         },
         {
-          id: "video", label: "Record a video for the family", cost: "Recording takes the evening: 1 science", gain: "Happy crew: +1 science for 1 day",
+          id: "video", label: "Record a video for the family", cost: "Recording takes the evening: some research", gain: "Happy crew: Restore some research (up to 100%) for 1 day",
           effect: { science: -1, status: [{ id: "happyCrew", sols: 1 }] },
           outcome: `The crew sings "Happy Birthday" to the camera. The video takes ${wait(m)} to reach the commander's family.`,
         },
@@ -421,12 +421,12 @@ export const DECK: DeckCard[] = [
       fact: { text: "The Space Station has had tiny leaks too. Astronauts once found one by watching floating tea leaves drift toward it!", source: "NASA — Space Station", url: "https://www.nasa.gov/international-space-station/" },
       options: [
         {
-          id: "patch", label: "Stop everything and patch it", cost: "2 science (the crew is busy)", gain: "Leak fixed",
+          id: "patch", label: "Stop everything and patch it", cost: "some research (the crew is busy)", gain: "Leak fixed",
           effect: { science: -2 },
           outcome: "The engineer finds the leak and presses on a sticky patch. The hissing stops.",
         },
         {
-          id: "ignore", label: "Keep working and let it hiss", cost: "1.5 days of air", gain: "Keep working",
+          id: "ignore", label: "Keep working and let it hiss", cost: "Some stored air", gain: "Keep working",
           effect: { air: -1.5 },
           outcome: "The crew keeps working, but the air tanks get a little lower all day.",
         },
@@ -446,12 +446,12 @@ export const DECK: DeckCard[] = [
       fact: { text: "The Space Station cleans and reuses about 98 out of every 100 drops of water, so astronauts need very little from Earth.", source: "NASA — Space Station", url: "https://www.nasa.gov/international-space-station/" },
       options: [
         {
-          id: "fix", label: "Fix it with a spare part", cost: "The repair takes all day: 2 science", gain: "Clean water again",
+          id: "fix", label: "Fix it with a spare part", cost: "The repair takes all day: some research", gain: "Clean water again",
           effect: { science: -2 },
           outcome: "The engineer swaps in a new filter. Drip, drip — fresh clean water flows again.",
         },
         {
-          id: "tank", label: "Drink from the emergency tank", cost: "That water was saved to make air: 1 day of air", gain: "Keep working",
+          id: "tank", label: "Drink from the emergency tank", cost: "That water was saved to make air: Some stored air", gain: "Keep working",
           effect: { air: -1 },
           outcome: "The crew drinks from the emergency tank. That's water the oxygen maker can't use now.",
         },
@@ -471,12 +471,12 @@ export const DECK: DeckCard[] = [
       fact: { text: "Astronauts on the Space Station often answer questions from school kids.", source: "NASA — Space Station", url: "https://www.nasa.gov/international-space-station/" },
       options: [
         {
-          id: "answer", label: "Record video answers", cost: "Recording takes all morning: 2 science today", gain: "Happy crew: +1 science for 2 days",
+          id: "answer", label: "Record video answers", cost: "Recording takes all morning: some research today", gain: "Happy crew: Restore some research (up to 100%) for 2 days",
           effect: { science: -2, status: [{ id: "happyCrew", sols: 2 }] },
           outcome: "The crew answers every question (no, they don't sleep upside down!). Soon, the kids cheer.",
         },
         {
-          id: "skip", label: "Too busy — maybe later", cost: "The crew misses home: tired crew, 1 less science for 2 days", gain: "No time lost today",
+          id: "skip", label: "Too busy — maybe later", cost: "The crew misses home: tired crew, research drops for 2 days", gain: "No time lost today",
           effect: { status: [{ id: "fatigue", sols: 2 }] },
           outcome: "The crew gets back to work, but everyone feels a bit homesick today.",
         },
@@ -496,12 +496,12 @@ export const DECK: DeckCard[] = [
       fact: { text: "Astronauts on the Space Station grow lettuce under red, blue and green lights, because there is no sunshine inside.", source: "NASA study OSD-268", url: osdrUrl("OSD-268") },
       options: [
         {
-          id: "fix", label: "Take spare lights from the lab", cost: "The lab goes dark: 2 science", gain: "The plants stay healthy",
+          id: "fix", label: "Take spare lights from the lab", cost: "The lab goes dark: some research", gain: "The plants stay healthy",
           effect: { science: -2 },
           outcome: "Click! Bright new lights. The lettuce perks right up.",
         },
         {
-          id: "skip", label: "Let the plants rest in the dark", cost: "The plants grow slower: 1 day of food", gain: "The lab keeps working",
+          id: "skip", label: "Let the plants rest in the dark", cost: "The plants grow slower: Some stored food", gain: "The lab keeps working",
           effect: { food: -1 },
           outcome: "The plant room stays dim. Some leaves turn yellow before they grow back.",
         },
@@ -522,12 +522,12 @@ export const DECK: DeckCard[] = [
       fact: { text: "NASA's rovers have heaters AND coolers to keep their batteries not too cold and not too hot.", source: "NASA — Perseverance rover", url: "https://science.nasa.gov/mission/mars-2020-perseverance/" },
       options: [
         {
-          id: "cool", label: "Turn off the lab to cool it", cost: "No lab today: 2 science", gain: "The battery stays healthy",
+          id: "cool", label: "Turn off the lab to cool it", cost: "No lab today: some research", gain: "The battery stays healthy",
           effect: { science: -2 },
           outcome: "The battery rests and cools off. It's ready to work again tomorrow.",
         },
         {
-          id: "keep", label: "Keep it running", cost: "It wears out: it holds 2⚡ less for the rest of the trip", gain: "The lab keeps working",
+          id: "keep", label: "Keep it running", cost: "It wears out: a smaller battery saves less power for future nights", gain: "The lab keeps working",
           effect: { batteryCap: -2 },
           outcome: "The battery keeps working, but it's a little worn out now and can't hold as much.",
         },

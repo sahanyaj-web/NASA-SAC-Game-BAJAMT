@@ -55,7 +55,7 @@ export function MissionSetup({
         <h2 className="mt-1 text-3xl font-bold sm:text-4xl">Pick your Sun ☀️</h2>
         <p className="mt-2 max-w-2xl text-muted-foreground">
           Each day of your trip uses what the <strong>real Sun</strong> did on a real day. NASA keeps a log of
-          everything the Sun does. Every Sun flash and radiation storm in the game really happened!
+          everything the Sun does. Every Sun flash and radiation storm in the game really happened! These record dates repeat if you survive longer than the record set.
         </p>
         <div className="mt-5 grid gap-3 md:grid-cols-2">
           <button type="button" className={sunCard(sun.kind === "recent")} onClick={() => setSun({ kind: "recent" })}>

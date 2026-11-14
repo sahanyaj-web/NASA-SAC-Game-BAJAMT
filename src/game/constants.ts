@@ -1,7 +1,10 @@
 // Real-world numbers that drive the game, each with its source.
 // Where the game simplifies, the comment says so and the in-game text says so too.
 
-export const MISSION_SOLS = 15;
+// NASA records are read in short windows; this is not a mission time limit.
+export const DATA_WINDOW_DAYS = 15;
+// Game-scale research readiness, not a NASA measurement.
+export const RESEARCH_CAP = 20;
 export const CREW = 4;
 
 /** One Mars day (sol) = 24 h 39 m 35 s. Source: NASA Mars Fact Sheet. */

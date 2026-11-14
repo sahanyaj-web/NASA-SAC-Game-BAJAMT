@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { EARTH_MSV_PER_DAY } from "@/game/constants";
+import { resourcePercentages } from "@/game/engine";
 import { OSDR_FACTS, osdrUrl } from "@/game/data/osdr-facts";
 import type { SolReport } from "@/game/engine";
 import type { GameState } from "@/game/types";
@@ -7,28 +7,25 @@ import { placeWords } from "@/game/words";
 import { Overlay } from "./Overlay";
 
 export function SummaryOverlay({ sol, report, state, onNext }: { sol: number; report: SolReport; state: GameState; onNext: () => void }) {
-  const f = report.forecast;
+  const pct = resourcePercentages(state);
   const D = placeWords(state.place).day;
   const fact = OSDR_FACTS[(sol - 1) % OSDR_FACTS.length];
-  const xrays = Math.round(state.dose / 0.1);
-  const earthDays = Math.round(state.dose / EARTH_MSV_PER_DAY);
-  const rows: [string, string, string][] = [
-    ["🫁 Air", `made ${f.airMade.toFixed(1)}, breathed 1`, `${state.air.toFixed(1)} days left`],
-    ["🥬 Food", `grew ${f.foodMade.toFixed(1)}, ate 1`, `${state.food.toFixed(1)} days left`],
-    ["☢️ Radiation", `+${f.doseToday.toFixed(2)} today`, `${state.dose.toFixed(1)} of ${state.doseLimit}`],
-    ["🔬 Science", `+${f.scienceMade}`, `${state.science} points`],
-    ["🔋 Battery", `${f.heat}⚡ used by the heater`, `${state.battery}⚡ for the morning`],
+  const rows: [string, string][] = [
+    ["🫁 Air", `${pct.air}%`],
+    ["🥬 Food", `${pct.food}%`],
+    ["☢️ Radiation safety", `${pct.safety}%`],
+    ["🔬 Research", `${pct.research}%`],
+    ["🔋 Power", `${pct.power}%`],
   ];
   return (
     <Overlay label={`End of ${D} ${sol}`}>
       <p className="text-data text-xs uppercase tracking-widest text-primary">Night falls</p>
       <h2 className="text-3xl font-bold">🌙 {D} {sol} is done</h2>
       <ul className="mt-4 divide-y divide-border">
-        {rows.map(([a, b, c]) => (
-          <li key={a} className="grid grid-cols-2 items-center gap-2 py-2 text-sm sm:grid-cols-[7rem_1fr_auto]">
+        {rows.map(([a, b]) => (
+          <li key={a} className="grid grid-cols-2 items-center gap-2 py-2 text-sm sm:grid-cols-[1fr_auto]">
             <span className="font-bold">{a}</span>
-            <span className="text-muted-foreground">{b}</span>
-            <span className="text-data font-bold col-span-2 sm:col-span-1">{c}</span>
+            <span className="text-data font-bold">{b}</span>
           </li>
         ))}
       </ul>
@@ -39,10 +36,6 @@ export function SummaryOverlay({ sol, report, state, onNext }: { sol: number; re
           ))}
         </ul>
       )}
-      <p className="mt-4 text-sm text-muted-foreground">
-        Your crew's radiation so far is about the same as <strong className="text-foreground">{xrays} chest X-rays</strong>, or{" "}
-        <strong className="text-foreground">{earthDays} days</strong> of living on Earth.
-      </p>
       {fact && <div className="mt-4 rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm">
         <p className="font-bold text-accent">🧬 Real astronaut science from NASA</p>
         <p className="mt-1">{fact.kid}</p>

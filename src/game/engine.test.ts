@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { applyEffect, checkOver, chooseOption, createGame, endSol, endStoryDay, eventForSol, forecast, powerToday, rate, stormEvent } from "./engine";
+import { applyEffect, checkOver, chooseOption, createGame, endSol, endStoryDay, eventForSol, forecast, powerToday, resourcePercentages, stormEvent } from "./engine";
 import { CREW_CAST, DECK, firstDayEvent } from "./events";
 import { earthMars, earthMoon } from "./orbit";
-import { buildSchedule } from "./space-weather";
+import { buildSchedule, recordForDay } from "./space-weather";
 import { heaterCost, stormDoseFor } from "./constants";
 import type { SolContext } from "./engine";
 
@@ -11,7 +11,7 @@ const mild = { sol: 1, min: -70, max: -10, pressure: 800, uv: "Moderate" };
 const ctx = (over: Partial<SolContext> = {}): SolContext => ({ weather: mild, space: quietDay, shelter: "none", ...over });
 
 describe("life support", () => {
-  it.each(["air", "food", "battery"] as const)("zero %s immediately loses the game, even on the final day", (resource) => {
+  it.each(["air", "food", "battery", "science"] as const)("zero %s immediately loses the game", (resource) => {
     const state = checkOver({ ...createGame(1, []), sol: 16, [resource]: 0 });
     expect(state.over?.result).toBe(resource === "battery" ? "power" : resource);
   });
@@ -32,11 +32,12 @@ describe("life support", () => {
     const plants = event.options.find((o) => o.id === "plants");
     if (!plants) throw new Error("Missing plant choice");
     const picked = chooseOption(game, event, plants);
-    expect(picked.food).toBe(7.5);
+    expect(picked.food).toBe(6);
+    expect(picked.science).toBe(18);
     const next = endStoryDay(picked, ctx()).state;
     expect(next.sol).toBe(2);
-    expect(next.food).toBe(7.5);
-    expect(next.battery).toBe(6);
+    expect(next.food).toBe(6);
+    expect(next.battery).toBe(8);
   });
 
   it("every day still has two story choices after the deck has been used", () => {
@@ -45,7 +46,7 @@ describe("life support", () => {
   });
 
   it("folding panels away can use up the last power overnight", () => {
-    const game = { ...createGame(1, []), statuses: { panelsAway: 1 } };
+    const game = { ...createGame(1, []), battery: 5, statuses: { panelsAway: 1 } };
     expect(endStoryDay(game, ctx()).state.over?.result).toBe("power");
   });
 
@@ -190,8 +191,53 @@ describe("real geometry & data", () => {
     expect(sched[launch.arrivesSol - 1]!.cmeArrival?.speed).toBe(1500);
   });
 
-  it("finishing the mission earns at least one star", () => {
-    const g = { ...createGame(1, []), over: { result: "success" as const, message: "" } };
-    expect(rate(g).stars).toBeGreaterThanOrEqual(1);
+});
+
+describe("percentage survival missions", () => {
+  it.each(["mars", "moon"] as const)("all systems start at exactly 100%% on %s, with any cargo", (place) => {
+    for (const crates of [[], ["water", "food"], ["battery", "rover"]] as const) {
+      expect(resourcePercentages(createGame(1, [...crates], place))).toEqual({ air: 100, food: 100, power: 100, safety: 100, research: 100 });
+    }
+  });
+
+  it("positive changes never exceed 100% and negative changes lower the percentage", () => {
+    const game = createGame(1, []);
+    const full = applyEffect(game, { air: 100, food: 100, battery: 100, science: 100, dose: -100 });
+    expect(resourcePercentages(full)).toEqual({ air: 100, food: 100, power: 100, safety: 100, research: 100 });
+    expect(resourcePercentages(applyEffect(full, { air: -1, food: -3, battery: -5, science: -10, dose: 12.5 }))).toEqual({ air: 80, food: 50, power: 50, safety: 50, research: 50 });
+  });
+
+  it("daily production cannot overfill systems", () => {
+    const next = endSol(createGame(1, ["reactor", "rover"]), { air: 6, greenhouse: 6, shield: 1, science: 1 }, ctx()).state;
+    expect(next.air).toBe(next.airCap);
+    expect(next.food).toBe(next.foodCap);
+    expect(next.science).toBeLessThanOrEqual(next.scienceCap);
+    expect(next.battery).toBeLessThanOrEqual(next.batteryCap);
+  });
+
+  it("does not end at day 15, day 16, or a later day", () => {
+    for (const sol of [15, 16, 10000]) {
+      const game = { ...createGame(1, []), sol };
+      expect(checkOver(game).over).toBeNull();
+      expect(endStoryDay(game, ctx()).state.sol).toBe(sol + 1);
+      expect(eventForSol(game, ctx(), 10)?.options).toHaveLength(2);
+    }
+  });
+
+  it("research reaching 0% through a choice ends immediately", () => {
+    const game = { ...createGame(1, []), science: 2 };
+    const event = DECK.find((c) => c.id === "leak")?.build(game, 10);
+    const option = event?.options.find((o) => o.id === "patch");
+    if (!event || !option) throw new Error("Missing repair choice");
+    const next = chooseOption(game, event, option);
+    expect(resourcePercentages(next).research).toBe(0);
+    expect(next.over?.result).toBe("science");
+  });
+
+  it("NASA records cycle after the saved window without changing real dates", () => {
+    const days = buildSchedule({ id: "t", name: "t", start: "2024-05-01", end: "2024-05-15", flares: [], seps: [], cmes: [] });
+    expect(recordForDay(days, 16)?.date).toBe("2024-05-01");
+    expect(recordForDay(days, 31)?.date).toBe("2024-05-01");
+    expect(recordForDay([], 16)).toBeUndefined();
   });
 });
