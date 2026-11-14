@@ -4,9 +4,9 @@ import {
   FOOD_PER_POWER, LATE_SHELTER_FACTOR, MARS_SURFACE_MSV_PER_SOL, MAX_ALLOC, MISSION_DOSE_LIMIT,
   MISSION_SOLS, SCIENCE_PER_POWER, SHELTER_FACTOR, SHIELD_FACTOR, heaterCost, stormDoseFor,
 } from "./constants";
-import { DECK } from "./events";
+import { DECK, firstDayEvent } from "./events";
 import { flarePhrase } from "./words";
-import type { Allocation, CrateId, Effect, GameEvent, GameState, MarsWeatherSol, SolSpaceWeather } from "./types";
+import type { Allocation, CrateId, Effect, EventOption, GameEvent, GameState, MarsWeatherSol, SolSpaceWeather } from "./types";
 
 export interface Crate {
   id: CrateId;
@@ -55,6 +55,7 @@ export function createGame(seed: number, crates: CrateId[]): GameState {
     crates,
     statuses: {},
     seenEvents: [],
+    story: [],
     log: [],
     over: null,
     seed,
@@ -70,7 +71,8 @@ export interface PowerToday {
 
 export function powerToday(s: GameState): PowerToday {
   const panels = (BASE_SOLAR + (s.crates.includes("solar") ? 3 : 0)) * s.panel * (s.statuses.dustStorm ? DUST_STORM_FACTOR : 1);
-  const solar = Math.max(0, Math.round(panels));
+  // Panels folded away (to protect them from a dust storm) make nothing.
+  const solar = s.statuses.panelsAway ? 0 : Math.max(0, Math.round(panels));
   const reactor = s.crates.includes("reactor") ? 3 : 0;
   return { solar, reactor, total: solar + reactor, available: solar + reactor + s.battery };
 }
@@ -174,6 +176,10 @@ export function applyEffect(s: GameState, e: Effect): GameState {
   if (e.panel) n.panel = Math.max(0.2, Math.min(1, n.panel + e.panel));
   if (e.setPanel !== undefined) n.panel = e.setPanel;
   if (e.shieldBonus) n.shieldBonus += e.shieldBonus;
+  if (e.batteryCap) {
+    n.batteryCap = Math.max(4, n.batteryCap + e.batteryCap);
+    n.battery = Math.min(n.battery, n.batteryCap);
+  }
   for (const st of e.status ?? []) n.statuses[st.id] = Math.max(n.statuses[st.id] ?? 0, st.sols);
   for (const id of e.clearStatus ?? []) delete n.statuses[id];
   return checkOver(n);
@@ -193,6 +199,7 @@ export function stormEvent(ctx: Pick<SolContext, "space" | "prevSpace">, oneWayM
   return {
     id: isSep ? "sep" : "cme",
     kind: isSep ? "storm" : "cme",
+    who: "mia",
     emoji: isSep ? "☢️" : "🌊",
     title: isSep ? "RADIATION STORM!" : "A giant Sun cloud is here!",
     text: isSep
@@ -204,32 +211,42 @@ export function stormEvent(ctx: Pick<SolContext, "space" | "prevSpace">, oneWayM
       url: "https://www.jpl.nasa.gov/news/large-solar-storm-sparks-global-aurora-and-doubles-radiation-levels-on-the-martian-surface",
     },
     options: [
-      { id: "shelter", label: "Everyone into the storm shelter!", cost: "No science today, and the plants only get half the care", gain: "Blocks most of the storm", effect: { shelter: "full" } },
-      { id: "work", label: "Keep working", cost: "Storm radiation gets through your water walls", gain: "A normal work day", effect: { shelter: "none" } },
       {
-        id: "ask",
-        label: "Ask the team on Earth what to do",
-        cost: `Your question takes ${Math.round(oneWayMin)} minutes to reach Earth, and the answer takes ${Math.round(oneWayMin)} minutes to come back`,
-        gain: "Experts decide for you… if they answer in time",
-        effect: {},
-        askEarth: true,
+        id: "shelter",
+        label: "Everyone into the storm shelter!",
+        cost: "No science today, and the plants only get half the care",
+        gain: "The shelter blocks most of the storm",
+        effect: { shelter: "full" },
+        outcome: "Everyone squeezes into the tiny shelter behind thick water walls. It's cramped, but the storm's invisible bits mostly can't get through.",
+      },
+      {
+        id: "work",
+        label: "Keep working",
+        cost: `Storm radiation gets through: up to ${dose} radiation units if your water walls are thin`,
+        gain: "A normal work day: science and plant care go on",
+        effect: { shelter: "none" },
+        outcome: "The crew keeps working while the alarm beeps. Your water walls are the only thing blocking the storm today.",
       },
     ],
   };
 }
 
+/** Every day tells a story: day 1 is the landing, later days draw a new problem from the deck. */
 export function drawDeckEvent(s: GameState, oneWayMin: number): GameEvent | null {
+  if (s.sol === 1) return firstDayEvent();
   const rng = mulberry32(s.seed * 31 + s.sol * 977);
-  if (s.sol === 1 || rng() > 0.7) return null;
-  const pool = DECK.filter((c) => !s.seenEvents.includes(c.id) && (!c.when || c.when(s)));
+  // Only problems the crew can actually answer right now (at least one choice they can afford).
+  const pool = DECK.filter((c) => !s.seenEvents.includes(c.id) && (!c.when || c.when(s)))
+    .map((c) => ({ c, e: c.build(s, oneWayMin) }))
+    .filter(({ e }) => e.options.some((o) => canAfford(s, o.effect)));
   if (!pool.length) return null;
-  const total = pool.reduce((t, c) => t + c.weight, 0);
+  const total = pool.reduce((t, p) => t + p.c.weight, 0);
   let r = rng() * total;
-  for (const c of pool) {
-    r -= c.weight;
-    if (r <= 0) return c.build(s, oneWayMin);
+  for (const p of pool) {
+    r -= p.c.weight;
+    if (r <= 0) return p.e;
   }
-  return pool[pool.length - 1]!.build(s, oneWayMin);
+  return pool[pool.length - 1]!.e;
 }
 
 export function eventForSol(s: GameState, ctx: Pick<SolContext, "space" | "prevSpace">, oneWayMin: number) {
@@ -287,6 +304,42 @@ export function checkOver(s: GameState): GameState {
 
 export function markSeen(s: GameState, id: string): GameState {
   return s.seenEvents.includes(id) ? s : { ...s, seenEvents: [...s.seenEvents, id] };
+}
+
+/** Play one story choice: remember it for the end-of-trip story, then apply what it costs and gives. */
+export function chooseOption(s: GameState, event: GameEvent, opt: EventOption): GameState {
+  const seen = markSeen(s, event.id);
+  const told = { ...seen, story: [...seen.story, { sol: s.sol, emoji: event.emoji, title: event.title, choice: opt.label }] };
+  return applyEffect(told, opt.effect);
+}
+
+/** Short, kid-friendly list of what a choice changed, e.g. "−0.5 days of air". */
+export function effectChips(e: Effect): { text: string; good: boolean }[] {
+  const out: { text: string; good: boolean }[] = [];
+  const num = (n: number) => `${n > 0 ? "+" : "−"}${Math.abs(n)}`;
+  if (e.air) out.push({ text: `🫁 ${num(e.air)} days of air`, good: e.air > 0 });
+  if (e.food) out.push({ text: `🥬 ${num(e.food)} days of food`, good: e.food > 0 });
+  if (e.battery) out.push({ text: `🔋 ${num(e.battery)}⚡ battery`, good: e.battery > 0 });
+  if (e.science) out.push({ text: `🔬 ${num(e.science)} science`, good: e.science > 0 });
+  if (e.dose) out.push({ text: `☢️ +${e.dose} radiation units`, good: false });
+  if (e.panel && e.panel < 0) out.push({ text: "🔆 Dirty, scratched panels", good: false });
+  if (e.setPanel === 1) out.push({ text: "🔆 Clean panels", good: true });
+  if (e.shieldBonus) out.push({ text: "🛡️ Thicker water walls", good: true });
+  if (e.batteryCap) out.push({ text: `🔋 Battery holds ${num(e.batteryCap)}⚡`, good: e.batteryCap > 0 });
+  for (const st of e.status ?? []) {
+    const label: Record<string, [string, boolean]> = {
+      dustStorm: [`🌪️ Dark, dusty sky for ${st.sols} days`, false],
+      panelsAway: ["🔆 No sunlight power today", false],
+      airClog: [`🫁 Half air from the oxygen maker for ${st.sols} day${st.sols > 1 ? "s" : ""}`, false],
+      fatigue: [`😴 Tired crew for ${st.sols} days`, false],
+      moldRisk: ["🦠 Mold might spread", false],
+      happyCrew: [`🎉 Happy crew for ${st.sols} day${st.sols > 1 ? "s" : ""}`, true],
+    };
+    const l = label[st.id];
+    if (l) out.push({ text: l[0], good: l[1] });
+  }
+  if (e.shelter === "full") out.push({ text: "🛡️ Hiding in the shelter today", good: true });
+  return out;
 }
 
 export interface Rating {
