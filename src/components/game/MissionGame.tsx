@@ -205,23 +205,27 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
 
   return (
     <div className="mx-auto max-w-7xl px-3 py-4 sm:px-6">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <div className="mb-2 flex flex-wrap items-center gap-2">
-            <Button variant="panel" size="sm" asChild>
-              <Link to="/">🏠 Back to home</Link>
-            </Button>
-            <Button variant="panel" size="sm" onClick={() => setAskRestart(true)}>
-              🔁 Restart mission
-            </Button>
-          </div>
+      {/* Stays stuck under the site header so the crew can always find these. */}
+      <div className="sticky top-[61px] z-30 -mx-3 mb-4 rounded-b-xl bg-background/95 px-3 py-2 backdrop-blur sm:-mx-6 sm:px-6">
+        <div className="flex flex-wrap items-center gap-2">
+          <Button variant="panel" size="sm" asChild>
+            <Link to="/">🏠 Back to home</Link>
+          </Button>
+          <Button variant="panel" size="sm" onClick={() => setAskRestart(true)}>
+            🔁 Restart mission
+          </Button>
           {askRestart && (
-            <div className="mb-2 flex flex-wrap items-center gap-2 rounded-xl border border-radiation/60 bg-radiation/10 p-2 text-sm">
+            <span className="flex flex-wrap items-center gap-2 rounded-xl border border-radiation/60 bg-radiation/10 p-2 text-sm">
               <span className="font-semibold">Start a brand-new mission? This erases the one you're on.</span>
               <Button variant="panel" size="sm" onClick={() => setAskRestart(false)}>Keep playing</Button>
               <Button variant="alert" size="sm" onClick={reset}>Yes, restart</Button>
-            </div>
+            </span>
           )}
+        </div>
+      </div>
+
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div>
           <p className="text-data text-xs uppercase tracking-widest text-primary">{P.base} · {P.on}</p>
           <h1 className="text-3xl font-bold sm:text-4xl">
             {state.place === "moon" ? "Day" : <Term k="sol">Mars day</Term>} {state.sol}
