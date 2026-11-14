@@ -161,7 +161,7 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
         <div>
           <p className="text-data text-xs uppercase tracking-widest text-primary">Outpost Ares · Gale Crater, Mars</p>
           <h1 className="text-3xl font-bold sm:text-4xl">
-            <Term k="sol">Sol</Term> {state.sol} <span className="text-muted-foreground">of {state.totalSols}</span>
+            <Term k="sol">Sol</Term> {Math.min(state.sol, state.totalSols)} <span className="text-muted-foreground">of {state.totalSols}</span>
           </h1>
         </div>
         <SourceBadge sun={mission.sun} />
