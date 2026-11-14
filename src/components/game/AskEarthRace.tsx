@@ -65,7 +65,7 @@ export function AskEarthRace({ link, onDone }: { link: EarthMarsInfo; onDone: (i
             <>
               <p className="font-display text-lg font-semibold text-food">🌍 "Go to the shelter now!" — the team on Earth</p>
               <p className="mt-1 text-sm">
-                The answer made it in time because Mars was pretty close to Earth on this date. Everyone hides safely.
+                The answer made it in time because your base was close enough to Earth. Everyone hides safely.
               </p>
             </>
           ) : (
@@ -75,7 +75,7 @@ export function AskEarthRace({ link, onDone }: { link: EarthMarsInfo; onDone: (i
                 {link.conjunction
                   ? "The Sun was in the way, so your message never got through."
                   : `There and back takes ${Math.round(roundTrip)} minutes, but the storm came in ${SEP_ARRIVAL_MINUTES}.`}{" "}
-                The crew ran to the shelter late. Real astronauts on Mars will have to make fast choices all by themselves.
+                The crew ran to the shelter late. Real astronauts far from Earth will have to make fast choices all by themselves.
               </p>
             </>
           )}

@@ -1,8 +1,11 @@
 import { ExternalLink } from "lucide-react";
 import { useState } from "react";
-import { canAfford } from "@/game/engine";
+import { Button } from "@/components/ui/button";
+import { effectChips } from "@/game/engine";
+import { CREW_CAST } from "@/game/events";
 import type { EarthMarsInfo } from "@/game/orbit";
 import type { EventOption, GameEvent, GameState } from "@/game/types";
+import { placeWords } from "@/game/words";
 import { cn } from "@/lib/utils";
 import { AskEarthRace } from "./AskEarthRace";
 import { Overlay } from "./Overlay";
@@ -13,14 +16,25 @@ export function EventOverlay({
   state,
   link,
   onChoose,
+  onClose,
 }: {
   event: GameEvent;
   state: GameState;
   link: EarthMarsInfo;
   onChoose: (opt: EventOption, shelterOverride?: "full" | "late") => void;
+  onClose: () => void;
 }) {
   const [racing, setRacing] = useState<EventOption | null>(null);
+  const [picked, setPicked] = useState<EventOption | null>(null);
   const urgent = event.kind === "storm" || event.kind === "cme";
+  const who = CREW_CAST[event.who];
+  const P = placeWords(state.place);
+
+  const pick = (o: EventOption, shelter?: "full" | "late") => {
+    onChoose(o, shelter);
+    setPicked(o);
+    setRacing(null);
+  };
 
   return (
     <Overlay label={event.title} alert={urgent}>
@@ -29,42 +43,56 @@ export function EventOverlay({
           {event.emoji}
         </span>
         <div>
-          <p className="text-data text-xs uppercase tracking-widest text-primary">Mars day {state.sol} · {urgent ? "Emergency" : "Something happened"}</p>
+          <p className="text-data text-xs uppercase tracking-widest text-primary">
+            {P.day} {state.sol} · {urgent ? "Emergency" : "Something happened"}
+          </p>
           <h2 className="text-2xl font-bold sm:text-3xl">{event.title}</h2>
         </div>
       </div>
-      <p className="mt-4 text-base leading-relaxed">{event.text}</p>
+      <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-sm">
+        <span aria-hidden>{who.emoji}</span> <strong>{who.name}</strong> <span className="text-muted-foreground">({who.job})</span>
+      </p>
+      <p className="mt-3 text-base leading-relaxed">{event.text}</p>
       {urgent && (
         <p className="mt-2 text-sm text-muted-foreground">
           Tap to learn: <Term k={event.kind === "storm" ? "sep" : "cme"} /> · <Term k="msv" />
         </p>
       )}
 
-      {racing ? (
+      {picked ? (
+        <div className="mt-6 panel-raised animate-float-in p-4">
+          <p className="text-data text-xs uppercase tracking-widest text-primary">What happened next</p>
+          <p className="mt-1 font-display text-lg font-semibold">You chose: {picked.label}</p>
+          <p className="mt-2">{picked.outcome}</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {effectChips(picked.effect).map((c) => (
+              <span key={c.text} className={cn("rounded-full border px-2 py-1 text-xs", c.good ? "border-food text-food" : "border-radiation text-radiation")}>
+                {c.text}
+              </span>
+            ))}
+          </div>
+          <Button variant="mission" size="lg" className="mt-4 w-full" onClick={onClose} autoFocus>
+            Continue
+          </Button>
+        </div>
+      ) : racing ? (
         <div className="mt-6">
-          <AskEarthRace link={link} onDone={(inTime) => onChoose(racing, inTime ? "full" : "late")} />
+          <AskEarthRace link={link} onDone={(inTime) => pick(racing, inTime ? "full" : "late")} />
         </div>
       ) : (
-        <div className="mt-6 grid gap-3">
-          {event.options.map((o) => {
-            const ok = canAfford(state, o.effect);
-            return (
-              <button
-                key={o.id}
-                type="button"
-                disabled={!ok}
-                onClick={() => (o.askEarth && urgent ? setRacing(o) : onChoose(o))}
-                className="panel-raised p-4 text-left transition-all hover:border-primary hover:shadow-glow disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <p className="font-display text-lg font-semibold">{o.label}</p>
-                <div className="mt-2 grid gap-1 text-sm sm:grid-cols-2">
-                  <p><span className="font-bold text-radiation">You give up:</span> {o.cost}</p>
-                  <p><span className="font-bold text-food">You get:</span> {o.gain}</p>
-                </div>
-                {!ok && <p className="mt-1 text-xs text-radiation">Not enough battery for this.</p>}
-              </button>
-            );
-          })}
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          {event.options.map((o) => (
+            <button
+              key={o.id}
+              type="button"
+              onClick={() => (o.askEarth && urgent ? setRacing(o) : pick(o))}
+              className="panel-raised p-4 text-left transition-all hover:border-primary hover:shadow-glow"
+            >
+              <p className="font-display text-lg font-semibold">{o.label}</p>
+              <p className="mt-2 text-sm"><span className="font-bold text-radiation">You give up:</span> {o.cost}</p>
+              <p className="mt-1 text-sm"><span className="font-bold text-food">You get:</span> {o.gain}</p>
+            </button>
+          ))}
         </div>
       )}
 

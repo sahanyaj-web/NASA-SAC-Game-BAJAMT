@@ -11,6 +11,7 @@ export function SiteHeader() {
           Outpost Ares
         </Link>
         <nav className="flex items-center gap-1">
+          <Link to="/" className={link} activeProps={active} activeOptions={{ exact: true }}>Home</Link>
           <Link to="/play" className={link} activeProps={active}>Play</Link>
           <Link to="/science" className={link} activeProps={active}>Real facts</Link>
         </nav>

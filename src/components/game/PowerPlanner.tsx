@@ -150,8 +150,7 @@ export function PowerPlanner({
       <div className={cn("mt-4 rounded-xl border p-4", forecast.coldNight ? "border-radiation bg-radiation/10" : "border-border")}>
         <p className="font-display text-lg font-semibold">🌙 Tonight</p>
         <p className="text-sm">
-          It will be <strong className="text-air">{weather.min}°C</strong> tonight — colder than any freezer! (Real reading from
-          NASA's Curiosity rover.) The heater needs <strong className="text-power">{forecast.heat}⚡</strong> from the battery.
+          It will be <strong className="text-air">{weather.min}°C</strong> tonight — colder than any freezer! {state.place === "moon" ? "(Based on NASA's Moon orbiter.)" : "(Real reading from NASA's Curiosity rover.)"} The heater needs <strong className="text-power">{forecast.heat}⚡</strong> from the battery.
         </p>
         <p className="mt-1 text-sm">
           Battery at bedtime: <strong>{forecast.batteryAfterDay}⚡</strong> → in the morning:{" "}
@@ -170,7 +169,7 @@ export function PowerPlanner({
       </div>
 
       <Button variant="mission" size="xl" className="mt-6 w-full" onClick={onEndSol}>
-        🌙 End Mars day {state.sol}
+        🌙 End {state.place === "moon" ? "day" : "Mars day"} {state.sol}
       </Button>
     </section>
   );
