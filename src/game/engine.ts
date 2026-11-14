@@ -310,3 +310,16 @@ export const suggestedAlloc = (): Allocation => ({ air: 2, greenhouse: 3, shield
 
 /** Spacewalk to brush the panels: costs suit oxygen and outdoor radiation. */
 export const CLEAN_PANELS_EFFECT: Effect = { air: -0.5, dose: 0.3, setPanel: 1 };
+
+/** Shrink a plan to fit the power actually available (science goes first, air last). */
+export function fitAlloc(a: Allocation, available: number): Allocation {
+  const out = { ...a };
+  let over = allocTotal(out) - Math.max(0, available);
+  for (const k of ["science", "shield", "greenhouse", "air"] as const) {
+    if (over <= 0) break;
+    const cut = Math.min(out[k], over);
+    out[k] -= cut;
+    over -= cut;
+  }
+  return out;
+}

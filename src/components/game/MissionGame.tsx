@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MARS_WEATHER } from "@/game/data/mars-weather";
 import {
-  CLEAN_PANELS_EFFECT, applyEffect, createGame, endSol, eventForSol, forecast, markSeen, mulberry32, powerToday,
+  CLEAN_PANELS_EFFECT, applyEffect, fitAlloc, createGame, endSol, eventForSol, forecast, markSeen, mulberry32, powerToday,
   suggestedAlloc, type Shelter, type SolReport,
 } from "@/game/engine";
 import { earthMars } from "@/game/orbit";
@@ -64,13 +64,13 @@ export function MissionGame({ initialStorm }: { initialStorm?: string }) {
     setMission({ sun, schedule, weather, notice });
     setState(g);
     setLoading(false);
-    startSol(g, schedule, sun);
+    startSol(g, schedule);
   };
 
   const linkFor = (sol: number, sched = mission?.schedule) =>
     earthMars(new Date((sched?.[Math.min(sol, sched.length) - 1]?.date ?? new Date().toISOString().slice(0, 10)) + "T12:00:00Z"));
 
-  const startSol = (g: GameState, sched: SolSpaceWeather[], _sun?: SunWindow) => {
+  const startSol = (g: GameState, sched: SolSpaceWeather[]) => {
     setAlloc(suggestedAlloc());
     setShelter("none");
     setCleaned(false);
@@ -126,14 +126,15 @@ export function MissionGame({ initialStorm }: { initialStorm?: string }) {
   }
 
   const power = powerToday(state);
-  const fc = forecast(state, alloc, ctx);
+  const plan = fitAlloc(alloc, power.available);
+  const fc = forecast(state, plan, ctx);
   const link = linkFor(state.sol);
   const upcoming = mission.schedule
     .map((d, i) => ({ sol: i + 1, speed: d.cmeArrival?.speed ?? 0 }))
     .filter((u) => u.speed && u.sol > state.sol && u.sol <= state.sol + 3);
 
   const endToday = () => {
-    const { state: next, report } = endSol(state, alloc, ctx);
+    const { state: next, report } = endSol(state, plan, ctx);
     setSummary({ sol: state.sol, report });
     setState(next);
   };
@@ -148,8 +149,10 @@ export function MissionGame({ initialStorm }: { initialStorm?: string }) {
   };
 
   const clean = () => {
-    setState(applyEffect(state, CLEAN_PANELS_EFFECT));
+    const g = applyEffect(state, CLEAN_PANELS_EFFECT);
+    setState(g);
     setCleaned(true);
+    if (g.over) setShowReport(true);
   };
 
   return (
@@ -194,7 +197,7 @@ export function MissionGame({ initialStorm }: { initialStorm?: string }) {
         <TodayPanel sol={state.sol} space={ctx.space} upcoming={upcoming} weather={ctx.weather} link={link} />
         <PowerPlanner
           state={state}
-          alloc={alloc}
+          alloc={plan}
           setAlloc={setAlloc}
           power={power}
           forecast={fc}
