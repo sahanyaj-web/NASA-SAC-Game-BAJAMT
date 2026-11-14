@@ -21,6 +21,6 @@ export function flarePhrase(cls: string | null | undefined): string {
 /** Kid words that change with where the base is. */
 export function placeWords(place: Place) {
   return place === "moon"
-    ? { name: "the Moon", Name: "The Moon", on: "on the Moon", day: "Moon base day", emoji: "🌕", base: "Outpost Selene" }
+    ? { name: "the Moon", Name: "The Moon", on: "on the Moon", day: "Day", emoji: "🌕", base: "Outpost Selene" }
     : { name: "Mars", Name: "Mars", on: "on Mars", day: "Mars day", emoji: "🔴", base: "Outpost Ares" };
 }

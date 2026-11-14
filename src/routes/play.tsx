@@ -12,10 +12,10 @@ export const Route = createFileRoute("/play")({
   }),
   head: () => ({
     meta: [
-      { title: "Play — Outpost Ares Mars mission" },
-      { name: "description", content: "Pick a real Sun from NASA records, pack your rocket and keep your Mars crew alive for 15 Mars days." },
-      { property: "og:title", content: "Play — Outpost Ares Mars mission" },
-      { property: "og:description", content: "Pick a real Sun from NASA records, pack your rocket and keep your Mars crew alive for 15 Mars days." },
+      { title: "Play — run a Moon or Mars base | Outpost Ares" },
+      { name: "description", content: "Pick a real Sun from NASA records, pack your rocket and keep your Moon or Mars crew alive for 15 days." },
+      { property: "og:title", content: "Play — run a Moon or Mars base | Outpost Ares" },
+      { property: "og:description", content: "Pick a real Sun from NASA records, pack your rocket and keep your Moon or Mars crew alive for 15 days." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
