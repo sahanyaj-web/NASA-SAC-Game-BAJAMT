@@ -17,12 +17,14 @@ export function EventOverlay({
   link,
   onChoose,
   onClose,
+  inline = false,
 }: {
   event: GameEvent;
   state: GameState;
   link: EarthMarsInfo;
   onChoose: (opt: EventOption, shelterOverride?: "full" | "late") => void;
   onClose: () => void;
+  inline?: boolean;
 }) {
   const [racing, setRacing] = useState<EventOption | null>(null);
   const [picked, setPicked] = useState<EventOption | null>(null);
@@ -36,8 +38,8 @@ export function EventOverlay({
     setRacing(null);
   };
 
-  return (
-    <Overlay label={event.title} alert={urgent}>
+  const content = (
+    <>
       <div className="flex items-start gap-4">
         <span aria-hidden className={cn("grid size-14 shrink-0 place-items-center rounded-2xl bg-muted text-3xl", urgent && "animate-alert")}>
           {event.emoji}
@@ -82,16 +84,17 @@ export function EventOverlay({
       ) : (
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
           {event.options.map((o) => (
-            <button
+            <Button
               key={o.id}
               type="button"
               onClick={() => (o.askEarth && urgent ? setRacing(o) : pick(o))}
-              className="panel-raised p-4 text-left transition-all hover:border-primary hover:shadow-glow"
+              variant="panel"
+              className="h-auto min-w-0 flex-col items-start whitespace-normal p-4 text-left transition-all hover:border-primary hover:shadow-glow"
             >
               <p className="font-display text-lg font-semibold">{o.label}</p>
               <p className="mt-2 text-sm"><span className="font-bold text-radiation">You give up:</span> {o.cost}</p>
               <p className="mt-1 text-sm"><span className="font-bold text-food">You get:</span> {o.gain}</p>
-            </button>
+            </Button>
           ))}
         </div>
       )}
@@ -112,6 +115,9 @@ export function EventOverlay({
           </p>
         </div>
       )}
-    </Overlay>
+    </>
   );
+  return inline
+    ? <section className="min-w-0 p-4 sm:p-6" aria-label={event.title}>{content}</section>
+    : <Overlay label={event.title} alert={urgent}>{content}</Overlay>;
 }

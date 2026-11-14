@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createGame, endSol, forecast, powerToday, rate, stormEvent } from "./engine";
+import { applyEffect, checkOver, chooseOption, createGame, endSol, endStoryDay, eventForSol, forecast, powerToday, rate, stormEvent } from "./engine";
 import { CREW_CAST, DECK, firstDayEvent } from "./events";
 import { earthMars, earthMoon } from "./orbit";
 import { buildSchedule } from "./space-weather";
@@ -11,6 +11,44 @@ const mild = { sol: 1, min: -70, max: -10, pressure: 800, uv: "Moderate" };
 const ctx = (over: Partial<SolContext> = {}): SolContext => ({ weather: mild, space: quietDay, shelter: "none", ...over });
 
 describe("life support", () => {
+  it.each(["air", "food", "battery"] as const)("zero %s immediately loses the game, even on the final day", (resource) => {
+    const state = checkOver({ ...createGame(1, []), sol: 16, [resource]: 0 });
+    expect(state.over?.result).toBe(resource === "battery" ? "power" : resource);
+  });
+
+  it("zero radiation safety immediately loses the game", () => {
+    expect(checkOver({ ...createGame(1, []), dose: 25 }).over?.result).toBe("dose");
+  });
+
+  it("a decrease with supplies still above zero does not end the game", () => {
+    const state = applyEffect(createGame(1, []), { air: -0.5 });
+    expect(state.air).toBe(4.5);
+    expect(state.over).toBeNull();
+  });
+
+  it("story decisions update supplies without a player power plan", () => {
+    const game = createGame(1, []);
+    const event = firstDayEvent(game);
+    const plants = event.options.find((o) => o.id === "plants");
+    if (!plants) throw new Error("Missing plant choice");
+    const picked = chooseOption(game, event, plants);
+    expect(picked.food).toBe(7.5);
+    const next = endStoryDay(picked, ctx()).state;
+    expect(next.sol).toBe(2);
+    expect(next.food).toBe(7.5);
+    expect(next.battery).toBe(6);
+  });
+
+  it("every day still has two story choices after the deck has been used", () => {
+    const game = { ...createGame(1, []), sol: 14, seenEvents: DECK.map((c) => c.id) };
+    expect(eventForSol(game, ctx(), 10)?.options).toHaveLength(2);
+  });
+
+  it("folding panels away can use up the last power overnight", () => {
+    const game = { ...createGame(1, []), statuses: { panelsAway: 1 } };
+    expect(endStoryDay(game, ctx()).state.over?.result).toBe("power");
+  });
+
   it("the crew breathes 1 day of air per sol, and 2⚡ in the oxygen maker makes exactly 1 day", () => {
     const g = createGame(1, []);
     const { state } = endSol(g, { air: 2, greenhouse: 0, shield: 0, science: 0 }, ctx());

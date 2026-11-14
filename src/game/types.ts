@@ -125,7 +125,7 @@ export interface GameState {
   /** The choices the player made, in order — retold at the end. */
   story: { sol: number; emoji: string; title: string; choice: string }[];
   log: SolLog[];
-  over: null | { result: "success" | "air" | "food" | "dose"; message: string };
+  over: null | { result: "success" | "air" | "food" | "power" | "dose"; message: string };
   seed: number;
   place: Place;
 }

@@ -4,19 +4,18 @@ import { Button } from "@/components/ui/button";
 import { MARS_WEATHER } from "@/game/data/mars-weather";
 import { MOON_WEATHER } from "@/game/data/moon-weather";
 import {
-  CLEAN_PANELS_EFFECT, applyEffect, chooseOption, fitAlloc, createGame, endSol, eventForSol, forecast, mulberry32, powerToday,
-  suggestedAlloc, type Shelter, type SolReport,
+  chooseOption, createGame, endStoryDay, eventForSol, mulberry32,
+  type Shelter, type SolReport,
 } from "@/game/engine";
 import { earthMars, earthMoon } from "@/game/orbit";
 import {
   archived, buildSchedule, fetchDonkiWindow, randomArchived, randomWindowDates, recentWindowDates,
 } from "@/game/space-weather";
-import type { Allocation, CrateId, EventOption, Place, GameEvent, GameState, MarsWeatherWindow, SolSpaceWeather, SunWindow } from "@/game/types";
+import type { CrateId, EventOption, Place, GameEvent, GameState, MarsWeatherWindow, SolSpaceWeather, SunWindow } from "@/game/types";
 import { EventOverlay } from "./EventOverlay";
 import { Gauge } from "./Gauge";
 import { MissionReport } from "./MissionReport";
 import { MissionSetup, type SunChoice } from "./MissionSetup";
-import { PowerPlanner } from "./PowerPlanner";
 import { SourceBadge } from "./SourceBadge";
 import { SummaryOverlay } from "./SummaryOverlay";
 import { Term } from "./Term";
@@ -34,10 +33,8 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
   const [mission, setMission] = useState<Mission | null>(null);
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState<GameState | null>(null);
-  const [alloc, setAlloc] = useState<Allocation>(suggestedAlloc());
   const [event, setEvent] = useState<GameEvent | null>(null);
   const [shelter, setShelter] = useState<Shelter>("none");
-  const [cleaned, setCleaned] = useState(false);
   const [summary, setSummary] = useState<{ sol: number; report: SolReport } | null>(null);
   const [showReport, setShowReport] = useState(false);
 
@@ -61,7 +58,8 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
       notice = "We couldn't reach NASA just now, so this trip uses saved real NASA records instead.";
     }
     const pool = place === "moon" ? MOON_WEATHER : MARS_WEATHER;
-    const weather = pool[Math.floor(rand() * pool.length)]!;
+    const weather = pool[Math.floor(rand() * pool.length)];
+    if (!weather) { setLoading(false); return; }
     const schedule = buildSchedule(sun);
     const g = createGame(seed, crates, place);
     setMission({ sun, schedule, weather, notice });
@@ -74,12 +72,12 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
     place === "moon" ? earthMoon() : earthMars(new Date((sched?.[Math.min(sol, sched.length) - 1]?.date ?? new Date().toISOString().slice(0, 10)) + "T12:00:00Z"));
 
   const startSol = (g: GameState, sched: SolSpaceWeather[]) => {
-    setAlloc(suggestedAlloc());
     setShelter("none");
-    setCleaned(false);
     const i = g.sol - 1;
     const link = linkFor(g.sol, sched, g.place);
-    const ev = eventForSol(g, { space: sched[i]!, prevSpace: sched[i - 1] }, link.oneWayMinutes);
+    const space = sched[i];
+    if (!space) return;
+    const ev = eventForSol(g, { space, prevSpace: sched[i - 1] }, link.oneWayMinutes);
     setEvent(ev);
   };
 
@@ -94,16 +92,20 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
 
   const closeEvent = () => {
     setEvent(null);
-    if (state?.over) setShowReport(true);
+    if (state?.over) { setShowReport(true); return; }
+    endToday();
   };
 
   const sol = state?.sol ?? 1;
   const idx = Math.min(sol, mission?.schedule.length ?? 1) - 1;
   const ctx = useMemo(() => {
     if (!mission) return null;
+    const weather = mission.weather.sols[idx];
+    const space = mission.schedule[idx];
+    if (!weather || !space) return null;
     return {
-      weather: mission.weather.sols[idx]!,
-      space: mission.schedule[idx]!,
+      weather,
+      space,
       prevSpace: mission.schedule[idx - 1],
       shelter,
     };
@@ -132,16 +134,13 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
   }
 
   const P = placeWords(state.place);
-  const power = powerToday(state);
-  const plan = fitAlloc(alloc, power.available);
-  const fc = forecast(state, plan, ctx);
   const link = linkFor(state.sol);
   const upcoming = mission.schedule
     .map((d, i) => ({ sol: i + 1, speed: d.cmeArrival?.speed ?? 0 }))
     .filter((u) => u.speed && u.sol > state.sol && u.sol <= state.sol + 3);
 
   const endToday = () => {
-    const { state: next, report } = endSol(state, plan, ctx);
+    const { state: next, report } = endStoryDay(state, ctx);
     setSummary({ sol: state.sol, report });
     setState(next);
   };
@@ -153,13 +152,6 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
       return;
     }
     startSol(state, mission.schedule);
-  };
-
-  const clean = () => {
-    const g = applyEffect(state, CLEAN_PANELS_EFFECT);
-    setState(g);
-    setCleaned(true);
-    if (g.over) setShowReport(true);
   };
 
   return (
@@ -189,34 +181,23 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
       <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
         <Gauge tone="air" emoji="🫁" label="Air" value={state.air} unit="days" max={10} danger={state.air < 2} hint="The crew uses 1 a day" />
         <Gauge tone="food" emoji="🥬" label="Food" value={state.food} unit="days" max={12} danger={state.food < 2} hint="The crew eats 1 a day" />
-        <Gauge tone="power" emoji="🔋" label="Battery" value={state.battery} unit={`/ ${state.batteryCap}⚡`} max={state.batteryCap} hint="Saved for the cold nights" />
+        <Gauge tone="power" emoji="🔋" label="Power" value={state.battery} unit={`/ ${state.batteryCap}⚡`} max={state.batteryCap} danger={state.battery < 3} hint="Saved for the cold nights" />
         <Gauge
           tone="radiation"
           emoji="☢️"
-          label="Radiation"
-          value={+state.dose.toFixed(1)}
+          label="Radiation safety"
+          value={+Math.max(0, state.doseLimit - state.dose).toFixed(1)}
           unit={`/ ${state.doseLimit}`}
           max={state.doseLimit}
           danger={state.dose > state.doseLimit * 0.75}
-          hint={<>Danger line: {state.doseLimit} · <Term k="msv">What is this?</Term></>}
+          hint={<>Safety left · <Term k="msv">What is this?</Term></>}
         />
         <Gauge tone="science" emoji="🔬" label="Science" value={state.science} unit="points" max={30} hint="15 = ⭐⭐ · 30 = ⭐⭐⭐" />
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-[22rem_1fr]">
         <TodayPanel place={state.place} sol={state.sol} space={ctx.space} upcoming={upcoming} weather={ctx.weather} link={link} />
-        <PowerPlanner
-          state={state}
-          alloc={plan}
-          setAlloc={setAlloc}
-          power={power}
-          forecast={fc}
-          weather={ctx.weather}
-          shelter={shelter}
-          cleanedToday={cleaned}
-          onClean={clean}
-          onEndSol={endToday}
-        />
+        {event && !summary && <EventOverlay key={`${state.sol}-${event.id}`} inline event={event} state={state} link={link} onChoose={choose} onClose={closeEvent} />}
       </div>
 
       <div className="mt-6 flex justify-center">
@@ -225,7 +206,6 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
         </Button>
       </div>
 
-      {event && !summary && <EventOverlay event={event} state={state} link={link} onChoose={choose} onClose={closeEvent} />}
       {summary && <SummaryOverlay sol={summary.sol} report={summary.report} state={state} onNext={nextSol} />}
     </div>
   );

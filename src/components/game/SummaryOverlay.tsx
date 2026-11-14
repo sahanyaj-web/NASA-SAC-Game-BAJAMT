@@ -9,7 +9,7 @@ import { Overlay } from "./Overlay";
 export function SummaryOverlay({ sol, report, state, onNext }: { sol: number; report: SolReport; state: GameState; onNext: () => void }) {
   const f = report.forecast;
   const D = placeWords(state.place).day;
-  const fact = OSDR_FACTS[(sol - 1) % OSDR_FACTS.length]!;
+  const fact = OSDR_FACTS[(sol - 1) % OSDR_FACTS.length];
   const xrays = Math.round(state.dose / 0.1);
   const earthDays = Math.round(state.dose / EARTH_MSV_PER_DAY);
   const rows: [string, string, string][] = [
@@ -25,10 +25,10 @@ export function SummaryOverlay({ sol, report, state, onNext }: { sol: number; re
       <h2 className="text-3xl font-bold">🌙 {D} {sol} is done</h2>
       <ul className="mt-4 divide-y divide-border">
         {rows.map(([a, b, c]) => (
-          <li key={a} className="grid grid-cols-[7rem_1fr_auto] items-center gap-2 py-2 text-sm">
+          <li key={a} className="grid grid-cols-2 items-center gap-2 py-2 text-sm sm:grid-cols-[7rem_1fr_auto]">
             <span className="font-bold">{a}</span>
             <span className="text-muted-foreground">{b}</span>
-            <span className="text-data font-bold">{c}</span>
+            <span className="text-data font-bold col-span-2 sm:col-span-1">{c}</span>
           </li>
         ))}
       </ul>
@@ -43,13 +43,13 @@ export function SummaryOverlay({ sol, report, state, onNext }: { sol: number; re
         Your crew's radiation so far is about the same as <strong className="text-foreground">{xrays} chest X-rays</strong>, or{" "}
         <strong className="text-foreground">{earthDays} days</strong> of living on Earth.
       </p>
-      <div className="mt-4 rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm">
+      {fact && <div className="mt-4 rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm">
         <p className="font-bold text-accent">🧬 Real astronaut science from NASA</p>
         <p className="mt-1">{fact.kid}</p>
         <a href={osdrUrl(fact.id)} target="_blank" rel="noreferrer" className="mt-1 block text-xs text-accent hover:underline">
           Read NASA study {fact.id} ↗
         </a>
-      </div>
+      </div>}
       <Button variant="mission" size="xl" className="mt-6 w-full" onClick={onNext} autoFocus>
         {state.over ? "See mission report" : `☀️ Wake up for ${D} ${sol + 1}`}
       </Button>
