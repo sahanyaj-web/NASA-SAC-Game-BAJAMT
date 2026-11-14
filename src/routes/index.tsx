@@ -49,8 +49,8 @@ function Index() {
             <p className="text-data text-sm uppercase tracking-[0.3em] text-primary">A Mars mission game · ages 7–12</p>
             <h1 className="mt-3 max-w-3xl text-5xl font-bold leading-[1.05] sm:text-7xl">Keep your crew alive on Mars.</h1>
             <p className="mt-4 max-w-2xl text-lg sm:text-xl">
-              You command Outpost Ares for 15 sols (Mars days). Every choice costs something, and the Sun's storms come
-              from <strong>real NASA data</strong>.
+              You're in charge of Outpost Ares for 15 Mars days. Every choice costs something, and the Sun's storms come
+              from <strong>real NASA records</strong>.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button variant="mission" size="xl" asChild>
