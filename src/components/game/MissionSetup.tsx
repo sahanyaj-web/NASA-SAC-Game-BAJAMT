@@ -7,6 +7,11 @@ import { cn } from "@/lib/utils";
 
 export type SunChoice = { kind: "recent" } | { kind: "random" } | { kind: "archived"; id: string };
 
+// Two Sun picks count as the same choice when they ask NASA for the same stretch of days.
+function sameSun(a: SunChoice, b: SunChoice) {
+  return a.kind === b.kind && (a.kind !== "archived" || b.kind !== "archived" || a.id === b.id);
+}
+
 export function MissionSetup({
   initialStorm,
   loading,
@@ -16,9 +21,19 @@ export function MissionSetup({
   loading: boolean;
   onLaunch: (place: Place, sun: SunChoice, crates: CrateId[]) => void;
 }) {
-  const [sun, setSun] = useState<SunChoice>(initialStorm ? { kind: "archived", id: initialStorm } : { kind: "recent" });
+  const startingSun: SunChoice = initialStorm ? { kind: "archived", id: initialStorm } : { kind: "recent" };
+  const [sun, setSun] = useState<SunChoice>(startingSun);
   const [crates, setCrates] = useState<CrateId[]>([]);
   const [place, setPlace] = useState<Place>("mars");
+
+  // The reset button only shows once the player has changed something.
+  const changed = place !== "mars" || !sameSun(sun, startingSun) || crates.length > 0;
+
+  const resetPicks = () => {
+    setPlace("mars");
+    setSun(startingSun);
+    setCrates([]);
+  };
 
   const toggle = (id: CrateId) =>
     setCrates((c) => (c.includes(id) ? c.filter((x) => x !== id) : c.length < CRATE_PICKS ? [...c, id] : [c[1]!, id]));
