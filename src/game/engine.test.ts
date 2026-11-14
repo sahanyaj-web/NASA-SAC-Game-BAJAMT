@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createGame, endSol, forecast, powerToday, rate, stormEvent } from "./engine";
-import { DECK } from "./events";
-import { earthMars } from "./orbit";
+import { CREW_CAST, DECK, firstDayEvent } from "./events";
+import { earthMars, earthMoon } from "./orbit";
 import { buildSchedule } from "./space-weather";
 import { heaterCost, stormDoseFor } from "./constants";
 import type { SolContext } from "./engine";
@@ -98,6 +98,35 @@ describe("no free choices", () => {
       expect(e.options.length).toBeGreaterThanOrEqual(2);
       for (const o of e.options) expect(o.cost.length).toBeGreaterThan(3);
     }
+  });
+});
+
+describe("story choices never need battery", () => {
+  it("no story choice costs battery, on Mars or the Moon, so both choices can always be picked", () => {
+    for (const place of ["mars", "moon"] as const) {
+      const g = { ...createGame(1, [], place), panel: 0.5, batteryCap: 10 };
+      for (const card of [...DECK.map((c) => c.build(g, 10)), firstDayEvent(g)]) {
+        expect(card.options.length).toBe(2);
+        for (const o of card.options) expect(o.effect.battery ?? 0).toBeGreaterThanOrEqual(0);
+      }
+    }
+  });
+
+  it("crew are called by their job, never a name", () => {
+    const g = createGame(1, []);
+    const text = JSON.stringify([...DECK.map((c) => c.build(g, 10)), firstDayEvent(g), CREW_CAST]);
+    for (const name of ["Ada", "Leo", "Mia", "Sam"]) expect(text).not.toMatch(new RegExp(`\\b${name}\\b`));
+  });
+});
+
+describe("moon base", () => {
+  it("a quiet day on the Moon is 1.37 radiation units unshielded, about twice Mars", () => {
+    const f = forecast(createGame(1, [], "moon"), { air: 0, greenhouse: 0, shield: 0, science: 0 }, ctx());
+    expect(f.doseToday).toBeCloseTo(1.37);
+  });
+
+  it("a message to the Moon takes about 1.3 seconds", () => {
+    expect(earthMoon().oneWayMinutes * 60).toBeCloseTo(1.28, 1);
   });
 });
 
