@@ -31,7 +31,6 @@ export function EventOverlay({
   const urgent = event.kind === "storm" || event.kind === "cme";
   const who = CREW_CAST[event.who];
   const P = placeWords(state.place);
-  const Frame = inline ? "section" : Overlay;
 
   const pick = (o: EventOption, shelter?: "full" | "late") => {
     onChoose(o, shelter);
@@ -39,8 +38,8 @@ export function EventOverlay({
     setRacing(null);
   };
 
-  return (
-    <Frame label={event.title} alert={urgent} className="min-w-0 p-4 sm:p-6" aria-label={event.title}>
+  const content = (
+    <>
       <div className="flex items-start gap-4">
         <span aria-hidden className={cn("grid size-14 shrink-0 place-items-center rounded-2xl bg-muted text-3xl", urgent && "animate-alert")}>
           {event.emoji}
@@ -116,6 +115,9 @@ export function EventOverlay({
           </p>
         </div>
       )}
-    </Frame>
+    </>
   );
+  return inline
+    ? <section className="min-w-0 p-4 sm:p-6" aria-label={event.title}>{content}</section>
+    : <Overlay label={event.title} alert={urgent}>{content}</Overlay>;
 }

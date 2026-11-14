@@ -7,15 +7,15 @@ import { SiteHeader } from "@/components/game/SiteHeader";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Outpost Ares — Run a Mars base with the real Sun" },
+      { title: "Junior Astronaut Mission Trainer — Moon and Mars adventures" },
       {
         name: "description",
-        content: "A free game for kids 7–12: share power between air, food, radiation walls and science on Mars, using what the real Sun did.",
+         content: "A story game for kids 7–12: make choices to keep a Moon or Mars crew safe, using real NASA records.",
       },
-      { property: "og:title", content: "Outpost Ares — Run a Mars base with the real Sun" },
+      { property: "og:title", content: "Junior Astronaut Mission Trainer — Moon and Mars adventures" },
       {
         property: "og:description",
-        content: "Share power between air, food, radiation walls and science on Mars, using what the real Sun did.",
+         content: "Make story choices to keep air, food, power and radiation safety above zero on the Moon or Mars.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -26,13 +26,13 @@ export const Route = createFileRoute("/")({
 
 const STEPS = [
   { emoji: "☀️", title: "Pick a real Sun", text: "Every Sun flash and radiation storm in your trip really happened. NASA wrote them all down." },
-  { emoji: "⚡", title: "Share your power", text: "There's never enough power for everything. Air, plants, water walls and science all need some." },
+  { emoji: "📖", title: "Choose what happens next", text: "A problem appears. You have two choices. What will your crew do?" },
   { emoji: "📡", title: "Earth is far away", text: "Messages take many minutes to reach Earth. In an emergency, YOU have to decide." },
 ];
 
 const TRADES = [
   { a: "More science today", b: "less oxygen or food tomorrow" },
-  { a: "Stronger radiation walls", b: "less battery for the cold night" },
+  { a: "Folding panels away from dust", b: "no sunlight power that day" },
   { a: "Going outside to clean the panels", b: "spacesuit air + radiation outside" },
   { a: "Hiding from a Sun storm", b: "a lost day of science" },
 ];
@@ -46,10 +46,10 @@ function Index() {
           <img src={hero} alt="Illustrated Mars outpost with habitat domes, a glowing greenhouse, solar panels and astronauts at sunset" width={1600} height={912} className="absolute inset-0 h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/10" />
           <div className="relative mx-auto flex min-h-[78vh] max-w-6xl flex-col justify-end px-4 pb-14 pt-32">
-            <p className="text-data text-sm uppercase tracking-[0.3em] text-primary">A Mars mission game · ages 7–12</p>
-            <h1 className="mt-3 max-w-3xl text-5xl font-bold leading-[1.05] sm:text-7xl">Keep your crew alive on Mars.</h1>
+            <p className="text-data text-sm uppercase tracking-[0.3em] text-primary">A Moon or Mars mission game · ages 7–12</p>
+            <h1 className="mt-3 max-w-4xl text-4xl font-bold leading-tight sm:text-6xl">Junior Astronaut Mission Trainer</h1>
             <p className="mt-4 max-w-2xl text-lg sm:text-xl">
-              You're in charge of Outpost Ares for 15 Mars days. Every choice costs something, and the Sun's storms come
+              Lead a Moon or Mars crew for 15 days. Each problem has two choices. Keep air, food, power and radiation safety above zero! The Sun's storms come
               from <strong>real NASA records</strong>.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
@@ -89,8 +89,7 @@ function Index() {
             <div>
               <h2 className="text-3xl font-bold">No choice is free</h2>
               <p className="mt-3 text-muted-foreground">
-                Real NASA teams have to make the same kinds of choices. Every bit of power you give to one thing,
-                something else doesn't get.
+                 Real NASA teams have to make the same kinds of choices. Protecting one supply can mean giving up something else.
               </p>
             </div>
             <ul className="space-y-3">

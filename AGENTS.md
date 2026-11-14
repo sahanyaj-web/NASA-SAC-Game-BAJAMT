@@ -38,3 +38,4 @@ use the editor.
 - Every decision card option must state a cost (enforced by a test). Why: the educational goal is that no choice is free.
 - The base location (`place`: mars | moon) lives in GameState; place-specific wording comes from `placeWords()` in `src/game/words.ts` and place-specific facts are chosen inside each event's `build`. Why: one rule set, two worlds.
 - Story (deck) choices never cost battery (enforced by a test), so both options are always selectable. Why: choices are trade-offs, never blocked.
+- Active missions advance through story choices and `endStoryDay`; automatic life support stays in the pure engine. Why: supply changes need no manual power planner and remain testable.

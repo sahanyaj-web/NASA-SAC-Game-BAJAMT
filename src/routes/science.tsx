@@ -8,9 +8,9 @@ import { OSDR_FACTS, osdrUrl } from "@/game/data/osdr-facts";
 export const Route = createFileRoute("/science")({
   head: () => ({
     meta: [
-      { title: "The real NASA facts behind Outpost Ares" },
+      { title: "NASA facts | Junior Astronaut Mission Trainer" },
       { name: "description", content: "Where every fact in the Mars base game comes from — all from NASA — and what we made simpler." },
-      { property: "og:title", content: "The real NASA facts behind Outpost Ares" },
+      { property: "og:title", content: "NASA facts | Junior Astronaut Mission Trainer" },
       { property: "og:description", content: "Where every fact in the Mars base game comes from — all from NASA — and what we made simpler." },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -54,7 +54,7 @@ const SOURCES = [
     tag: "WORKED OUT",
     url: "https://ssd.jpl.nasa.gov/planets/approx_pos.html",
     what: "NASA knows exactly where Earth and Mars are on any day.",
-    how: "We work out how far apart Earth and Mars were on each day of your trip. That tells us how long a message takes (3 to 22 minutes), and when the Sun is in the way. When Mars is close, asking Earth for help during a storm works. When it's far away, the storm gets there first!",
+    how: "We work out how far apart Earth and Mars were on each day of your trip. That tells us how long a message takes (3 to 22 minutes), and when the Sun is in the way. Stories about asking Earth for help use this wait.",
     grownups: "NASA JPL Approximate Positions of the Planets (Keplerian elements, 1800–2050).",
   },
   {
@@ -79,6 +79,7 @@ const SOURCES = [
 
 const SIMPLER = [
   "Power is counted in simple ⚡ points, and air and food in \"days\", so you can do the math in your head.",
+  "The base runs its air maker, plant lights and water walls by itself. Your story choices change supplies and how well the machines work. If air, food, stored power or radiation safety reaches zero, the mission ends. Science is a score, not a supply you need to stay alive.",
   "NASA saw the Sun flashes and radiation storms from near Earth. Mars is usually in a different spot, so in the game we pretend the Sun was pointing at Mars too.",
   "Storm radiation in the game is a \"be ready for the worst\" amount. Mars's air blocks some radiation, and real storms can be bigger or smaller.",
   "The danger line of 25 radiation units is just for this game. NASA's real lifetime limit for an astronaut is 600.",
@@ -88,7 +89,7 @@ const SIMPLER = [
 
 const QUESTIONS = [
   "Why can't astronauts on Mars just call Earth when something goes wrong?",
-  "Your water walls cost power every day. When were they worth it?",
+  "When did hiding in the storm shelter help? What did you give up?",
   "Did the nuclear power plant or the extra solar panels help more? What happens in a dust storm?",
   "Play the same famous storm twice with different boxes. What changed?",
 ];
@@ -102,7 +103,7 @@ function SciencePage() {
           <p className="text-data text-xs uppercase tracking-widest text-primary">For players, families, teachers & judges</p>
           <h1 className="mt-2 text-4xl font-bold sm:text-5xl">Where our facts come from</h1>
           <p className="mt-3 max-w-3xl text-lg text-muted-foreground">
-            Every fact in Outpost Ares comes from NASA. Here's each one, what it changes in the game, and what we made
+            The facts in Junior Astronaut Mission Trainer come from NASA. Here's each one, what it changes in the game, and what we made
             simpler so it's fun to play.
           </p>
         </header>
@@ -174,10 +175,10 @@ function SciencePage() {
 
         <div className="flex justify-center pb-6">
           <Button variant="mission" size="xl" asChild>
-            <Link to="/play">🚀 Start a trip to Mars</Link>
+            <Link to="/play">🚀 Start a mission</Link>
           </Button>
         </div>
-        <p className="pb-10 text-center text-xs text-muted-foreground">Outpost Ares is a learning game. It is not made by NASA.</p>
+        <p className="pb-10 text-center text-xs text-muted-foreground">Junior Astronaut Mission Trainer is a learning game. It is not made by NASA.</p>
       </main>
     </div>
   );
