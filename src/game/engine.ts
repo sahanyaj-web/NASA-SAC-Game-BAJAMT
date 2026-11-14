@@ -339,10 +339,11 @@ export function effectChips(e: Effect, s?: GameState): { text: string; good: boo
   const out: { text: string; good: boolean }[] = [];
   const num = (n: number) => `${n > 0 ? "+" : "−"}${Math.abs(n)}`;
   const change = (n: number, cap: number) => `${num(Math.round(n / cap * 1000) / 10)} percentage points`;
-  if (e.air) out.push({ text: `🫁 ${change(e.air, s?.airCap ?? 5)} air`, good: e.air > 0 });
-  if (e.food) out.push({ text: `🥬 ${change(e.food, s?.foodCap ?? 6)} food`, good: e.food > 0 });
+  const actual = (delta: number, current: number | undefined, cap: number) => current === undefined ? delta : capped(current + delta, cap) - current;
+  if (e.air) out.push({ text: `🫁 ${change(actual(e.air, s?.air, s?.airCap ?? 5), s?.airCap ?? 5)} air`, good: e.air > 0 });
+  if (e.food) out.push({ text: `🥬 ${change(actual(e.food, s?.food, s?.foodCap ?? 6), s?.foodCap ?? 6)} food`, good: e.food > 0 });
   if (e.battery) out.push({ text: `🔋 ${change(e.battery, s?.batteryCap ?? BASE_BATTERY_CAP)} power`, good: e.battery > 0 });
-  if (e.science) out.push({ text: `🔬 ${change(e.science, s?.scienceCap ?? RESEARCH_CAP)} research`, good: e.science > 0 });
+  if (e.science) out.push({ text: `🔬 ${change(actual(e.science, s?.science, s?.scienceCap ?? RESEARCH_CAP), s?.scienceCap ?? RESEARCH_CAP)} research`, good: e.science > 0 });
   if (e.dose) out.push({ text: `☢️ ${change(-e.dose, s?.doseLimit ?? MISSION_DOSE_LIMIT)} radiation safety`, good: e.dose < 0 });
   if (e.panel && e.panel < 0) out.push({ text: "🔆 Dirty, scratched panels", good: false });
   if (e.setPanel === 1) out.push({ text: "🔆 Clean panels", good: true });

@@ -28,6 +28,7 @@ export function EventOverlay({
 }) {
   const [racing, setRacing] = useState<EventOption | null>(null);
   const [picked, setPicked] = useState<EventOption | null>(null);
+  const [beforeChoice] = useState(state);
   const urgent = event.kind === "storm" || event.kind === "cme";
   const who = CREW_CAST[event.who];
   const P = placeWords(state.place);
@@ -67,7 +68,7 @@ export function EventOverlay({
           <p className="mt-1 font-display text-lg font-semibold">You chose: {picked.label}</p>
           <p className="mt-2">{picked.outcome}</p>
           <div className="mt-3 flex flex-wrap gap-2">
-            {effectChips(picked.effect, state).map((c) => (
+            {effectChips(picked.effect, beforeChoice).map((c) => (
               <span key={c.text} className={cn("rounded-full border px-2 py-1 text-xs", c.good ? "border-food text-food" : "border-radiation text-radiation")}>
                 {c.text}
               </span>
