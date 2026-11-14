@@ -1,0 +1,130 @@
+import { describe, expect, it } from "vitest";
+import { createGame, endSol, forecast, powerToday, rate, stormEvent } from "./engine";
+import { DECK } from "./events";
+import { earthMars } from "./orbit";
+import { buildSchedule } from "./space-weather";
+import { heaterCost, stormDoseFor } from "./constants";
+import type { SolContext } from "./engine";
+
+const quietDay = { date: "2020-01-01", flares: [], strongestFlare: null, sep: false, cmeLaunches: [], cmeArrival: null };
+const mild = { sol: 1, min: -70, max: -10, pressure: 800, uv: "Moderate" };
+const ctx = (over: Partial<SolContext> = {}): SolContext => ({ weather: mild, space: quietDay, shelter: "none", ...over });
+
+describe("life support", () => {
+  it("the crew breathes 1 day of air per sol, and 2⚡ in the oxygen maker makes exactly 1 day", () => {
+    const g = createGame(1, []);
+    const { state } = endSol(g, { air: 2, greenhouse: 0, shield: 0, science: 0 }, ctx());
+    expect(state.air).toBe(g.air);
+    const { state: s2 } = endSol(g, { air: 0, greenhouse: 0, shield: 0, science: 0 }, ctx());
+    expect(s2.air).toBe(g.air - 1);
+  });
+
+  it("3⚡ in the greenhouse grows exactly 1 day of food", () => {
+    const g = createGame(1, []);
+    const f = forecast(g, { air: 0, greenhouse: 3, shield: 0, science: 0 }, ctx());
+    expect(f.foodMade).toBeCloseTo(1);
+  });
+
+  it("running out of air ends the mission", () => {
+    const g = { ...createGame(1, []), air: 1 };
+    const { state } = endSol(g, { air: 0, greenhouse: 3, shield: 0, science: 0 }, ctx());
+    expect(state.over?.result).toBe("air");
+  });
+});
+
+describe("power", () => {
+  it("clean panels on a clear sol give 10⚡; a dust storm cuts that to 40%", () => {
+    const g = createGame(1, []);
+    expect(powerToday(g).solar).toBe(10);
+    expect(powerToday({ ...g, statuses: { dustStorm: 2 } }).solar).toBe(4);
+  });
+
+  it("the reactor keeps giving 3⚡ during a dust storm", () => {
+    const g = { ...createGame(1, ["reactor"]), statuses: { dustStorm: 2 } };
+    expect(powerToday(g).reactor).toBe(3);
+  });
+
+  it("a colder real night costs more heater power, and an empty battery freezes plants", () => {
+    expect(heaterCost(-70)).toBe(2);
+    expect(heaterCost(-80)).toBe(3);
+    expect(heaterCost(-90)).toBe(4);
+    const g = { ...createGame(1, []), battery: 0 };
+    const f = forecast(g, { air: 6, greenhouse: 6, shield: 0, science: 0 }, ctx({ weather: { ...mild, min: -90 } }));
+    expect(f.coldNight).toBe(true);
+  });
+});
+
+describe("radiation", () => {
+  it("a quiet sol on Mars's surface is 0.64 mSv unshielded (Curiosity RAD)", () => {
+    const f = forecast(createGame(1, []), { air: 0, greenhouse: 0, shield: 0, science: 0 }, ctx());
+    expect(f.doseToday).toBeCloseTo(0.64);
+  });
+
+  it("an X-class particle storm adds 8 mSv unshielded, and the shelter blocks at least 80%", () => {
+    expect(stormDoseFor("X2.1")).toBe(8);
+    const storm = { ...quietDay, sep: true, strongestFlare: "X2.1" };
+    const g = createGame(1, []);
+    const open = forecast(g, { air: 0, greenhouse: 0, shield: 0, science: 0 }, ctx({ space: storm }));
+    const hid = forecast(g, { air: 0, greenhouse: 0, shield: 0, science: 0 }, ctx({ space: storm, shelter: "full" }));
+    expect(open.stormDose).toBe(8);
+    expect(hid.stormDose).toBeLessThanOrEqual(8 * 0.2);
+  });
+
+  it("sheltering is not free: no science that sol and half greenhouse output", () => {
+    const storm = { ...quietDay, sep: true };
+    const f = forecast(createGame(1, []), { air: 0, greenhouse: 3, shield: 0, science: 4 }, ctx({ space: storm, shelter: "full" }));
+    expect(f.scienceMade).toBe(0);
+    expect(f.foodMade).toBeCloseTo(0.5);
+  });
+
+  it("reaching the 25 mSv mission limit sends the crew home", () => {
+    const g = { ...createGame(1, []), dose: 24.8 };
+    const { state } = endSol(g, { air: 2, greenhouse: 3, shield: 0, science: 0 }, ctx());
+    expect(state.over?.result).toBe("dose");
+  });
+
+  it("storm events come only from real DONKI particle events or CME arrivals", () => {
+    expect(stormEvent({ space: quietDay }, 10)).toBeNull();
+    expect(stormEvent({ space: { ...quietDay, sep: true } }, 10)?.kind).toBe("storm");
+  });
+});
+
+describe("no free choices", () => {
+  it("every decision card has at least two options and each one names a cost", () => {
+    const g = { ...createGame(1, []), panel: 0.5 };
+    for (const card of DECK) {
+      const e = card.build(g, 10);
+      if (e.kind !== "deck") continue;
+      expect(e.options.length).toBeGreaterThanOrEqual(2);
+      for (const o of e.options) expect(o.cost.length).toBeGreaterThan(3);
+    }
+  });
+});
+
+describe("real geometry & data", () => {
+  it("Mars at its 2018 close approach was about 57.6 million km away (~3.2 light-minutes)", () => {
+    const i = earthMars(new Date("2018-07-31T08:00:00Z"));
+    expect(i.distanceKm / 1e6).toBeGreaterThan(55);
+    expect(i.distanceKm / 1e6).toBeLessThan(60);
+    expect(i.oneWayMinutes).toBeGreaterThan(3);
+    expect(i.oneWayMinutes).toBeLessThan(3.4);
+  });
+
+  it("flags the January 2026 solar conjunction, when messages can't get through", () => {
+    expect(earthMars(new Date("2026-01-09T12:00:00Z")).conjunction).toBe(true);
+    expect(earthMars(new Date("2025-06-01T12:00:00Z")).conjunction).toBe(false);
+  });
+
+  it("a fast CME arrives at Mars a few sols after launch", () => {
+    const sched = buildSchedule({ id: "t", name: "t", start: "2024-05-01", end: "2024-05-15", flares: [], seps: [], cmes: [{ t: "2024-05-02T10:00Z", v: 1500 }] });
+    const launch = sched[1].cmeLaunches[0];
+    expect(launch.travelSols).toBeGreaterThanOrEqual(1);
+    expect(launch.travelSols).toBeLessThanOrEqual(2);
+    expect(sched[launch.arrivesSol - 1].cmeArrival?.speed).toBe(1500);
+  });
+
+  it("finishing the mission earns at least one star", () => {
+    const g = { ...createGame(1, []), over: { result: "success" as const, message: "" } };
+    expect(rate(g).stars).toBeGreaterThanOrEqual(1);
+  });
+});
