@@ -13,3 +13,4 @@
 - [x] Finish story pop-up (who is talking + what happened next) and story retelling in report
 - [x] Restart mission button with a confirm step that clears the saved mission
 - [x] Reset choices button on the pick-your-base screen
+- [x] Keep Back to home + Restart mission pinned to the top during a mission
