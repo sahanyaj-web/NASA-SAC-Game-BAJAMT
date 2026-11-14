@@ -1,3 +1,5 @@
+import type { Place } from "./types";
+
 // Kid-friendly words for science labels.
 
 /** NASA flare classes: C small, M big (10× C), X huge (10× M). */
@@ -15,8 +17,6 @@ export function flarePhrase(cls: string | null | undefined): string {
   if (!cls) return "";
   return `a ${flareWord(cls)} Sun flash (scientists call it ${cls})`;
 }
-
-import type { Place } from "./types";
 
 /** Kid words that change with where the base is. */
 export function placeWords(place: Place) {

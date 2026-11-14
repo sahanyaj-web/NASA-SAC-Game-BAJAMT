@@ -1,6 +1,6 @@
 // Where are Earth and Mars today? JPL "Approximate Positions of the Planets"
 // Keplerian elements (Standish, valid 1800–2050). Accurate to well under 1% for distance.
-import { KM_PER_AU, LIGHT_SECONDS_PER_AU } from "./constants";
+import { EARTH_MOON_KM, KM_PER_AU, LIGHT_SECONDS_PER_AU } from "./constants";
 
 interface Elements {
   a: [number, number];
