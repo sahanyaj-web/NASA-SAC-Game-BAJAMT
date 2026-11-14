@@ -25,7 +25,7 @@ interface Mission {
   sun: SunWindow;
   schedule: SolSpaceWeather[];
   weather: MarsWeatherWindow;
-  notice?: string;
+  notice?: string | undefined;
 }
 
 export function MissionGame({ initialStorm }: { initialStorm?: string | undefined }) {
