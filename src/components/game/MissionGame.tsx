@@ -50,6 +50,7 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
   const [shelter, setShelter] = useState<Shelter>("none");
   const [summary, setSummary] = useState<{ sol: number; report: SolReport } | null>(null);
   const [showReport, setShowReport] = useState(false);
+  const [askRestart, setAskRestart] = useState(false);
 
   // Bring back a saved mission after the page loads (runs once, in the browser only).
   useEffect(() => {
@@ -166,6 +167,8 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
     setSummary(null);
     setShowReport(false);
     setEvent(null);
+    setShelter("none");
+    setAskRestart(false);
   };
 
   if (!mission || !state || !ctx) {
@@ -204,9 +207,21 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
     <div className="mx-auto max-w-7xl px-3 py-4 sm:px-6">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <Button variant="panel" size="sm" asChild className="mb-2">
-            <Link to="/">🏠 Back to home</Link>
-          </Button>
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            <Button variant="panel" size="sm" asChild>
+              <Link to="/">🏠 Back to home</Link>
+            </Button>
+            <Button variant="panel" size="sm" onClick={() => setAskRestart(true)}>
+              🔁 Restart mission
+            </Button>
+          </div>
+          {askRestart && (
+            <div className="mb-2 flex flex-wrap items-center gap-2 rounded-xl border border-radiation/60 bg-radiation/10 p-2 text-sm">
+              <span className="font-semibold">Start a brand-new mission? This erases the one you're on.</span>
+              <Button variant="panel" size="sm" onClick={() => setAskRestart(false)}>Keep playing</Button>
+              <Button variant="alert" size="sm" onClick={reset}>Yes, restart</Button>
+            </div>
+          )}
           <p className="text-data text-xs uppercase tracking-widest text-primary">{P.base} · {P.on}</p>
           <h1 className="text-3xl font-bold sm:text-4xl">
             {state.place === "moon" ? "Day" : <Term k="sol">Mars day</Term>} {state.sol}

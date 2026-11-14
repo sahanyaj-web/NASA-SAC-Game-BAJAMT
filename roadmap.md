@@ -11,3 +11,4 @@
 - [x] Crew roles only (the commander, the engineer…), no names
 - [x] Story choices never cost battery, so both choices are always open
 - [x] Finish story pop-up (who is talking + what happened next) and story retelling in report
+- [x] Restart mission button with a confirm step that clears the saved mission
