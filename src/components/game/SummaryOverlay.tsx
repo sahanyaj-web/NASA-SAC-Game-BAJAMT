@@ -18,7 +18,7 @@ export function SummaryOverlay({ sol, report, state, onNext }: { sol: number; re
     ["🔋 Battery", `${f.heat}⚡ used by the heater`, `${state.battery}⚡ for the morning`],
   ];
   return (
-    <Overlay label={`End of sol ${sol}`}>
+    <Overlay label={`End of Mars day ${sol}`}>
       <p className="text-data text-xs uppercase tracking-widest text-primary">Night falls</p>
       <h2 className="text-3xl font-bold">🌙 Mars day {sol} is done</h2>
       <ul className="mt-4 divide-y divide-border">
