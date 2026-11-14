@@ -93,6 +93,7 @@ export function earthMars(date: Date): EarthMarsInfo {
 export function formatMinutes(min: number) {
   const m = Math.floor(min);
   const s = Math.round((min - m) * 60);
+  if (m === 0) return `${s} s`;
   return s === 0 ? `${m} min` : `${m} min ${s} s`;
 }
 
