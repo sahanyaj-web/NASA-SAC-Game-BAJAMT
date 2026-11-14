@@ -101,7 +101,7 @@ export function MissionReport({
               <li key={d.date} className="panel-raised flex flex-wrap items-center justify-between gap-2 p-3 text-sm">
                 <span>
                   <strong className="text-data">Day {schedule.indexOf(d) + 1 || i + 1}</strong> · {d.date}:{" "}
-                  {d.strongestFlare && <>{flareWord(d.strongestFlare)} Sun flash ({d.strongestFlare}). </>}
+                  {d.strongestFlare && <>Biggest Sun flash: {flareWord(d.strongestFlare)} ({d.strongestFlare}). </>}
                   {d.sep && <span className="text-radiation">Radiation storm. </span>}
                   {d.cmeArrival && <span className="text-power">Giant Sun cloud reached Mars. </span>}
                 </span>
