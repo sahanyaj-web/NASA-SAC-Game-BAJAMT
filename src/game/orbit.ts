@@ -76,7 +76,7 @@ export function earthMars(date: Date): EarthMarsInfo {
   const M = helio(MARS, date);
   const d: [number, number, number] = [M[0] - E[0], M[1] - E[1], M[2] - E[2]];
   const distanceAU = Math.hypot(...d);
-  const toSun = [-E[0], -E[1], -E[2]];
+  const toSun: [number, number, number] = [-E[0], -E[1], -E[2]];
   const cos =
     (toSun[0] * d[0] + toSun[1] * d[1] + toSun[2] * d[2]) / (Math.hypot(...toSun) * distanceAU);
   const elongationDeg = Math.acos(Math.max(-1, Math.min(1, cos))) / RAD;

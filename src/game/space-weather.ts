@@ -15,7 +15,7 @@ const flareRank = (c: string) => {
 
 export function strongest(classes: string[]): string | null {
   if (!classes.length) return null;
-  return [...classes].sort((a, b) => flareRank(b) - flareRank(a))[0];
+  return [...classes].sort((a, b) => flareRank(b) - flareRank(a))[0] ?? null;
 }
 
 export function addDays(iso: string, n: number) {
@@ -40,15 +40,16 @@ export function buildSchedule(win: SunWindowRaw, sols = MISSION_SOLS): SolSpaceW
   for (const c of win.cmes) {
     if (c.v < FAST_CME_KMS) continue;
     const i = days.findIndex((d) => c.t.startsWith(d.date));
-    if (i < 0) continue;
+    const day = days[i];
+    if (!day) continue;
     // Travel time to Mars at the real Mars–Sun distance that day (constant speed: a simplification).
-    const marsKm = earthMars(new Date(days[i].date + "T12:00:00Z")).marsSunAU * KM_PER_AU;
+    const marsKm = earthMars(new Date(day.date + "T12:00:00Z")).marsSunAU * KM_PER_AU;
     const travelSols = Math.max(1, Math.round(marsKm / c.v / 86400));
     const arrivesSol = i + 1 + travelSols; // 1-based sol
-    days[i].cmeLaunches.push({ speed: c.v, arrivesSol, travelSols });
-    const j = arrivesSol - 1;
-    if (j < sols && (!days[j].cmeArrival || days[j].cmeArrival!.speed < c.v)) {
-      days[j].cmeArrival = { speed: c.v };
+    day.cmeLaunches.push({ speed: c.v, arrivesSol, travelSols });
+    const target = days[arrivesSol - 1];
+    if (target && (!target.cmeArrival || target.cmeArrival.speed < c.v)) {
+      target.cmeArrival = { speed: c.v };
     }
   }
   return days;
@@ -110,12 +111,12 @@ export function randomWindowDates(rand: () => number, today = new Date()) {
 }
 
 export function archived(id: string, source: SunWindow["source"] = "archived"): SunWindow {
-  const w = ARCHIVED_SUN.find((x) => x.id === id) ?? ARCHIVED_SUN[0];
+  const w = ARCHIVED_SUN.find((x) => x.id === id) ?? ARCHIVED_SUN[0]!;
   return { ...w, source };
 }
 
 export function randomArchived(rand: () => number): SunWindow {
-  return archived(ARCHIVED_SUN[Math.floor(rand() * ARCHIVED_SUN.length)].id, "archived-fallback");
+  return archived(ARCHIVED_SUN[Math.floor(rand() * ARCHIVED_SUN.length)]!.id, "archived-fallback");
 }
 
 export function donkiBrowseUrl(date: string) {

@@ -95,7 +95,7 @@ export interface SolContext {
   weather: MarsWeatherSol;
   space: SolSpaceWeather;
   /** previous sol's space weather (particles can follow a flare from late the day before) */
-  prevSpace?: SolSpaceWeather;
+  prevSpace?: SolSpaceWeather | undefined;
   shelter: Shelter;
 }
 
@@ -133,7 +133,7 @@ export function forecast(s: GameState, alloc: Allocation, ctx: SolContext): Fore
     (s.crates.includes("rover") ? 1 : 0) - (s.statuses.fatigue ? 1 : 0) + (s.statuses.happyCrew ? 1 : 0);
   const scienceMade = sheltered ? 0 : Math.max(0, alloc.science * SCIENCE_PER_POWER + extra);
   const lvl = shieldLevel(s, alloc);
-  const factor = SHIELD_FACTOR[lvl];
+  const factor = SHIELD_FACTOR[lvl] ?? 1;
   const baseDose = MARS_SURFACE_MSV_PER_SOL * factor;
   const storm = stormBaseDose(ctx);
   const stormFactor =
@@ -228,7 +228,7 @@ export function drawDeckEvent(s: GameState, oneWayMin: number): GameEvent | null
     r -= c.weight;
     if (r <= 0) return c.build(s, oneWayMin);
   }
-  return pool[pool.length - 1].build(s, oneWayMin);
+  return pool[pool.length - 1]!.build(s, oneWayMin);
 }
 
 export function eventForSol(s: GameState, ctx: Pick<SolContext, "space" | "prevSpace">, oneWayMin: number) {

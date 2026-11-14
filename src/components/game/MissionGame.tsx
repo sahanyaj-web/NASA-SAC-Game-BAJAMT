@@ -28,7 +28,7 @@ interface Mission {
   notice?: string;
 }
 
-export function MissionGame({ initialStorm }: { initialStorm?: string }) {
+export function MissionGame({ initialStorm }: { initialStorm?: string | undefined }) {
   const [mission, setMission] = useState<Mission | null>(null);
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState<GameState | null>(null);
@@ -58,7 +58,7 @@ export function MissionGame({ initialStorm }: { initialStorm?: string }) {
       sun = randomArchived(rand);
       notice = "We couldn't reach NASA's live server just now, so this mission uses saved real NASA records instead.";
     }
-    const weather = MARS_WEATHER[Math.floor(rand() * MARS_WEATHER.length)];
+    const weather = MARS_WEATHER[Math.floor(rand() * MARS_WEATHER.length)]!;
     const schedule = buildSchedule(sun);
     const g = createGame(seed, crates);
     setMission({ sun, schedule, weather, notice });
@@ -76,7 +76,7 @@ export function MissionGame({ initialStorm }: { initialStorm?: string }) {
     setCleaned(false);
     const i = g.sol - 1;
     const link = linkFor(g.sol, sched);
-    const ev = eventForSol(g, { space: sched[i], prevSpace: sched[i - 1] }, link.oneWayMinutes);
+    const ev = eventForSol(g, { space: sched[i]!, prevSpace: sched[i - 1] }, link.oneWayMinutes);
     setEvent(ev);
   };
 
@@ -96,8 +96,8 @@ export function MissionGame({ initialStorm }: { initialStorm?: string }) {
   const ctx = useMemo(() => {
     if (!mission) return null;
     return {
-      weather: mission.weather.sols[idx],
-      space: mission.schedule[idx],
+      weather: mission.weather.sols[idx]!,
+      space: mission.schedule[idx]!,
       prevSpace: mission.schedule[idx - 1],
       shelter,
     };

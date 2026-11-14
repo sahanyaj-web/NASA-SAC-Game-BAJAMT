@@ -3,12 +3,12 @@ import { MissionGame } from "@/components/game/MissionGame";
 import { SiteHeader } from "@/components/game/SiteHeader";
 
 interface PlaySearch {
-  storm?: string;
+  storm?: string | undefined;
 }
 
 export const Route = createFileRoute("/play")({
   validateSearch: (s: Record<string, unknown>): PlaySearch => ({
-    storm: typeof s.storm === "string" ? s.storm : undefined,
+    storm: typeof s["storm"] === "string" ? s["storm"] : undefined,
   }),
   head: () => ({
     meta: [

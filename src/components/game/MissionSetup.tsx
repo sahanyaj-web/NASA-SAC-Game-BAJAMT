@@ -12,7 +12,7 @@ export function MissionSetup({
   loading,
   onLaunch,
 }: {
-  initialStorm?: string;
+  initialStorm?: string | undefined;
   loading: boolean;
   onLaunch: (sun: SunChoice, crates: CrateId[]) => void;
 }) {
@@ -20,7 +20,7 @@ export function MissionSetup({
   const [crates, setCrates] = useState<CrateId[]>([]);
 
   const toggle = (id: CrateId) =>
-    setCrates((c) => (c.includes(id) ? c.filter((x) => x !== id) : c.length < CRATE_PICKS ? [...c, id] : [c[1], id]));
+    setCrates((c) => (c.includes(id) ? c.filter((x) => x !== id) : c.length < CRATE_PICKS ? [...c, id] : [c[1]!, id]));
 
   const sunCard = (active: boolean) =>
     cn("panel-raised w-full p-4 text-left transition-all hover:border-primary/70", active && "border-primary shadow-glow");

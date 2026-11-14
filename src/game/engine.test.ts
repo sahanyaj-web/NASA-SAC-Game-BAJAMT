@@ -117,10 +117,10 @@ describe("real geometry & data", () => {
 
   it("a fast CME arrives at Mars a few sols after launch", () => {
     const sched = buildSchedule({ id: "t", name: "t", start: "2024-05-01", end: "2024-05-15", flares: [], seps: [], cmes: [{ t: "2024-05-02T10:00Z", v: 1500 }] });
-    const launch = sched[1].cmeLaunches[0];
+    const launch = sched[1]!.cmeLaunches[0]!;
     expect(launch.travelSols).toBeGreaterThanOrEqual(1);
     expect(launch.travelSols).toBeLessThanOrEqual(2);
-    expect(sched[launch.arrivesSol - 1].cmeArrival?.speed).toBe(1500);
+    expect(sched[launch.arrivesSol - 1]!.cmeArrival?.speed).toBe(1500);
   });
 
   it("finishing the mission earns at least one star", () => {

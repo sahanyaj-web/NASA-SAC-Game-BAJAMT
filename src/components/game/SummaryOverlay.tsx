@@ -7,7 +7,7 @@ import { Overlay } from "./Overlay";
 
 export function SummaryOverlay({ sol, report, state, onNext }: { sol: number; report: SolReport; state: GameState; onNext: () => void }) {
   const f = report.forecast;
-  const fact = OSDR_FACTS[(sol - 1) % OSDR_FACTS.length];
+  const fact = OSDR_FACTS[(sol - 1) % OSDR_FACTS.length]!;
   const xrays = Math.round(state.dose / 0.1);
   const earthDays = Math.round(state.dose / EARTH_MSV_PER_DAY);
   const rows: [string, string, string][] = [
