@@ -1,43 +1,55 @@
 import type { ReactNode } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
+/** Tap-to-learn word helper. Every explanation is written for a 7-year-old. */
 export const GLOSSARY = {
-  sol: { word: "Sol", text: "A day on Mars. It lasts 24 hours and 39 minutes — a little longer than an Earth day." },
+  sol: {
+    word: "Mars day",
+    text: "One day on Mars is a little longer than on Earth: 24 hours and 39 minutes. Scientists call a Mars day a \"sol\".",
+  },
   msv: {
-    word: "mSv (millisievert)",
-    text: "Measures how much radiation your body soaks up. A chest X-ray is about 0.1 mSv. On Earth, nature gives you about 3 mSv a year.",
+    word: "Radiation units",
+    text: "Radiation is invisible energy that can hurt your body if you get too much. We count it in units (scientists call them millisieverts). One X-ray picture of your chest at the doctor is about 0.1 units. On Earth, nature gives you about 3 units a year.",
   },
   flare: {
-    word: "Solar flare",
-    text: "A sudden flash of light and X-rays from the Sun. Classes go C (small), M (medium), X (huge). Mars's thin air blocks most X-rays — but flares can be followed by dangerous particles.",
+    word: "Sun flash",
+    text: "A sudden, super-bright flash on the Sun. Scientists call it a solar flare. Small ones are called C, big ones M, and huge ones X. The flash itself can't get through Mars's air very well, but tiny zooming bits can follow it.",
   },
   sep: {
-    word: "Particle storm (SEP)",
-    text: "Solar Energetic Particles: bits of atoms the Sun shoots out so fast they can zip through walls — and astronauts. They can arrive within an hour of a flare.",
+    word: "Radiation storm",
+    text: "Sometimes the Sun shoots out tiny, invisible bits that zoom through space super fast. They can go right through walls and into people. They can reach Mars less than an hour after a big Sun flash.",
   },
   cme: {
-    word: "CME",
-    text: "Coronal Mass Ejection: a giant cloud of the Sun's hot gas flung into space. It takes a day or more to reach Mars, so you get a warning.",
+    word: "Giant Sun cloud",
+    text: "A huge cloud of hot gas that the Sun throws into space. It is slower than a radiation storm and takes a day or more to reach Mars, so you get a warning.",
   },
   delay: {
-    word: "Communication delay",
-    text: "Radio travels at the speed of light, but Mars is so far that a message takes 3 to 22 minutes to arrive, depending on where the planets are.",
+    word: "Message wait",
+    text: "Radio messages are the fastest thing there is, but Mars is SO far away that a message still takes 3 to 22 minutes to get there. Then you wait just as long for the answer!",
   },
   moxie: {
     word: "Oxygen maker",
-    text: "A machine that pulls oxygen out of Mars's air (which is mostly carbon dioxide). NASA tested a small one called MOXIE on the Perseverance rover.",
+    text: "A machine that pulls oxygen (the part of air we breathe) out of Mars's air. NASA tested a small one called MOXIE on the Perseverance rover.",
   },
   waterwall: {
     word: "Water walls",
-    text: "Tanks of water in the habitat walls. Water is great at stopping radiation — but at −80°C it freezes and cracks the tanks, so keeping walls full takes power.",
+    text: "Tanks of water inside the walls of your base. Water is great at blocking radiation. But Mars nights are colder than a freezer, so the water needs power to keep from freezing.",
   },
   conjunction: {
-    word: "Solar conjunction",
-    text: "When the Sun is between Earth and Mars. Its glow drowns out radio, so NASA stops sending commands for about two weeks.",
+    word: "Sun in the way",
+    text: "Sometimes the Sun sits right between Earth and Mars. Its glow drowns out radio messages, so nobody can talk for about two weeks.",
   },
   dust: {
     word: "Dust",
-    text: "Mars dust is finer than flour. It settles on solar panels and blocks sunlight, so panels make less power every sol unless cleaned.",
+    text: "Mars dust is finer than flour. It settles on solar panels like a blanket and blocks sunlight, so the panels make less power every day unless someone brushes them.",
+  },
+  crater: {
+    word: "Gale Crater",
+    text: "A giant bowl-shaped hole on Mars, made long ago when a space rock crashed there. Long, long ago it was filled with a lake. NASA's Curiosity rover is exploring it.",
+  },
+  rover: {
+    word: "Rover",
+    text: "A robot car that drives around on Mars taking pictures and testing rocks. NASA's Curiosity rover has been on Mars since 2012.",
   },
 } as const;
 
