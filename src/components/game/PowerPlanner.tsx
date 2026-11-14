@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MAX_ALLOC } from "@/game/constants";
@@ -8,7 +9,7 @@ import { Term } from "./Term";
 
 type Key = keyof Allocation;
 
-const ROWS: { key: Key; emoji: string; name: React.ReactNode; rule: string; dot: string }[] = [
+const ROWS: { key: Key; emoji: string; name: ReactNode; rule: string; dot: string }[] = [
   { key: "air", emoji: "🫁", name: <Term k="moxie">Oxygen maker</Term>, rule: "2⚡ = 1 day of air. The crew breathes 1 day every sol.", dot: "bg-air" },
   { key: "greenhouse", emoji: "🌱", name: "Greenhouse lights", rule: "3⚡ = 1 day of food. The crew eats 1 day every sol.", dot: "bg-food" },
   { key: "shield", emoji: "🛡️", name: <Term k="waterwall">Water walls</Term>, rule: "Each ⚡ keeps more shielding water from freezing.", dot: "bg-radiation" },
