@@ -4,14 +4,15 @@ import { Button } from "@/components/ui/button";
 import { rate } from "@/game/engine";
 import { formatMinutes } from "@/game/orbit";
 import { donkiBrowseUrl } from "@/game/space-weather";
+import { flareWord } from "@/game/words";
 import type { GameState, SolSpaceWeather, SunWindow } from "@/game/types";
 import { SourceBadge } from "./SourceBadge";
 
 const LESSON: Record<string, string> = {
-  air: "Oxygen is the most urgent supply — people can't last even minutes without it. Real mission planners keep big oxygen reserves and backup machines.",
-  food: "Growing food takes lots of power for the lights. Real Mars missions will bring most food from Earth and grow fresh plants as a bonus.",
-  dose: "Radiation adds up, sol after sol, and storms add a lot at once. That's why NASA watches the Sun 24/7 and designs shelters for crews.",
-  success: "You balanced power between air, food, shielding and science. That juggling act is exactly what real mission planners practise.",
+  air: "Air is the most important supply — people can't last even a few minutes without it. Real space teams pack lots of extra air and spare air machines.",
+  food: "Growing food takes lots of power for the lights. Real Mars trips will bring most of their food from Earth and grow fresh plants as a treat.",
+  dose: "Radiation adds up day after day, and storms add a lot all at once. That's why NASA watches the Sun all day and night, and plans safe shelters for crews.",
+  success: "You shared power between air, food, radiation walls and science. That juggling act is exactly what real NASA teams practice.",
 };
 
 export function MissionReport({
@@ -36,7 +37,7 @@ export function MissionReport({
     <div className="mx-auto max-w-5xl space-y-6 px-4 py-8 animate-float-in">
       <section className="panel p-6 text-center sm:p-10">
         <p className="text-data text-xs uppercase tracking-widest text-primary">Mission report</p>
-        <h1 className="mt-2 text-4xl font-bold sm:text-5xl">{result === "success" ? "🏁 Mission complete!" : "🚀 Mission ended early"}</h1>
+        <h1 className="mt-2 text-4xl font-bold sm:text-5xl">{result === "success" ? "🏁 You did it!" : "🚀 The trip ended early"}</h1>
         <p className="mt-3 text-lg">{state.over?.message}</p>
         <p className="mt-4 text-5xl" aria-label={`${r.stars} of 3 stars`}>
           {[0, 1, 2].map((i) => (
@@ -44,7 +45,7 @@ export function MissionReport({
           ))}
         </p>
         <p className="mt-2 text-sm text-muted-foreground">
-          Survived {state.log.length} of {state.totalSols} sols · {state.science} science · {state.dose.toFixed(1)} mSv radiation
+          Lasted {state.log.length} of {state.totalSols} Mars days · {state.science} science · {state.dose.toFixed(1)} radiation units
         </p>
         {r.badges.length > 0 && (
           <div className="mt-5 flex flex-wrap justify-center gap-2">
@@ -61,16 +62,16 @@ export function MissionReport({
         <h2 className="text-2xl font-bold">🧠 What you learned</h2>
         <p className="mt-2">{LESSON[result]}</p>
         <p className="mt-2">
-          During your mission dates, a radio message to Earth took between{" "}
+          On your trip's dates, a message to Earth took between{" "}
           <strong className="text-accent">{formatMinutes(delays[0])}</strong> and <strong className="text-accent">{formatMinutes(delays[1])}</strong>.
-          Mars crews can't wait for help in an emergency — they have to decide for themselves.
+          In an emergency, Mars crews can't wait that long for help — they have to decide for themselves.
         </p>
-        <p className="mt-2">Try again with different cargo crates or a different Sun. There's more than one way to survive!</p>
+        <p className="mt-2">Try again with different cargo crates or a different Sun. There's more than one way to win!</p>
       </section>
 
       {data.length > 1 && (
         <section className="panel p-6">
-          <h2 className="text-2xl font-bold">📈 Your supplies, sol by sol</h2>
+          <h2 className="text-2xl font-bold">📈 Your supplies, day by day</h2>
           <div className="mt-4 h-72">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={data}>
@@ -93,19 +94,19 @@ export function MissionReport({
         <h2 className="text-2xl font-bold">☀️ What the real Sun did</h2>
         <SourceBadge sun={sun} className="mt-3" />
         {realDays.length === 0 ? (
-          <p className="mt-3 text-sm">The Sun was quiet on these dates — no big flares or particle storms in NASA's records.</p>
+          <p className="mt-3 text-sm">The Sun was quiet on these dates — no big Sun flashes or radiation storms in NASA's records.</p>
         ) : (
           <ul className="mt-3 space-y-2">
             {realDays.map((d, i) => (
               <li key={d.date} className="panel-raised flex flex-wrap items-center justify-between gap-2 p-3 text-sm">
                 <span>
-                  <strong className="text-data">Sol {schedule.indexOf(d) + 1 || i + 1}</strong> · {d.date}:{" "}
-                  {d.strongestFlare && <>strongest flare {d.strongestFlare}. </>}
-                  {d.sep && <span className="text-radiation">Particle storm. </span>}
-                  {d.cmeArrival && <span className="text-power">CME reached Mars ({d.cmeArrival.speed} km/s). </span>}
+                  <strong className="text-data">Day {schedule.indexOf(d) + 1 || i + 1}</strong> · {d.date}:{" "}
+                  {d.strongestFlare && <>Biggest Sun flash: {flareWord(d.strongestFlare)} ({d.strongestFlare}). </>}
+                  {d.sep && <span className="text-radiation">Radiation storm. </span>}
+                  {d.cmeArrival && <span className="text-power">Giant Sun cloud reached Mars. </span>}
                 </span>
                 <a className="text-accent hover:underline" href={donkiBrowseUrl(d.date)} target="_blank" rel="noreferrer">
-                  NASA DONKI ↗
+                  NASA log ↗
                 </a>
               </li>
             ))}
@@ -116,7 +117,7 @@ export function MissionReport({
       <div className="flex flex-col justify-center gap-3 pb-10 sm:flex-row">
         <Button variant="mission" size="xl" onClick={onAgain}>🔁 Play a new mission</Button>
         <Button variant="panel" size="xl" asChild>
-          <Link to="/science">🔭 See the real NASA data</Link>
+          <Link to="/science">🔭 See the real NASA facts</Link>
         </Button>
       </div>
     </div>

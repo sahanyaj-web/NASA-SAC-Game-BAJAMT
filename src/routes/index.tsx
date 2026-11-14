@@ -10,12 +10,12 @@ export const Route = createFileRoute("/")({
       { title: "Outpost Ares — Run a Mars base with the real Sun" },
       {
         name: "description",
-        content: "A free browser game for kids 7–12: share power between air, food, radiation shields and science on Mars, using real NASA space weather.",
+        content: "A free game for kids 7–12: share power between air, food, radiation walls and science on Mars, using what the real Sun did.",
       },
       { property: "og:title", content: "Outpost Ares — Run a Mars base with the real Sun" },
       {
         property: "og:description",
-        content: "Share power between air, food, radiation shields and science on Mars, using real NASA space weather.",
+        content: "Share power between air, food, radiation walls and science on Mars, using what the real Sun did.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -25,16 +25,16 @@ export const Route = createFileRoute("/")({
 });
 
 const STEPS = [
-  { emoji: "☀️", title: "Pick a real Sun", text: "Every flare and particle storm in your mission really happened. It comes from NASA's space weather records." },
-  { emoji: "⚡", title: "Share your power", text: "You never have enough power for everything: oxygen, greenhouse, water walls and science all need it." },
-  { emoji: "📡", title: "Earth is far away", text: "Messages take minutes to reach Earth. In an emergency, you're the one who decides." },
+  { emoji: "☀️", title: "Pick a real Sun", text: "Every Sun flash and radiation storm in your trip really happened. NASA wrote them all down." },
+  { emoji: "⚡", title: "Share your power", text: "There's never enough power for everything. Air, plants, water walls and science all need some." },
+  { emoji: "📡", title: "Earth is far away", text: "Messages take many minutes to reach Earth. In an emergency, YOU have to decide." },
 ];
 
 const TRADES = [
   { a: "More science today", b: "less oxygen or food tomorrow" },
-  { a: "Thicker radiation shields", b: "a colder, darker night" },
-  { a: "A spacewalk to clean the panels", b: "suit oxygen + radiation outside" },
-  { a: "Hiding from a solar storm", b: "a lost day of research" },
+  { a: "Stronger radiation walls", b: "less battery for the cold night" },
+  { a: "Going outside to clean the panels", b: "spacesuit air + radiation outside" },
+  { a: "Hiding from a Sun storm", b: "a lost day of science" },
 ];
 
 function Index() {
@@ -49,8 +49,8 @@ function Index() {
             <p className="text-data text-sm uppercase tracking-[0.3em] text-primary">A Mars mission game · ages 7–12</p>
             <h1 className="mt-3 max-w-3xl text-5xl font-bold leading-[1.05] sm:text-7xl">Keep your crew alive on Mars.</h1>
             <p className="mt-4 max-w-2xl text-lg sm:text-xl">
-              You command Outpost Ares for 15 sols (Mars days). Every choice costs something, and the Sun's storms come
-              from <strong>real NASA data</strong>.
+              You're in charge of Outpost Ares for 15 Mars days. Every choice costs something, and the Sun's storms come
+              from <strong>real NASA records</strong>.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button variant="mission" size="xl" asChild>
@@ -60,7 +60,7 @@ function Index() {
                 <Link to="/science">🔭 The real science</Link>
               </Button>
             </div>
-            <p className="mt-4 text-sm text-muted-foreground">Free · plays in your browser · no account needed · about 10 minutes</p>
+            <p className="mt-4 text-sm text-muted-foreground">Free · no download · no sign-up · about 10 minutes</p>
           </div>
         </section>
 
@@ -90,8 +90,8 @@ function Index() {
             <div>
               <h2 className="text-3xl font-bold">No choice is free</h2>
               <p className="mt-3 text-muted-foreground">
-                Real mission planners juggle the same trade-offs. Every bit of power you give one system, another system
-                doesn't get.
+                Real NASA teams have to make the same kinds of choices. Every bit of power you give to one thing,
+                something else doesn't get.
               </p>
             </div>
             <ul className="space-y-3">
@@ -107,8 +107,8 @@ function Index() {
         </section>
 
         <footer className="mx-auto max-w-6xl px-4 pb-12 text-sm text-muted-foreground">
-          Data: NASA DONKI space weather (CCMC), Curiosity rover REMS weather, Curiosity RAD radiation, NASA OSDR, JPL planet
-          positions. Not an official NASA product. <Link to="/science" className="text-accent hover:underline">Full sources →</Link>
+          Facts from NASA: the Sun-storm log, the Curiosity rover's weather and radiation readings, NASA's planet maps
+          and NASA astronaut studies. This game is not made by NASA. <Link to="/science" className="text-accent hover:underline">See all the NASA facts →</Link>
         </footer>
       </main>
     </div>

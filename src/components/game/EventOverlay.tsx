@@ -29,14 +29,14 @@ export function EventOverlay({
           {event.emoji}
         </span>
         <div>
-          <p className="text-data text-xs uppercase tracking-widest text-primary">Sol {state.sol} · {urgent ? "Emergency" : "Something happened"}</p>
+          <p className="text-data text-xs uppercase tracking-widest text-primary">Mars day {state.sol} · {urgent ? "Emergency" : "Something happened"}</p>
           <h2 className="text-2xl font-bold sm:text-3xl">{event.title}</h2>
         </div>
       </div>
       <p className="mt-4 text-base leading-relaxed">{event.text}</p>
       {urgent && (
         <p className="mt-2 text-sm text-muted-foreground">
-          Words to know: <Term k={event.kind === "storm" ? "sep" : "cme"} /> · <Term k="msv" />
+          Tap to learn: <Term k={event.kind === "storm" ? "sep" : "cme"} /> · <Term k="msv" />
         </p>
       )}
 
@@ -70,10 +70,10 @@ export function EventOverlay({
 
       {event.fact && (
         <div className="mt-6 rounded-xl border border-accent/40 bg-accent/10 p-4 text-sm">
-          <p className="font-bold text-accent">🛰️ Real NASA science</p>
+          <p className="font-bold text-accent">🛰️ True NASA fact</p>
           <p className="mt-1">{event.fact.text}</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Source:{" "}
+            From:{" "}
             {event.fact.url ? (
               <a className="inline-flex items-center gap-1 text-accent hover:underline" href={event.fact.url} target="_blank" rel="noreferrer">
                 {event.fact.source} <ExternalLink className="size-3" />

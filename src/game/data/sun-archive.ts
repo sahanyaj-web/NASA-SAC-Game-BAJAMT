@@ -239,7 +239,7 @@ export const ARCHIVED_SUN: SunWindowRaw[] = [
 "v": 300
 }
 ],
-"blurb": "Two of the biggest flares of the decade. NASA's Curiosity rover measured radiation on Mars's surface jump to more than double the normal level."
+"blurb": "Two of the biggest Sun flashes in 10 years. NASA's Curiosity rover saw radiation on Mars jump to more than double the normal amount."
 },
 {
 "id": "may-2024",
@@ -1134,11 +1134,11 @@ export const ARCHIVED_SUN: SunWindowRaw[] = [
 "v": 1269
 }
 ],
-"blurb": "A burst of giant sunspots launched cloud after cloud of solar plasma. Northern lights were seen as far south as Florida."
+"blurb": "Giant dark spots on the Sun threw out cloud after cloud of hot gas. Glowing northern lights were seen as far south as Florida!"
 },
 {
 "id": "oct-2024",
-"name": "Solar Maximum Fireworks",
+"name": "The Sun's Busiest Time",
 "start": "2024-09-29",
 "end": "2024-10-13",
 "flares": [
@@ -1684,7 +1684,7 @@ export const ARCHIVED_SUN: SunWindowRaw[] = [
 "v": 535
 }
 ],
-"blurb": "Near solar maximum, the Sun fired off an X9-class flare (Oct 3) \u2014 one of the strongest of its 11-year cycle."
+"blurb": "The Sun gets extra busy every 11 years. In this busy time it made one of its biggest flashes ever seen (Oct 3)."
 },
 {
 "id": "feb-2022",
@@ -1860,7 +1860,7 @@ export const ARCHIVED_SUN: SunWindowRaw[] = [
 "v": 246
 }
 ],
-"blurb": "A fairly calm stretch of Sun. Good practice for new commanders!"
+"blurb": "A fairly calm Sun. Good practice for new commanders!"
 },
 {
 "id": "oct-2021",
@@ -2091,7 +2091,7 @@ export const ARCHIVED_SUN: SunWindowRaw[] = [
 "v": 590
 }
 ],
-"blurb": "A big X-class flare on Oct 28 sent a burst of fast particles racing through space."
+"blurb": "A huge Sun flash on Oct 28 sent tiny, super-fast bits racing through space."
 },
 {
 "id": "jul-2012",
@@ -2155,7 +2155,7 @@ export const ARCHIVED_SUN: SunWindowRaw[] = [
 "v": 2715
 }
 ],
-"blurb": "Curiosity was flying to Mars. On July 23 a super-fast plasma cloud blasted out \u2014 luckily it missed Earth."
+"blurb": "NASA's Curiosity rover was flying to Mars. On July 23 a super-fast Sun cloud blasted out \u2014 luckily it missed Earth."
 },
 {
 "id": "dec-2019",
@@ -2178,6 +2178,6 @@ export const ARCHIVED_SUN: SunWindowRaw[] = [
 "v": 356
 }
 ],
-"blurb": "Solar minimum: the quietest the Sun gets. But quiet Sun lets in MORE cosmic rays from deep space!"
+"blurb": "The quietest the Sun ever gets. But a quiet Sun lets in MORE radiation from deep space!"
 }
 ];

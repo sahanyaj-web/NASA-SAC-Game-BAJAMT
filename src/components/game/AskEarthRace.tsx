@@ -33,17 +33,17 @@ export function AskEarthRace({ link, onDone }: { link: EarthMarsInfo; onDone: (i
   return (
     <div className="space-y-4" aria-live="polite">
       <p className="text-data text-center text-4xl font-bold">{Math.floor(min)} min</p>
-      <p className="text-center text-xs text-muted-foreground">real-life minutes passing (sped up: 1 minute = ½ second)</p>
+      <p className="text-center text-xs text-muted-foreground">real minutes going by (sped up so 1 minute = half a second)</p>
 
       <div>
-        <p className="text-sm font-semibold">☢️ Particles reach the outpost ({SEP_ARRIVAL_MINUTES} min)</p>
+        <p className="text-sm font-semibold">☢️ Radiation storm reaches your base ({SEP_ARRIVAL_MINUTES} min)</p>
         <div className="mt-1 h-4 overflow-hidden rounded-full bg-muted">
           <div className="h-full bg-radiation" style={{ width: bar(min, SEP_ARRIVAL_MINUTES) }} />
         </div>
       </div>
       <div>
         <p className="text-sm font-semibold">
-          📡 Your message flies to Earth ({link.conjunction ? "blocked by the Sun!" : `${Math.round(outMin)} min`})
+          📡 Your message flies to Earth ({link.conjunction ? "the Sun is in the way!" : `${Math.round(outMin)} min`})
         </p>
         <div className="mt-1 h-4 overflow-hidden rounded-full bg-muted">
           <div className="h-full bg-air" style={{ width: link.conjunction ? "0%" : bar(min, outMin) }} />
@@ -63,19 +63,19 @@ export function AskEarthRace({ link, onDone }: { link: EarthMarsInfo; onDone: (i
         <div className="panel-raised animate-float-in p-4">
           {inTime ? (
             <>
-              <p className="font-display text-lg font-semibold text-food">🌍 "Go to the shelter now!" — Mission Control</p>
+              <p className="font-display text-lg font-semibold text-food">🌍 "Go to the shelter now!" — the team on Earth</p>
               <p className="mt-1 text-sm">
-                The answer made it in time because Mars is fairly close to Earth on this date. Everyone hides safely.
+                The answer made it in time because Mars was pretty close to Earth on this date. Everyone hides safely.
               </p>
             </>
           ) : (
             <>
-              <p className="font-display text-lg font-semibold text-radiation">☢️ The particles got here first!</p>
+              <p className="font-display text-lg font-semibold text-radiation">☢️ The storm got here first!</p>
               <p className="mt-1 text-sm">
                 {link.conjunction
-                  ? "The Sun blocked your message completely."
-                  : `A reply needs ${Math.round(roundTrip)} minutes round-trip, but the particles came in ${SEP_ARRIVAL_MINUTES}.`}{" "}
-                The crew rushed to the shelter late. Real Mars crews will have to make fast decisions themselves.
+                  ? "The Sun was in the way, so your message never got through."
+                  : `There and back takes ${Math.round(roundTrip)} minutes, but the storm came in ${SEP_ARRIVAL_MINUTES}.`}{" "}
+                The crew ran to the shelter late. Real astronauts on Mars will have to make fast choices all by themselves.
               </p>
             </>
           )}

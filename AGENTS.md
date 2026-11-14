@@ -33,6 +33,6 @@ use the editor.
 
 - Game rules live in pure modules under `src/game/` (engine, events, orbit, space-weather); UI components never compute outcomes themselves. Why: keeps rules testable in `src/game/engine.test.ts`.
 - Every real-world number in the game is defined once in `src/game/constants.ts` with its source in a comment. Why: judges and teachers must be able to trace each value.
-- Live NASA DONKI data is fetched directly from the browser (`ccmc.gsfc.nasa.gov/DONKI/WS/get`, CORS-enabled, no key); any failure falls back to the embedded archive and the UI must label it ARCHIVED. Why: never present static data as live.
+- Live NASA DONKI data is fetched directly from the browser (`ccmc.gsfc.nasa.gov/DONKI/WS/get`, CORS-enabled, no key); any failure falls back to the embedded archive and the UI must label it SAVED (never LIVE). Why: never present static data as live.
 - Embedded datasets in `src/game/data/` are generated snapshots of real NASA sources; regenerate rather than hand-edit values. Why: data authenticity.
 - Every decision card option must state a cost (enforced by a test). Why: the educational goal is that no choice is free.

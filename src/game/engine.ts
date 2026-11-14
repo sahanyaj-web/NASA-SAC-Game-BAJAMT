@@ -5,6 +5,7 @@ import {
   MISSION_SOLS, SCIENCE_PER_POWER, SHELTER_FACTOR, SHIELD_FACTOR, heaterCost, stormDoseFor,
 } from "./constants";
 import { DECK } from "./events";
+import { flarePhrase } from "./words";
 import type { Allocation, CrateId, Effect, GameEvent, GameState, MarsWeatherSol, SolSpaceWeather } from "./types";
 
 export interface Crate {
@@ -16,12 +17,12 @@ export interface Crate {
 }
 
 export const CRATES: Crate[] = [
-  { id: "solar", name: "Extra solar panels", emoji: "🔆", what: "+3⚡ every sunny sol (less when dusty)", real: "Most Mars robots ran on sunlight." },
-  { id: "reactor", name: "Mini nuclear reactor", emoji: "⚛️", what: "+3⚡ every sol — even in dust storms", real: "NASA's Kilopower (KRUSTY) reactor was tested in 2018." },
-  { id: "water", name: "Water tanks", emoji: "💧", what: "+1 shield level forever and +2 days of air", real: "Water blocks radiation, and splitting it makes oxygen." },
-  { id: "battery", name: "Big battery", emoji: "🔋", what: "Store 8⚡ more for nights and storms", real: "Batteries kept rovers warm through freezing Mars nights." },
-  { id: "food", name: "Food stash", emoji: "🥫", what: "+5 days of food", real: "Astronaut food is packed to last years." },
-  { id: "rover", name: "Science rover", emoji: "🚙", what: "+1 science every sol, automatically", real: "Rovers explore while the crew stays safe inside." },
+  { id: "solar", name: "Extra solar panels", emoji: "🔆", what: "+3⚡ every sunny day (less when it's dusty)", real: "Lots of NASA's Mars robots ran on sunlight." },
+  { id: "reactor", name: "Mini nuclear power plant", emoji: "⚛️", what: "+3⚡ every day, even in dust storms", real: "NASA tested a small nuclear power maker called Kilopower in 2018." },
+  { id: "water", name: "Water tanks", emoji: "💧", what: "Better radiation blocking for the whole trip, and +2 days of air", real: "Water blocks radiation, and water can be turned into oxygen." },
+  { id: "battery", name: "Big battery", emoji: "🔋", what: "Saves 8⚡ more for nights and storms", real: "Batteries kept NASA's rovers warm on freezing Mars nights." },
+  { id: "food", name: "Food stash", emoji: "🥫", what: "+5 days of food", real: "Astronaut food is packed so it lasts for years." },
+  { id: "rover", name: "Robot science car", emoji: "🚙", what: "+1 science every day, all by itself", real: "Robot cars (rovers) explore while the crew stays safe inside." },
 ];
 
 export const CRATE_PICKS = 2;
@@ -193,22 +194,22 @@ export function stormEvent(ctx: Pick<SolContext, "space" | "prevSpace">, oneWayM
     id: isSep ? "sep" : "cme",
     kind: isSep ? "storm" : "cme",
     emoji: isSep ? "☢️" : "🌊",
-    title: isSep ? "RADIATION ALERT!" : "Solar plasma cloud arriving!",
+    title: isSep ? "RADIATION STORM!" : "A giant Sun cloud is here!",
     text: isSep
-      ? `On ${space.date}, NASA really recorded a burst of super-fast solar particles${flare ? ` after a ${flare} flare` : ""}. Your particle counter is starting to climb. Particles will hit in about 30 minutes. Without protection this storm adds ${dose} mSv.`
-      : `A fast cloud of solar plasma (a CME, ${space.cmeArrival!.speed.toLocaleString()} km/s) is reaching Mars. It pushes extra particles ahead of it: up to ${dose} mSv without protection.`,
+      ? `On ${space.date}, NASA really saw the Sun shoot out tiny, invisible, super-fast bits${flare ? ` after ${flarePhrase(flare)}` : ""}. Your radiation alarm is beeping! The storm will hit in about 30 minutes. If nobody hides, it adds ${dose} radiation units.`
+      : `A giant cloud of hot gas from the Sun is reaching Mars. It left the Sun going ${space.cmeArrival!.speed.toLocaleString()} km every second! It pushes radiation ahead of it: up to ${dose} radiation units if nobody hides.`,
     fact: {
-      text: "When the Sun had huge flares in September 2017, NASA's Curiosity rover measured radiation on Mars's surface more than double anything it had seen before.",
-      source: "NASA JPL / Curiosity RAD & MAVEN",
-      url: "https://www.jpl.nasa.gov/news/nasa-mission-tracks-a-sudden-solar-event-at-mars/",
+      text: "When the Sun had huge flashes in September 2017, NASA's Curiosity rover measured radiation on Mars more than double what it normally sees.",
+      source: "NASA — Jet Propulsion Laboratory",
+      url: "https://www.jpl.nasa.gov/news/large-solar-storm-sparks-global-aurora-and-doubles-radiation-levels-on-the-martian-surface",
     },
     options: [
-      { id: "shelter", label: "Everyone into the storm shelter!", cost: "No science today and the greenhouse gets only half care", gain: "Blocks most of the storm", effect: { shelter: "full" } },
+      { id: "shelter", label: "Everyone into the storm shelter!", cost: "No science today, and the plants only get half the care", gain: "Blocks most of the storm", effect: { shelter: "full" } },
       { id: "work", label: "Keep working", cost: "Storm radiation gets through your water walls", gain: "A normal work day", effect: { shelter: "none" } },
       {
         id: "ask",
-        label: "Ask Mission Control on Earth",
-        cost: `Your question takes ${Math.round(oneWayMin)} min to reach Earth, and the answer takes ${Math.round(oneWayMin)} min to come back`,
+        label: "Ask the team on Earth what to do",
+        cost: `Your question takes ${Math.round(oneWayMin)} minutes to reach Earth, and the answer takes ${Math.round(oneWayMin)} minutes to come back`,
         gain: "Experts decide for you… if they answer in time",
         effect: {},
         askEarth: true,
@@ -251,13 +252,13 @@ export function endSol(s: GameState, alloc: Allocation, ctx: SolContext): { stat
   n.science = s.science + f.scienceMade;
   n.dose = s.dose + f.doseToday;
   n.battery = f.batteryAfterNight;
-  if (f.wasted > 0) notes.push(`Battery was full, so ${f.wasted}⚡ of sunlight went to waste.`);
-  if (f.coldNight) notes.push(`Not enough battery to heat tonight (${ctx.weather.min}°C outside). Some plants froze: −1 day of food.`);
-  if (f.stormDose > 0) notes.push(`The storm added ${f.stormDose.toFixed(1)} mSv of radiation.`);
+  if (f.wasted > 0) notes.push(`The battery was full, so ${f.wasted}⚡ of sunlight went to waste.`);
+  if (f.coldNight) notes.push(`Not enough battery for the heater tonight (${ctx.weather.min}°C outside). Some plants froze: 1 day of food lost.`);
+  if (f.stormDose > 0) notes.push(`The storm added ${f.stormDose.toFixed(1)} radiation units.`);
   if (s.statuses.moldRisk && rng() < 0.4) {
     n.food -= 2;
     delete n.statuses.moldRisk;
-    notes.push("The mold spread! −2 days of food.");
+    notes.push("The mold spread! 2 days of food lost.");
   }
   for (const k of Object.keys(n.statuses) as (keyof GameState["statuses"])[]) {
     const left = (n.statuses[k] ?? 0) - 1;
@@ -276,11 +277,11 @@ export function endSol(s: GameState, alloc: Allocation, ctx: SolContext): { stat
 
 export function checkOver(s: GameState): GameState {
   if (s.over) return s;
-  if (s.air <= 0) return { ...s, over: { result: "air", message: "The oxygen ran out. The crew had to escape in their return rocket." } };
-  if (s.food <= 0) return { ...s, over: { result: "food", message: "The food ran out. The crew had to head home early." } };
+  if (s.air <= 0) return { ...s, over: { result: "air", message: "The air ran out. The crew had to fly home early in their rocket." } };
+  if (s.food <= 0) return { ...s, over: { result: "food", message: "The food ran out. The crew had to fly home early." } };
   if (s.dose >= s.doseLimit)
-    return { ...s, over: { result: "dose", message: "The crew got too much radiation. The flight surgeon ordered everyone home." } };
-  if (s.sol > s.totalSols) return { ...s, over: { result: "success", message: "Mission complete! Your crew survived every sol on Mars." } };
+    return { ...s, over: { result: "dose", message: "The crew got too much radiation. The space doctor sent everyone home to stay safe." } };
+  if (s.sol > s.totalSols) return { ...s, over: { result: "success", message: "Your crew made it through every day on Mars!" } };
   return s;
 }
 
@@ -296,10 +297,10 @@ export interface Rating {
 export function rate(s: GameState): Rating {
   const badges: Rating["badges"] = [];
   const ok = s.over?.result === "success";
-  if (ok) badges.push({ emoji: "🏁", name: "Mission Complete", why: `Survived all ${s.totalSols} sols` });
-  if (s.science >= 30) badges.push({ emoji: "🔬", name: "Star Scientist", why: "30+ science points" });
-  if (ok && s.dose < s.doseLimit / 2) badges.push({ emoji: "🛡️", name: "Radiation Guardian", why: "Kept dose under half the limit" });
-  if (ok && s.air >= 3 && s.food >= 3) badges.push({ emoji: "🫁", name: "Careful Planner", why: "Finished with 3+ days of air and food" });
+  if (ok) badges.push({ emoji: "🏁", name: "Mission Complete", why: `Made it through all ${s.totalSols} days` });
+  if (s.science >= 30) badges.push({ emoji: "🔬", name: "Star Scientist", why: "30 or more science points" });
+  if (ok && s.dose < s.doseLimit / 2) badges.push({ emoji: "🛡️", name: "Radiation Guardian", why: "Kept radiation under half the danger line" });
+  if (ok && s.air >= 3 && s.food >= 3) badges.push({ emoji: "🫁", name: "Careful Planner", why: "Finished with 3 or more days of air and food" });
   const stars = (ok ? 1 : 0) + (s.science >= 15 ? 1 : 0) + (s.science >= 30 ? 1 : 0) + (ok && s.dose < s.doseLimit / 2 ? 1 : 0);
   return { stars: Math.min(3, stars), badges };
 }
