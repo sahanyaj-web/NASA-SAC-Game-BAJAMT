@@ -52,7 +52,7 @@ export interface Allocation {
   science: number;
 }
 
-export type StatusId = "dustStorm" | "airClog" | "fatigue" | "moldRisk" | "earthFix" | "happyCrew";
+export type StatusId = "dustStorm" | "panelsAway" | "airClog" | "fatigue" | "moldRisk" | "earthFix" | "happyCrew";
 
 export interface Effect {
   air?: number;
@@ -63,6 +63,7 @@ export interface Effect {
   panel?: number; // change to panel cleanliness 0..1
   setPanel?: number;
   shieldBonus?: number; // permanent water-wall level
+  batteryCap?: number; // permanent change to how much the battery holds
   status?: { id: StatusId; sols: number }[];
   clearStatus?: StatusId[];
   shelter?: "full" | "late" | "none";
@@ -74,12 +75,18 @@ export interface EventOption {
   cost: string; // kid-language summary of what you give up
   gain: string; // and what you get
   effect: Effect;
+  /** What happens next in the story after picking this choice. */
+  outcome: string;
   askEarth?: boolean;
 }
 
+export type CrewId = "ada" | "leo" | "mia" | "sam";
+
 export interface GameEvent {
   id: string;
-  kind: "deck" | "storm" | "cme" | "info";
+  kind: "deck" | "storm" | "cme";
+  /** Which crew member tells you about the problem. */
+  who: CrewId;
   title: string;
   emoji: string;
   text: string;
@@ -113,6 +120,8 @@ export interface GameState {
   crates: CrateId[];
   statuses: Partial<Record<StatusId, number>>;
   seenEvents: string[];
+  /** The choices the player made, in order — retold at the end. */
+  story: { sol: number; emoji: string; title: string; choice: string }[];
   log: SolLog[];
   over: null | { result: "success" | "air" | "food" | "dose"; message: string };
   seed: number;
