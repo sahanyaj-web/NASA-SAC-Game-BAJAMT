@@ -65,7 +65,7 @@ export function MissionReport({
         <p className="mt-2">
           On your trip's dates, a message to Earth took between{" "}
           <strong className="text-accent">{formatMinutes(delays[0])}</strong> and <strong className="text-accent">{formatMinutes(delays[1])}</strong>.
-          {state.place === "moon" ? "That's so quick that Moon crews can get help from Earth almost right away. Mars crews can't — they have to decide for themselves." : "In an emergency, Mars crews can't wait that long for help — they have to decide for themselves."}
+          {" "}{state.place === "moon" ? "That's so quick that Moon crews can get help from Earth almost right away. Mars crews can't — they have to decide for themselves." : "In an emergency, Mars crews can't wait that long for help — they have to decide for themselves."}
         </p>
         <p className="mt-2">Try again with different cargo crates or a different Sun. There's more than one way to win!</p>
       </section>
