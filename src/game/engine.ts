@@ -2,11 +2,11 @@
 import {
   AIR_PER_POWER, BASE_BATTERY_CAP, BASE_SOLAR, CME_ARRIVAL_DOSE, DUST_PER_SOL, DUST_STORM_FACTOR,
   FOOD_PER_POWER, LATE_SHELTER_FACTOR, MARS_SURFACE_MSV_PER_SOL, MAX_ALLOC, MISSION_DOSE_LIMIT,
-  MISSION_SOLS, SCIENCE_PER_POWER, SHELTER_FACTOR, SHIELD_FACTOR, heaterCost, stormDoseFor,
+  MISSION_SOLS, MOON_DUST_PER_DAY, MOON_SURFACE_MSV_PER_DAY, SCIENCE_PER_POWER, SHELTER_FACTOR, SHIELD_FACTOR, heaterCost, stormDoseFor,
 } from "./constants";
 import { DECK, firstDayEvent } from "./events";
-import { flarePhrase } from "./words";
-import type { Allocation, CrateId, Effect, EventOption, GameEvent, GameState, MarsWeatherSol, SolSpaceWeather } from "./types";
+import { flarePhrase, placeWords } from "./words";
+import type { Allocation, CrateId, Place, Effect, EventOption, GameEvent, GameState, MarsWeatherSol, SolSpaceWeather } from "./types";
 
 export interface Crate {
   id: CrateId;
@@ -38,7 +38,7 @@ export function mulberry32(seed: number) {
   };
 }
 
-export function createGame(seed: number, crates: CrateId[]): GameState {
+export function createGame(seed: number, crates: CrateId[], place: Place = "mars"): GameState {
   const has = (c: CrateId) => crates.includes(c);
   return {
     sol: 1,
@@ -59,6 +59,7 @@ export function createGame(seed: number, crates: CrateId[]): GameState {
     log: [],
     over: null,
     seed,
+    place,
   };
 }
 
@@ -137,7 +138,7 @@ export function forecast(s: GameState, alloc: Allocation, ctx: SolContext): Fore
   const scienceMade = sheltered ? 0 : Math.max(0, alloc.science * SCIENCE_PER_POWER + extra);
   const lvl = shieldLevel(s, alloc);
   const factor = SHIELD_FACTOR[lvl] ?? 1;
-  const baseDose = MARS_SURFACE_MSV_PER_SOL * factor;
+  const baseDose = (s.place === "moon" ? MOON_SURFACE_MSV_PER_DAY : MARS_SURFACE_MSV_PER_SOL) * factor;
   const storm = stormBaseDose(ctx);
   const stormFactor =
     ctx.shelter === "full" ? Math.min(factor, SHELTER_FACTOR) : ctx.shelter === "late" ? Math.min(factor, LATE_SHELTER_FACTOR) : factor;
@@ -185,17 +186,13 @@ export function applyEffect(s: GameState, e: Effect): GameState {
   return checkOver(n);
 }
 
-/** Can the player afford this option right now? (battery costs need stored power) */
-export function canAfford(s: GameState, e: Effect) {
-  return (e.battery ?? 0) >= 0 || s.battery + (e.battery ?? 0) >= 0;
-}
-
-export function stormEvent(ctx: Pick<SolContext, "space" | "prevSpace">, oneWayMin: number): GameEvent | null {
+export function stormEvent(ctx: Pick<SolContext, "space" | "prevSpace">, _oneWayMin: number, place: Place = "mars"): GameEvent | null {
   const { space } = ctx;
   if (!space.sep && !space.cmeArrival) return null;
   const isSep = space.sep;
   const flare = space.strongestFlare ?? ctx.prevSpace?.strongestFlare;
   const dose = stormBaseDose(ctx);
+  const P = placeWords(place);
   return {
     id: isSep ? "sep" : "cme",
     kind: isSep ? "storm" : "cme",
@@ -204,8 +201,12 @@ export function stormEvent(ctx: Pick<SolContext, "space" | "prevSpace">, oneWayM
     title: isSep ? "RADIATION STORM!" : "A giant Sun cloud is here!",
     text: isSep
       ? `On ${space.date}, NASA really saw the Sun shoot out tiny, invisible, super-fast bits${flare ? ` after ${flarePhrase(flare)}` : ""}. Your radiation alarm is beeping! The storm will hit in about 30 minutes. If nobody hides, it adds ${dose} radiation units.`
-      : `A giant cloud of hot gas from the Sun is reaching Mars. It left the Sun going ${space.cmeArrival!.speed.toLocaleString()} km every second! It pushes radiation ahead of it: up to ${dose} radiation units if nobody hides.`,
-    fact: {
+      : `A giant cloud of hot gas from the Sun is reaching ${P.name}. It left the Sun going ${space.cmeArrival!.speed.toLocaleString()} km every second! It pushes radiation ahead of it: up to ${dose} radiation units if nobody hides.`,
+    fact: place === "moon" ? {
+      text: "The Moon has no air at all to block the Sun's storms. That's why NASA is planning storm shelters for Artemis astronauts, and why NASA's LRO spacecraft measures radiation around the Moon.",
+      source: "NASA — Lunar Reconnaissance Orbiter",
+      url: "https://science.nasa.gov/mission/lro/",
+    } : {
       text: "When the Sun had huge flashes in September 2017, NASA's Curiosity rover measured radiation on Mars more than double what it normally sees.",
       source: "NASA — Jet Propulsion Laboratory",
       url: "https://www.jpl.nasa.gov/news/large-solar-storm-sparks-global-aurora-and-doubles-radiation-levels-on-the-martian-surface",
@@ -233,12 +234,10 @@ export function stormEvent(ctx: Pick<SolContext, "space" | "prevSpace">, oneWayM
 
 /** Every day tells a story: day 1 is the landing, later days draw a new problem from the deck. */
 export function drawDeckEvent(s: GameState, oneWayMin: number): GameEvent | null {
-  if (s.sol === 1) return firstDayEvent();
+  if (s.sol === 1) return firstDayEvent(s);
   const rng = mulberry32(s.seed * 31 + s.sol * 977);
-  // Only problems the crew can actually answer right now (at least one choice they can afford).
   const pool = DECK.filter((c) => !s.seenEvents.includes(c.id) && (!c.when || c.when(s)))
-    .map((c) => ({ c, e: c.build(s, oneWayMin) }))
-    .filter(({ e }) => e.options.some((o) => canAfford(s, o.effect)));
+    .map((c) => ({ c, e: c.build(s, oneWayMin) }));
   if (!pool.length) return null;
   const total = pool.reduce((t, p) => t + p.c.weight, 0);
   let r = rng() * total;
@@ -250,7 +249,7 @@ export function drawDeckEvent(s: GameState, oneWayMin: number): GameEvent | null
 }
 
 export function eventForSol(s: GameState, ctx: Pick<SolContext, "space" | "prevSpace">, oneWayMin: number) {
-  return stormEvent(ctx, oneWayMin) ?? drawDeckEvent(s, oneWayMin);
+  return stormEvent(ctx, oneWayMin, s.place) ?? drawDeckEvent(s, oneWayMin);
 }
 
 export interface SolReport {
@@ -283,7 +282,7 @@ export function endSol(s: GameState, alloc: Allocation, ctx: SolContext): { stat
     else n.statuses[k] = left;
   }
   n.food = Math.max(0, n.food);
-  n.panel = Math.max(0.3, +(s.panel - DUST_PER_SOL).toFixed(2));
+  n.panel = Math.max(0.3, +(s.panel - (s.place === "moon" ? MOON_DUST_PER_DAY : DUST_PER_SOL)).toFixed(2));
   n.log = [
     ...s.log,
     { sol: s.sol, air: n.air, food: n.food, battery: n.battery, dose: +n.dose.toFixed(2), science: n.science, solar: p.total, notes },
@@ -298,7 +297,7 @@ export function checkOver(s: GameState): GameState {
   if (s.food <= 0) return { ...s, over: { result: "food", message: "The food ran out. The crew had to fly home early." } };
   if (s.dose >= s.doseLimit)
     return { ...s, over: { result: "dose", message: "The crew got too much radiation. The space doctor sent everyone home to stay safe." } };
-  if (s.sol > s.totalSols) return { ...s, over: { result: "success", message: "Your crew made it through every day on Mars!" } };
+  if (s.sol > s.totalSols) return { ...s, over: { result: "success", message: `Your crew made it through every day ${placeWords(s.place).on}!` } };
   return s;
 }
 
