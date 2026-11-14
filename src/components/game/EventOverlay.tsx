@@ -67,7 +67,7 @@ export function EventOverlay({
           <p className="mt-1 font-display text-lg font-semibold">You chose: {picked.label}</p>
           <p className="mt-2">{picked.outcome}</p>
           <div className="mt-3 flex flex-wrap gap-2">
-            {effectChips(picked.effect).map((c) => (
+            {effectChips(picked.effect, state).map((c) => (
               <span key={c.text} className={cn("rounded-full border px-2 py-1 text-xs", c.good ? "border-food text-food" : "border-radiation text-radiation")}>
                 {c.text}
               </span>
@@ -94,6 +94,9 @@ export function EventOverlay({
               <p className="font-display text-lg font-semibold">{o.label}</p>
               <p className="mt-2 text-sm"><span className="font-bold text-radiation">You give up:</span> {o.cost}</p>
               <p className="mt-1 text-sm"><span className="font-bold text-food">You get:</span> {o.gain}</p>
+              <div className="mt-2 flex flex-wrap gap-2 text-xs">
+                {effectChips(o.effect, state).map((c) => <span key={c.text} className={c.good ? "text-food" : "text-radiation"}>{c.text}</span>)}
+              </div>
             </Button>
           ))}
         </div>

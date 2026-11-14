@@ -173,7 +173,7 @@ const capped = (value: number, max: number) => Math.max(0, Math.min(max, value))
 
 /** All visible systems share a 0–100% scale; physical units stay inside the engine. */
 export function resourcePercentages(s: Pick<GameState, "air" | "airCap" | "food" | "foodCap" | "battery" | "batteryCap" | "dose" | "doseLimit" | "science" | "scienceCap">) {
-  const percent = (n: number, cap: number) => Math.round(capped(n / cap * 100, 100) * 10) / 10;
+  const percent = (n: number, cap: number) => cap <= 0 ? 0 : Math.round(capped(n / cap * 100, 100) * 10) / 10;
   return { air: percent(s.air, s.airCap), food: percent(s.food, s.foodCap), power: percent(s.battery, s.batteryCap), safety: percent(s.doseLimit - s.dose, s.doseLimit), research: percent(s.science, s.scienceCap) };
 }
 
@@ -281,9 +281,9 @@ export function endSol(s: GameState, alloc: Allocation, ctx: SolContext): { stat
   n.science = capped(s.science - 1 + f.scienceMade * 0.25, n.scienceCap);
   n.dose = capped(s.dose + f.doseToday, n.doseLimit);
   n.battery = f.batteryAfterNight;
-  if (f.wasted > 0) notes.push(`The battery was full, so ${f.wasted}⚡ of sunlight went to waste.`);
-  if (f.coldNight) notes.push(`Not enough battery for the heater tonight (${ctx.weather.min}°C outside). Some plants froze: 1 day of food lost.`);
-  if (f.stormDose > 0) notes.push(`The storm added ${f.stormDose.toFixed(1)} radiation units.`);
+  if (f.wasted > 0) notes.push("The battery reached 100%. Extra sunlight power could not be stored.");
+  if (f.coldNight) notes.push(`Not enough power for the heater tonight (${ctx.weather.min}°C outside). Some plants froze and food dropped.`);
+  if (f.stormDose > 0) notes.push(`The storm used ${(f.stormDose / s.doseLimit * 100).toFixed(1)} percentage points of radiation safety.`);
   if (s.statuses.moldRisk && rng() < 0.4) {
     n.food -= 2;
     delete n.statuses.moldRisk;
@@ -335,18 +335,19 @@ export function endStoryDay(s: GameState, ctx: SolContext) {
 }
 
 /** Short, kid-friendly list of what a choice changed, e.g. "−0.5 days of air". */
-export function effectChips(e: Effect): { text: string; good: boolean }[] {
+export function effectChips(e: Effect, s?: GameState): { text: string; good: boolean }[] {
   const out: { text: string; good: boolean }[] = [];
   const num = (n: number) => `${n > 0 ? "+" : "−"}${Math.abs(n)}`;
-  if (e.air) out.push({ text: `🫁 ${num(e.air)} days of air`, good: e.air > 0 });
-  if (e.food) out.push({ text: `🥬 ${num(e.food)} days of food`, good: e.food > 0 });
-  if (e.battery) out.push({ text: `🔋 ${num(e.battery)}⚡ battery`, good: e.battery > 0 });
-  if (e.science) out.push({ text: `🔬 ${num(e.science)} science`, good: e.science > 0 });
-  if (e.dose) out.push({ text: `☢️ +${e.dose} radiation units`, good: false });
+  const change = (n: number, cap: number) => `${num(Math.round(n / cap * 1000) / 10)} percentage points`;
+  if (e.air) out.push({ text: `🫁 ${change(e.air, s?.airCap ?? 5)} air`, good: e.air > 0 });
+  if (e.food) out.push({ text: `🥬 ${change(e.food, s?.foodCap ?? 6)} food`, good: e.food > 0 });
+  if (e.battery) out.push({ text: `🔋 ${change(e.battery, s?.batteryCap ?? BASE_BATTERY_CAP)} power`, good: e.battery > 0 });
+  if (e.science) out.push({ text: `🔬 ${change(e.science, s?.scienceCap ?? RESEARCH_CAP)} research`, good: e.science > 0 });
+  if (e.dose) out.push({ text: `☢️ ${change(-e.dose, s?.doseLimit ?? MISSION_DOSE_LIMIT)} radiation safety`, good: e.dose < 0 });
   if (e.panel && e.panel < 0) out.push({ text: "🔆 Dirty, scratched panels", good: false });
   if (e.setPanel === 1) out.push({ text: "🔆 Clean panels", good: true });
   if (e.shieldBonus) out.push({ text: "🛡️ Thicker water walls", good: true });
-  if (e.batteryCap) out.push({ text: `🔋 Battery holds ${num(e.batteryCap)}⚡`, good: e.batteryCap > 0 });
+  if (e.batteryCap) out.push({ text: "🔋 Smaller battery: less power saved for nights", good: e.batteryCap > 0 });
   for (const st of e.status ?? []) {
     const label: Record<string, [string, boolean]> = {
       dustStorm: [`🌪️ Dark, dusty sky for ${st.sols} days`, false],

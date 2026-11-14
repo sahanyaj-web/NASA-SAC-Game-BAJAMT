@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/button";
 import { MARS_WEATHER } from "@/game/data/mars-weather";
 import { MOON_WEATHER } from "@/game/data/moon-weather";
 import {
-  chooseOption, createGame, endStoryDay, eventForSol, mulberry32,
+  chooseOption, createGame, endStoryDay, eventForSol, mulberry32, resourcePercentages,
   type Shelter, type SolReport,
 } from "@/game/engine";
 import { earthMars, earthMoon } from "@/game/orbit";
 import {
-  archived, buildSchedule, fetchDonkiWindow, randomArchived, randomWindowDates, recentWindowDates,
+  archived, buildSchedule, fetchDonkiWindow, randomArchived, randomWindowDates, recentWindowDates, recordForDay,
 } from "@/game/space-weather";
 import type { CrateId, EventOption, Place, GameEvent, GameState, MarsWeatherWindow, SolSpaceWeather, SunWindow } from "@/game/types";
 import { EventOverlay } from "./EventOverlay";
@@ -69,15 +69,14 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
   };
 
   const linkFor = (sol: number, sched = mission?.schedule, place = state?.place) =>
-    place === "moon" ? earthMoon() : earthMars(new Date((sched?.[Math.min(sol, sched.length) - 1]?.date ?? new Date().toISOString().slice(0, 10)) + "T12:00:00Z"));
+    place === "moon" ? earthMoon() : earthMars(new Date((recordForDay(sched ?? [], sol)?.date ?? new Date().toISOString().slice(0, 10)) + "T12:00:00Z"));
 
   const startSol = (g: GameState, sched: SolSpaceWeather[]) => {
     setShelter("none");
-    const i = g.sol - 1;
     const link = linkFor(g.sol, sched, g.place);
-    const space = sched[i];
+    const space = recordForDay(sched, g.sol);
     if (!space) return;
-    const ev = eventForSol(g, { space, prevSpace: sched[i - 1] }, link.oneWayMinutes);
+    const ev = eventForSol(g, { space, prevSpace: g.sol > 1 ? recordForDay(sched, g.sol - 1) : undefined }, link.oneWayMinutes);
     setEvent(ev);
   };
 
@@ -97,19 +96,18 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
   };
 
   const sol = state?.sol ?? 1;
-  const idx = Math.min(sol, mission?.schedule.length ?? 1) - 1;
   const ctx = useMemo(() => {
     if (!mission) return null;
-    const weather = mission.weather.sols[idx];
-    const space = mission.schedule[idx];
+    const weather = recordForDay(mission.weather.sols, sol);
+    const space = recordForDay(mission.schedule, sol);
     if (!weather || !space) return null;
     return {
       weather,
       space,
-      prevSpace: mission.schedule[idx - 1],
+      prevSpace: sol > 1 ? recordForDay(mission.schedule, sol - 1) : undefined,
       shelter,
     };
-  }, [mission, idx, shelter]);
+  }, [mission, sol, shelter]);
 
   const delays = useMemo<[number, number]>(() => {
     if (!mission) return [0, 0];
@@ -134,10 +132,13 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
   }
 
   const P = placeWords(state.place);
+  const pct = resourcePercentages(state);
+  const replay = state.sol > mission.schedule.length;
+  const shownSun: SunWindow = replay ? { ...mission.sun, source: "archived" } : mission.sun;
   const link = linkFor(state.sol);
-  const upcoming = mission.schedule
-    .map((d, i) => ({ sol: i + 1, speed: d.cmeArrival?.speed ?? 0 }))
-    .filter((u) => u.speed && u.sol > state.sol && u.sol <= state.sol + 3);
+  const upcoming = [1, 2, 3]
+    .map((offset) => ({ sol: state.sol + offset, speed: recordForDay(mission.schedule, state.sol + offset)?.cmeArrival?.speed ?? 0 }))
+    .filter((u) => u.speed);
 
   const endToday = () => {
     const { state: next, report } = endStoryDay(state, ctx);
@@ -163,14 +164,13 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
           </Button>
           <p className="text-data text-xs uppercase tracking-widest text-primary">{P.base} · {P.on}</p>
           <h1 className="text-3xl font-bold sm:text-4xl">
-            {state.place === "moon" ? "Day" : <Term k="sol">Mars day</Term>} {Math.min(state.sol, state.totalSols)} <span className="text-muted-foreground">of {state.totalSols}</span>
+            {state.place === "moon" ? "Day" : <Term k="sol">Mars day</Term>} {state.sol}
           </h1>
+          <p className="mt-1 text-sm text-muted-foreground">Survived {state.log.length} days · Keep going!</p>
         </div>
-        <SourceBadge sun={mission.sun} />
+        <SourceBadge sun={shownSun} />
       </div>
-      <div className="mb-4 h-2 overflow-hidden rounded-full bg-muted" aria-hidden>
-        <div className="h-full bg-gradient-primary transition-all" style={{ width: `${((state.sol - 1) / state.totalSols) * 100}%` }} />
-      </div>
+      {replay && <p className="mb-4 text-sm text-muted-foreground">SAVED NASA records are repeating from their original dates. Your mission keeps going.</p>}
       {mission.notice && <p className="mb-4 rounded-xl border border-power/50 bg-power/10 p-3 text-sm">{mission.notice}</p>}
       {shelter !== "none" && (
         <p className="mb-4 rounded-xl border border-radiation/60 bg-radiation/10 p-3 text-sm font-semibold">
@@ -179,20 +179,19 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
       )}
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
-        <Gauge tone="air" emoji="🫁" label="Air" value={state.air} unit="days" max={10} danger={state.air < 2} hint="The crew uses 1 a day" />
-        <Gauge tone="food" emoji="🥬" label="Food" value={state.food} unit="days" max={12} danger={state.food < 2} hint="The crew eats 1 a day" />
-        <Gauge tone="power" emoji="🔋" label="Power" value={state.battery} unit={`/ ${state.batteryCap}⚡`} max={state.batteryCap} danger={state.battery < 3} hint="Saved for the cold nights" />
+        <Gauge tone="air" emoji="🫁" label="Air" value={pct.air} unit="%" max={100} danger={pct.air < 25} />
+        <Gauge tone="food" emoji="🥬" label="Food" value={pct.food} unit="%" max={100} danger={pct.food < 25} />
+        <Gauge tone="power" emoji="🔋" label="Power" value={pct.power} unit="%" max={100} danger={pct.power < 25} />
         <Gauge
           tone="radiation"
           emoji="☢️"
           label="Radiation safety"
-          value={+Math.max(0, state.doseLimit - state.dose).toFixed(1)}
-          unit={`/ ${state.doseLimit}`}
-          max={state.doseLimit}
-          danger={state.dose > state.doseLimit * 0.75}
-          hint={<>Safety left · <Term k="msv">What is this?</Term></>}
+          value={pct.safety}
+          unit="%"
+          max={100}
+          danger={pct.safety < 25}
         />
-        <Gauge tone="science" emoji="🔬" label="Science" value={state.science} unit="points" max={30} hint="15 = ⭐⭐ · 30 = ⭐⭐⭐" />
+        <Gauge tone="science" emoji="🔬" label="Research" value={pct.research} unit="%" max={100} danger={pct.research < 25} hint="The crew's science work" />
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-[22rem_1fr]">

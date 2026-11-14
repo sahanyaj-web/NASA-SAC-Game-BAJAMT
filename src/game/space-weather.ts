@@ -1,6 +1,6 @@
 // Turns real NASA DONKI records into what happens on each game sol.
 import { ARCHIVED_SUN } from "./data/sun-archive";
-import { KM_PER_AU, MISSION_SOLS } from "./constants";
+import { DATA_WINDOW_DAYS, KM_PER_AU } from "./constants";
 import { earthMars } from "./orbit";
 import type { SolSpaceWeather, SunWindow, SunWindowRaw } from "./types";
 
@@ -24,7 +24,7 @@ export function addDays(iso: string, n: number) {
   return d.toISOString().slice(0, 10);
 }
 
-export function buildSchedule(win: SunWindowRaw, sols = MISSION_SOLS): SolSpaceWeather[] {
+export function buildSchedule(win: SunWindowRaw, sols = DATA_WINDOW_DAYS): SolSpaceWeather[] {
   const days: SolSpaceWeather[] = Array.from({ length: sols }, (_, i) => {
     const date = addDays(win.start, i);
     const flares = win.flares.filter((f) => f.t.startsWith(date)).map((f) => f.c);
@@ -100,14 +100,14 @@ export async function fetchDonkiWindow(start: string, end: string, name: string,
 export function recentWindowDates(today = new Date()) {
   const end = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - 1));
   const endIso = end.toISOString().slice(0, 10);
-  return { start: addDays(endIso, -(MISSION_SOLS - 1)), end: endIso };
+  return { start: addDays(endIso, -(DATA_WINDOW_DAYS - 1)), end: endIso };
 }
 
 export function randomWindowDates(rand: () => number, today = new Date()) {
   const min = Date.UTC(2012, 0, 1);
   const max = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()) - 60 * 86400000;
   const start = new Date(min + Math.floor(rand() * (max - min) / 86400000) * 86400000).toISOString().slice(0, 10);
-  return { start, end: addDays(start, MISSION_SOLS - 1) };
+  return { start, end: addDays(start, DATA_WINDOW_DAYS - 1) };
 }
 
 export function archived(id: string, source: SunWindow["source"] = "archived"): SunWindow {
@@ -122,4 +122,9 @@ export function randomArchived(rand: () => number): SunWindow {
 /** NASA's public DONKI page (the date is shown next to the link so players can look it up). */
 export function donkiBrowseUrl(_date: string) {
   return "https://ccmc.gsfc.nasa.gov/DONKI/";
+}
+
+/** Endless missions replay the actual record dates, never invent future NASA observations. */
+export function recordForDay<T>(records: T[], day: number): T | undefined {
+  return records.length ? records[((day - 1) % records.length + records.length) % records.length] : undefined;
 }
