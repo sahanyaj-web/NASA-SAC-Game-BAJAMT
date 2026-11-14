@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MARS_WEATHER } from "@/game/data/mars-weather";
 import { MOON_WEATHER } from "@/game/data/moon-weather";
@@ -27,6 +27,19 @@ interface Mission {
   schedule: SolSpaceWeather[];
   weather: MarsWeatherWindow;
   notice?: string | undefined;
+}
+
+// Progress is kept in the browser so leaving for "Real facts" and coming back
+// does not lose the mission. Cleared when a mission ends and a new one starts.
+const SAVE_KEY = "jam-mission-save";
+
+interface SaveData {
+  mission: Mission;
+  state: GameState;
+  shelter: Shelter;
+  summary: { sol: number; report: SolReport } | null;
+  showReport: boolean;
+  event: GameEvent | null;
 }
 
 export function MissionGame({ initialStorm }: { initialStorm?: string | undefined }) {
