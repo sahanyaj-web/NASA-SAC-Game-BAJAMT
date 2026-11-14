@@ -60,7 +60,6 @@ function Index() {
                 <Link to="/science">🔭 The real science</Link>
               </Button>
             </div>
-            <p className="mt-4 text-sm text-muted-foreground">Free · no download · no sign-up · about 10 minutes</p>
           </div>
         </section>
 

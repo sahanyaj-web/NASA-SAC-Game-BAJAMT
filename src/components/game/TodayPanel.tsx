@@ -1,17 +1,19 @@
 import { ExternalLink } from "lucide-react";
 import { formatMinutes, type EarthMarsInfo } from "@/game/orbit";
 import { donkiBrowseUrl } from "@/game/space-weather";
-import type { MarsWeatherSol, SolSpaceWeather } from "@/game/types";
-import { flareWord } from "@/game/words";
+import type { MarsWeatherSol, Place, SolSpaceWeather } from "@/game/types";
+import { flareWord, placeWords } from "@/game/words";
 import { Term } from "./Term";
 
 export function TodayPanel({
+  place,
   sol,
   space,
   upcoming,
   weather,
   link,
 }: {
+  place: Place;
   sol: number;
   space: SolSpaceWeather;
   upcoming: { sol: number; speed: number }[];
@@ -19,6 +21,8 @@ export function TodayPanel({
   link: EarthMarsInfo;
 }) {
   const strong = space.strongestFlare;
+  const P = placeWords(place);
+  const moon = place === "moon";
   const scary = strong && (strong[0] === "M" || strong[0] === "X");
   return (
     <aside className="space-y-4" aria-label="Today's report">
@@ -44,7 +48,7 @@ export function TodayPanel({
         {space.cmeLaunches.map((c, i) => (
           <p key={i} className="mt-2 text-sm">
             🌊 A <Term k="cme">giant Sun cloud</Term> flew off the Sun at <strong>{c.speed.toLocaleString()} km every second</strong>!
-            It will reach Mars in about <strong>{c.travelSols} day{c.travelSols > 1 ? "s" : ""}</strong>.
+            It will reach {P.name} in about <strong>{c.travelSols} day{c.travelSols > 1 ? "s" : ""}</strong>.
           </p>
         ))}
         {upcoming.length > 0 && (
@@ -62,14 +66,14 @@ export function TodayPanel({
           Look up {space.date} in NASA's Sun-storm log <ExternalLink className="size-3" />
         </a>
         <p className="mt-2 text-xs text-muted-foreground">
-          NASA saw these from near Earth. Mars is in a different spot in space, so in the game we pretend the Sun was pointing at Mars too.
+          {moon ? "NASA saw these from near Earth. The Moon is right next to Earth, so it gets hit by the same Sun storms." : "NASA saw these from near Earth. Mars is in a different spot in space, so in the game we pretend the Sun was pointing at Mars too."}
         </p>
       </section>
 
       <section className="panel p-4">
-        <h3 className="text-lg font-bold">🌡️ Mars weather</h3>
+        <h3 className="text-lg font-bold">🌡️ {moon ? "Moon temperature" : "Mars weather"}</h3>
         <p className="text-data text-xs text-primary">
-          NASA's Curiosity <Term k="rover">rover</Term> · <Term k="crater">Gale Crater</Term>
+          {moon ? <>NASA's LRO Moon orbiter · near the Moon's south pole</> : <>NASA's Curiosity <Term k="rover">rover</Term> · <Term k="crater">Gale Crater</Term></>}
         </p>
         <div className="mt-2 grid grid-cols-2 gap-2 text-center">
           <div className="panel-raised p-2">
@@ -81,15 +85,27 @@ export function TodayPanel({
             <p className="text-xs text-muted-foreground">coldest tonight</p>
           </div>
         </div>
-        <p className="mt-2 text-xs text-muted-foreground">
-          These are real temperatures measured by Curiosity on Mars. The air there is about 100 times thinner than on Earth!
-          Your <Term k="sol">Mars day</Term> {sol} uses this real day's weather.
-        </p>
+        {moon ? (
+          <p className="mt-2 text-xs text-muted-foreground">
+            The Moon has no air to hold heat. NASA's LRO orbiter measured the Moon's ground: near the south pole the Sun stays low, and
+            in dark craters it can be −248°C, colder than Pluto! Game temperatures are picked from NASA's measured range, not a single real day.
+          </p>
+        ) : (
+          <p className="mt-2 text-xs text-muted-foreground">
+            These are real temperatures measured by Curiosity on Mars. The air there is about 100 times thinner than on Earth!
+            Your <Term k="sol">Mars day</Term> {sol} uses this real day's weather.
+          </p>
+        )}
       </section>
 
       <section className="panel p-4">
         <h3 className="text-lg font-bold">📡 Talking to Earth</h3>
-        {link.conjunction ? (
+        {moon ? (
+          <p className="mt-2 text-sm">
+            The Moon is about <strong>384,000 km</strong> from Earth. Each message takes only{" "}
+            <strong className="text-accent">about 1 second</strong> to get there, so you can almost talk live!
+          </p>
+        ) : link.conjunction ? (
           <p className="mt-2 text-sm font-bold text-radiation">
             ☀️ The <Term k="conjunction">Sun is in the way</Term>! It's between Earth and Mars, so no messages can get through today.
           </p>
@@ -100,7 +116,7 @@ export function TodayPanel({
             <Term k="delay">message wait</Term>.
           </p>
         )}
-        <p className="mt-2 text-xs text-muted-foreground">Worked out from where NASA says Earth and Mars really were on that date.</p>
+        <p className="mt-2 text-xs text-muted-foreground">{moon ? "Worked out from NASA's Moon distance and the speed of light." : "Worked out from where NASA says Earth and Mars really were on that date."}</p>
       </section>
     </aside>
   );

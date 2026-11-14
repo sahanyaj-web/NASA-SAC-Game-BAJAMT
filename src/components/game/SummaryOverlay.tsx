@@ -3,10 +3,12 @@ import { EARTH_MSV_PER_DAY } from "@/game/constants";
 import { OSDR_FACTS, osdrUrl } from "@/game/data/osdr-facts";
 import type { SolReport } from "@/game/engine";
 import type { GameState } from "@/game/types";
+import { placeWords } from "@/game/words";
 import { Overlay } from "./Overlay";
 
 export function SummaryOverlay({ sol, report, state, onNext }: { sol: number; report: SolReport; state: GameState; onNext: () => void }) {
   const f = report.forecast;
+  const D = placeWords(state.place).day;
   const fact = OSDR_FACTS[(sol - 1) % OSDR_FACTS.length]!;
   const xrays = Math.round(state.dose / 0.1);
   const earthDays = Math.round(state.dose / EARTH_MSV_PER_DAY);
@@ -18,9 +20,9 @@ export function SummaryOverlay({ sol, report, state, onNext }: { sol: number; re
     ["🔋 Battery", `${f.heat}⚡ used by the heater`, `${state.battery}⚡ for the morning`],
   ];
   return (
-    <Overlay label={`End of Mars day ${sol}`}>
+    <Overlay label={`End of ${D} ${sol}`}>
       <p className="text-data text-xs uppercase tracking-widest text-primary">Night falls</p>
-      <h2 className="text-3xl font-bold">🌙 Mars day {sol} is done</h2>
+      <h2 className="text-3xl font-bold">🌙 {D} {sol} is done</h2>
       <ul className="mt-4 divide-y divide-border">
         {rows.map(([a, b, c]) => (
           <li key={a} className="grid grid-cols-[7rem_1fr_auto] items-center gap-2 py-2 text-sm">
@@ -49,7 +51,7 @@ export function SummaryOverlay({ sol, report, state, onNext }: { sol: number; re
         </a>
       </div>
       <Button variant="mission" size="xl" className="mt-6 w-full" onClick={onNext} autoFocus>
-        {state.over ? "See mission report" : `☀️ Wake up for Mars day ${sol + 1}`}
+        {state.over ? "See mission report" : `☀️ Wake up for ${D} ${sol + 1}`}
       </Button>
     </Overlay>
   );

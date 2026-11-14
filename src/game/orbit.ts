@@ -1,6 +1,6 @@
 // Where are Earth and Mars today? JPL "Approximate Positions of the Planets"
 // Keplerian elements (Standish, valid 1800–2050). Accurate to well under 1% for distance.
-import { KM_PER_AU, LIGHT_SECONDS_PER_AU } from "./constants";
+import { EARTH_MOON_KM, KM_PER_AU, LIGHT_SECONDS_PER_AU } from "./constants";
 
 interface Elements {
   a: [number, number];
@@ -93,5 +93,19 @@ export function earthMars(date: Date): EarthMarsInfo {
 export function formatMinutes(min: number) {
   const m = Math.floor(min);
   const s = Math.round((min - m) * 60);
+  if (m === 0) return `${s} s`;
   return s === 0 ? `${m} min` : `${m} min ${s} s`;
+}
+
+/** The Moon is always about the same distance away: ~1.3 light-seconds (NASA Moon Fact Sheet). */
+export function earthMoon(): EarthMarsInfo {
+  const distanceAU = EARTH_MOON_KM / KM_PER_AU;
+  return {
+    distanceAU,
+    distanceKm: EARTH_MOON_KM,
+    oneWayMinutes: (distanceAU * LIGHT_SECONDS_PER_AU) / 60,
+    marsSunAU: 1,
+    elongationDeg: 180,
+    conjunction: false,
+  };
 }

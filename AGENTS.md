@@ -36,3 +36,5 @@ use the editor.
 - Live NASA DONKI data is fetched directly from the browser (`ccmc.gsfc.nasa.gov/DONKI/WS/get`, CORS-enabled, no key); any failure falls back to the embedded archive and the UI must label it SAVED (never LIVE). Why: never present static data as live.
 - Embedded datasets in `src/game/data/` are generated snapshots of real NASA sources; regenerate rather than hand-edit values. Why: data authenticity.
 - Every decision card option must state a cost (enforced by a test). Why: the educational goal is that no choice is free.
+- The base location (`place`: mars | moon) lives in GameState; place-specific wording comes from `placeWords()` in `src/game/words.ts` and place-specific facts are chosen inside each event's `build`. Why: one rule set, two worlds.
+- Story (deck) choices never cost battery (enforced by a test), so both options are always selectable. Why: choices are trade-offs, never blocked.

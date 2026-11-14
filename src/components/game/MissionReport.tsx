@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { rate } from "@/game/engine";
 import { formatMinutes } from "@/game/orbit";
 import { donkiBrowseUrl } from "@/game/space-weather";
-import { flareWord } from "@/game/words";
+import { flareWord, placeWords } from "@/game/words";
 import type { GameState, SolSpaceWeather, SunWindow } from "@/game/types";
 import { SourceBadge } from "./SourceBadge";
 
@@ -29,6 +29,7 @@ export function MissionReport({
   onAgain: () => void;
 }) {
   const r = rate(state);
+  const P = placeWords(state.place);
   const result = state.over?.result ?? "success";
   const realDays = schedule.filter((d) => d.sep || d.cmeArrival || d.flares.some((f) => f[0] === "X" || f[0] === "M"));
   const data = state.log.map((l) => ({ sol: l.sol, Air: +l.air.toFixed(1), Food: +l.food.toFixed(1), Battery: l.battery, Radiation: l.dose }));
@@ -45,7 +46,7 @@ export function MissionReport({
           ))}
         </p>
         <p className="mt-2 text-sm text-muted-foreground">
-          Lasted {state.log.length} of {state.totalSols} Mars days · {state.science} science · {state.dose.toFixed(1)} radiation units
+          Lasted {state.log.length} of {state.totalSols} days · {state.science} science · {state.dose.toFixed(1)} radiation units
         </p>
         {r.badges.length > 0 && (
           <div className="mt-5 flex flex-wrap justify-center gap-2">
@@ -64,10 +65,27 @@ export function MissionReport({
         <p className="mt-2">
           On your trip's dates, a message to Earth took between{" "}
           <strong className="text-accent">{formatMinutes(delays[0])}</strong> and <strong className="text-accent">{formatMinutes(delays[1])}</strong>.
-          In an emergency, Mars crews can't wait that long for help — they have to decide for themselves.
+          {" "}{state.place === "moon" ? "That's so quick that Moon crews can get help from Earth almost right away. Mars crews can't — they have to decide for themselves." : "In an emergency, Mars crews can't wait that long for help — they have to decide for themselves."}
         </p>
         <p className="mt-2">Try again with different cargo crates or a different Sun. There's more than one way to win!</p>
       </section>
+
+      {state.story.length > 0 && (
+        <section className="panel p-6">
+          <h2 className="text-2xl font-bold">📖 Your {P.name} story</h2>
+          <ol className="mt-3 space-y-2">
+            {state.story.map((st, i) => (
+              <li key={i} className="panel-raised flex items-start gap-3 p-3 text-sm">
+                <span aria-hidden className="text-2xl">{st.emoji}</span>
+                <span>
+                  <strong className="text-data">Day {st.sol}</strong> · {st.title} <span className="text-muted-foreground">→ you chose:</span>{" "}
+                  <strong>{st.choice}</strong>
+                </span>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
 
       {data.length > 1 && (
         <section className="panel p-6">
@@ -103,7 +121,7 @@ export function MissionReport({
                   <strong className="text-data">Day {schedule.indexOf(d) + 1 || i + 1}</strong> · {d.date}:{" "}
                   {d.strongestFlare && <>Biggest Sun flash: {flareWord(d.strongestFlare)} ({d.strongestFlare}). </>}
                   {d.sep && <span className="text-radiation">Radiation storm. </span>}
-                  {d.cmeArrival && <span className="text-power">Giant Sun cloud reached Mars. </span>}
+                  {d.cmeArrival && <span className="text-power">Giant Sun cloud reached {P.name}. </span>}
                 </span>
                 <a className="text-accent hover:underline" href={donkiBrowseUrl(d.date)} target="_blank" rel="noreferrer">
                   NASA log ↗
