@@ -51,6 +51,38 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
   const [summary, setSummary] = useState<{ sol: number; report: SolReport } | null>(null);
   const [showReport, setShowReport] = useState(false);
 
+  // Bring back a saved mission after the page loads (runs once, in the browser only).
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(SAVE_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw) as SaveData;
+      if (saved.mission && saved.state && !saved.state.over) {
+        setMission(saved.mission);
+        setState(saved.state);
+        setShelter(saved.shelter);
+        setSummary(saved.summary);
+        setEvent(saved.event);
+      }
+    } catch {
+      // A broken or old save is ignored.
+    }
+  }, []);
+
+  // Save progress whenever it changes.
+  useEffect(() => {
+    try {
+      if (!mission || !state) {
+        window.localStorage.removeItem(SAVE_KEY);
+        return;
+      }
+      const data: SaveData = { mission, state, shelter, summary, showReport, event };
+      window.localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+    } catch {
+      // Storage full or unavailable: the game still works, it just won't save.
+    }
+  }, [mission, state, shelter, summary, showReport, event]);
+
   const launch = async (place: Place, choice: SunChoice, crates: CrateId[]) => {
     setLoading(true);
     const seed = Math.floor(Math.random() * 1e9);
