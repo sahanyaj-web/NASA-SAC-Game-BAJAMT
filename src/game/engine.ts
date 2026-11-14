@@ -2,7 +2,7 @@
 import {
   AIR_PER_POWER, BASE_BATTERY_CAP, BASE_SOLAR, CME_ARRIVAL_DOSE, DUST_PER_SOL, DUST_STORM_FACTOR,
   FOOD_PER_POWER, LATE_SHELTER_FACTOR, MARS_SURFACE_MSV_PER_SOL, MAX_ALLOC, MISSION_DOSE_LIMIT,
-  MISSION_SOLS, MOON_DUST_PER_DAY, MOON_SURFACE_MSV_PER_DAY, SCIENCE_PER_POWER, SHELTER_FACTOR, SHIELD_FACTOR, heaterCost, stormDoseFor,
+  RESEARCH_CAP, MOON_DUST_PER_DAY, MOON_SURFACE_MSV_PER_DAY, SCIENCE_PER_POWER, SHELTER_FACTOR, SHIELD_FACTOR, heaterCost, stormDoseFor,
 } from "./constants";
 import { DECK, firstDayEvent } from "./events";
 import { flarePhrase, placeWords } from "./words";
@@ -17,12 +17,12 @@ export interface Crate {
 }
 
 export const CRATES: Crate[] = [
-  { id: "solar", name: "Extra solar panels", emoji: "🔆", what: "+3⚡ every sunny day (less when it's dusty)", real: "Lots of NASA's Mars robots ran on sunlight." },
-  { id: "reactor", name: "Mini nuclear power plant", emoji: "⚛️", what: "+3⚡ every day, even in dust storms", real: "NASA tested a small nuclear power maker called Kilopower in 2018." },
-  { id: "water", name: "Water tanks", emoji: "💧", what: "Better radiation blocking for the whole trip, and +2 days of air", real: "Water blocks radiation, and water can be turned into oxygen." },
-  { id: "battery", name: "Big battery", emoji: "🔋", what: "Saves 8⚡ more for nights and storms", real: "Batteries kept NASA's rovers warm on freezing Mars nights." },
-  { id: "food", name: "Food stash", emoji: "🥫", what: "+5 days of food", real: "Astronaut food is packed so it lasts for years." },
-  { id: "rover", name: "Robot science car", emoji: "🚙", what: "+1 science every day, all by itself", real: "Robot cars (rovers) explore while the crew stays safe inside." },
+  { id: "solar", name: "Extra solar panels", emoji: "🔆", what: "More sunlight power to refill your battery", real: "Lots of NASA's Mars robots ran on sunlight." },
+  { id: "reactor", name: "Mini nuclear power plant", emoji: "⚛️", what: "Extra power every day, even in dust storms", real: "NASA tested a small nuclear power maker called Kilopower in 2018." },
+  { id: "water", name: "Water tanks", emoji: "💧", what: "Better radiation blocking and bigger air tanks", real: "Water blocks radiation, and water can be turned into oxygen." },
+  { id: "battery", name: "Big battery", emoji: "🔋", what: "A bigger full battery lasts longer at night", real: "Batteries kept NASA's rovers warm on freezing Mars nights." },
+  { id: "food", name: "Food stash", emoji: "🥫", what: "Bigger full food stores last longer", real: "Astronaut food is packed so it lasts for years." },
+  { id: "rover", name: "Robot science car", emoji: "🚙", what: "Helps keep your research system working each day", real: "Robot cars (rovers) explore while the crew stays safe inside." },
 ];
 
 export const CRATE_PICKS = 2;
@@ -42,14 +42,16 @@ export function createGame(seed: number, crates: CrateId[], place: Place = "mars
   const has = (c: CrateId) => crates.includes(c);
   return {
     sol: 1,
-    totalSols: MISSION_SOLS,
     air: 5 + (has("water") ? 2 : 0),
+    airCap: 5 + (has("water") ? 2 : 0),
     food: 6 + (has("food") ? 5 : 0),
-    battery: 5,
+    foodCap: 6 + (has("food") ? 5 : 0),
+    battery: BASE_BATTERY_CAP + (has("battery") ? 8 : 0),
     batteryCap: BASE_BATTERY_CAP + (has("battery") ? 8 : 0),
     dose: 0,
     doseLimit: MISSION_DOSE_LIMIT,
-    science: 0,
+    science: RESEARCH_CAP,
+    scienceCap: RESEARCH_CAP,
     panel: 1,
     shieldBonus: has("water") ? 1 : 0,
     crates,
@@ -167,18 +169,26 @@ export function forecast(s: GameState, alloc: Allocation, ctx: SolContext): Fore
   };
 }
 
+const capped = (value: number, max: number) => Math.max(0, Math.min(max, value));
+
+/** All visible systems share a 0–100% scale; physical units stay inside the engine. */
+export function resourcePercentages(s: Pick<GameState, "air" | "airCap" | "food" | "foodCap" | "battery" | "batteryCap" | "dose" | "doseLimit" | "science" | "scienceCap">) {
+  const percent = (n: number, cap: number) => Math.round(capped(n / cap * 100, 100) * 10) / 10;
+  return { air: percent(s.air, s.airCap), food: percent(s.food, s.foodCap), power: percent(s.battery, s.batteryCap), safety: percent(s.doseLimit - s.dose, s.doseLimit), research: percent(s.science, s.scienceCap) };
+}
+
 export function applyEffect(s: GameState, e: Effect): GameState {
   const n: GameState = { ...s, statuses: { ...s.statuses } };
-  n.air = Math.max(0, n.air + (e.air ?? 0));
-  n.food = Math.max(0, n.food + (e.food ?? 0));
+  n.air = capped(n.air + (e.air ?? 0), n.airCap);
+  n.food = capped(n.food + (e.food ?? 0), n.foodCap);
   n.battery = Math.max(0, Math.min(n.batteryCap, n.battery + (e.battery ?? 0)));
-  n.science = Math.max(0, n.science + (e.science ?? 0));
-  n.dose = n.dose + (e.dose ?? 0);
+  n.science = capped(n.science + (e.science ?? 0), n.scienceCap);
+  n.dose = capped(n.dose + (e.dose ?? 0), n.doseLimit);
   if (e.panel) n.panel = Math.max(0.2, Math.min(1, n.panel + e.panel));
   if (e.setPanel !== undefined) n.panel = e.setPanel;
   if (e.shieldBonus) n.shieldBonus += e.shieldBonus;
   if (e.batteryCap) {
-    n.batteryCap = Math.max(4, n.batteryCap + e.batteryCap);
+    n.batteryCap = Math.max(0, n.batteryCap + e.batteryCap);
     n.battery = Math.min(n.battery, n.batteryCap);
   }
   for (const st of e.status ?? []) n.statuses[st.id] = Math.max(n.statuses[st.id] ?? 0, st.sols);
@@ -201,7 +211,7 @@ export function stormEvent(ctx: Pick<SolContext, "space" | "prevSpace">, _oneWay
     title: isSep ? "RADIATION STORM!" : "A giant Sun cloud is here!",
     text: isSep
       ? `On ${space.date}, NASA really saw the Sun shoot out tiny, invisible, super-fast bits${flare ? ` after ${flarePhrase(flare)}` : ""}. Your radiation alarm is beeping! The storm will hit in about 30 minutes. If nobody hides, it adds ${dose} radiation units.`
-      : `A giant cloud of hot gas from the Sun is reaching ${P.name}. It left the Sun going ${space.cmeArrival!.speed.toLocaleString()} km every second! It pushes radiation ahead of it: up to ${dose} radiation units if nobody hides.`,
+      : `A giant cloud of hot gas from the Sun is reaching ${P.name}. It left the Sun going ${space.cmeArrival?.speed.toLocaleString()} km every second! It pushes radiation ahead of it: up to ${dose} radiation units if nobody hides.`,
     fact: place === "moon" ? {
       text: "The Moon has no air at all to block the Sun's storms. That's why NASA is planning storm shelters for Artemis astronauts, and why NASA's LRO spacecraft measures radiation around the Moon.",
       source: "NASA — Lunar Reconnaissance Orbiter",
@@ -217,7 +227,7 @@ export function stormEvent(ctx: Pick<SolContext, "space" | "prevSpace">, _oneWay
         label: "Everyone into the storm shelter!",
         cost: "No science today, and the plants only get half the care",
         gain: "The shelter blocks most of the storm",
-        effect: { shelter: "full" },
+        effect: { shelter: "full", science: -1 },
         outcome: "Everyone squeezes into the tiny shelter behind thick water walls. It's cramped, but the storm's invisible bits mostly can't get through.",
       },
       {
@@ -247,7 +257,7 @@ export function drawDeckEvent(s: GameState, oneWayMin: number): GameEvent | null
     r -= p.c.weight;
     if (r <= 0) return p.e;
   }
-  return pool[pool.length - 1]!.e;
+  return pool[pool.length - 1]?.e ?? null;
 }
 
 export function eventForSol(s: GameState, ctx: Pick<SolContext, "space" | "prevSpace">, oneWayMin: number) {
@@ -265,10 +275,11 @@ export function endSol(s: GameState, alloc: Allocation, ctx: SolContext): { stat
   const rng = mulberry32(s.seed * 7 + s.sol * 131);
   const n: GameState = { ...s, statuses: { ...s.statuses } };
   const p = powerToday(s);
-  n.air = Math.max(0, f.airAfter);
-  n.food = f.foodAfter;
-  n.science = s.science + f.scienceMade;
-  n.dose = s.dose + f.doseToday;
+  n.air = capped(f.airAfter, n.airCap);
+  n.food = capped(f.foodAfter, n.foodCap);
+  // Daily wear means research needs care too; exploration choices restore it.
+  n.science = capped(s.science - 1 + f.scienceMade * 0.25, n.scienceCap);
+  n.dose = capped(s.dose + f.doseToday, n.doseLimit);
   n.battery = f.batteryAfterNight;
   if (f.wasted > 0) notes.push(`The battery was full, so ${f.wasted}⚡ of sunlight went to waste.`);
   if (f.coldNight) notes.push(`Not enough battery for the heater tonight (${ctx.weather.min}°C outside). Some plants froze: 1 day of food lost.`);
@@ -276,7 +287,7 @@ export function endSol(s: GameState, alloc: Allocation, ctx: SolContext): { stat
   if (s.statuses.moldRisk && rng() < 0.4) {
     n.food -= 2;
     delete n.statuses.moldRisk;
-    notes.push("The mold spread! 2 days of food lost.");
+    notes.push(`The mold spread! Food dropped by ${(2 / n.foodCap * 100).toFixed(1)} percentage points.`);
   }
   for (const k of Object.keys(n.statuses) as (keyof GameState["statuses"])[]) {
     const left = (n.statuses[k] ?? 0) - 1;
@@ -298,9 +309,9 @@ export function checkOver(s: GameState): GameState {
   if (s.air <= 0) return { ...s, over: { result: "air", message: "The air ran out. The crew had to fly home early in their rocket." } };
   if (s.food <= 0) return { ...s, over: { result: "food", message: "The food ran out. The crew had to fly home early." } };
   if (s.battery <= 0) return { ...s, over: { result: "power", message: "The power ran out. The base cannot keep the crew warm, so everyone had to fly home early." } };
+  if (s.science <= 0) return { ...s, over: { result: "science", message: "The research system reached 0%. The crew cannot keep studying their new home, so the mission is over." } };
   if (s.dose >= s.doseLimit)
     return { ...s, over: { result: "dose", message: "The crew got too much radiation. The space doctor sent everyone home to stay safe." } };
-  if (s.sol > s.totalSols) return { ...s, over: { result: "success", message: `Your crew made it through every day ${placeWords(s.place).on}!` } };
   return s;
 }
 
@@ -359,13 +370,9 @@ export interface Rating {
 
 export function rate(s: GameState): Rating {
   const badges: Rating["badges"] = [];
-  const ok = s.over?.result === "success";
-  if (ok) badges.push({ emoji: "🏁", name: "Mission Complete", why: `Made it through all ${s.totalSols} days` });
-  if (s.science >= 30) badges.push({ emoji: "🔬", name: "Star Scientist", why: "30 or more science points" });
-  if (ok && s.dose < s.doseLimit / 2) badges.push({ emoji: "🛡️", name: "Radiation Guardian", why: "Kept radiation under half the danger line" });
-  if (ok && s.air >= 3 && s.food >= 3) badges.push({ emoji: "🫁", name: "Careful Planner", why: "Finished with 3 or more days of air and food" });
-  const stars = (ok ? 1 : 0) + (s.science >= 15 ? 1 : 0) + (s.science >= 30 ? 1 : 0) + (ok && s.dose < s.doseLimit / 2 ? 1 : 0);
-  return { stars: Math.min(3, stars), badges };
+  const days = s.log.length;
+  if (days >= 10) badges.push({ emoji: "🏁", name: "Space Survivor", why: `Kept the base going for ${days} days` });
+  return { stars: days >= 20 ? 3 : days >= 10 ? 2 : days >= 1 ? 1 : 0, badges };
 }
 
 export const emptyAlloc = (): Allocation => ({ air: 0, greenhouse: 0, shield: 0, science: 0 });

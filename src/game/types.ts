@@ -109,14 +109,16 @@ export interface SolLog {
 
 export interface GameState {
   sol: number; // 1-based current sol
-  totalSols: number;
   air: number; // crew-days of breathable oxygen
+  airCap: number;
   food: number; // crew-days of food
+  foodCap: number;
   battery: number;
   batteryCap: number;
   dose: number; // mSv (simplified)
   doseLimit: number;
   science: number;
+  scienceCap: number; // research system readiness, not accumulated points
   panel: number; // 0..1 cleanliness
   shieldBonus: number;
   crates: CrateId[];
@@ -125,7 +127,7 @@ export interface GameState {
   /** The choices the player made, in order — retold at the end. */
   story: { sol: number; emoji: string; title: string; choice: string }[];
   log: SolLog[];
-  over: null | { result: "success" | "air" | "food" | "power" | "dose"; message: string };
+  over: null | { result: "air" | "food" | "power" | "dose" | "science"; message: string };
   seed: number;
   place: Place;
 }
