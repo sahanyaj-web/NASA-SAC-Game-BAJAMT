@@ -2,15 +2,16 @@ import { Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MARS_WEATHER } from "@/game/data/mars-weather";
+import { MOON_WEATHER } from "@/game/data/moon-weather";
 import {
-  CLEAN_PANELS_EFFECT, applyEffect, fitAlloc, createGame, endSol, eventForSol, forecast, markSeen, mulberry32, powerToday,
+  CLEAN_PANELS_EFFECT, applyEffect, chooseOption, fitAlloc, createGame, endSol, eventForSol, forecast, mulberry32, powerToday,
   suggestedAlloc, type Shelter, type SolReport,
 } from "@/game/engine";
-import { earthMars } from "@/game/orbit";
+import { earthMars, earthMoon } from "@/game/orbit";
 import {
   archived, buildSchedule, fetchDonkiWindow, randomArchived, randomWindowDates, recentWindowDates,
 } from "@/game/space-weather";
-import type { Allocation, CrateId, EventOption, GameEvent, GameState, MarsWeatherWindow, SolSpaceWeather, SunWindow } from "@/game/types";
+import type { Allocation, CrateId, EventOption, Place, GameEvent, GameState, MarsWeatherWindow, SolSpaceWeather, SunWindow } from "@/game/types";
 import { EventOverlay } from "./EventOverlay";
 import { Gauge } from "./Gauge";
 import { MissionReport } from "./MissionReport";
@@ -20,6 +21,7 @@ import { SourceBadge } from "./SourceBadge";
 import { SummaryOverlay } from "./SummaryOverlay";
 import { Term } from "./Term";
 import { TodayPanel } from "./TodayPanel";
+import { placeWords } from "@/game/words";
 
 interface Mission {
   sun: SunWindow;
@@ -39,7 +41,7 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
   const [summary, setSummary] = useState<{ sol: number; report: SolReport } | null>(null);
   const [showReport, setShowReport] = useState(false);
 
-  const launch = async (choice: SunChoice, crates: CrateId[]) => {
+  const launch = async (place: Place, choice: SunChoice, crates: CrateId[]) => {
     setLoading(true);
     const seed = Math.floor(Math.random() * 1e9);
     const rand = mulberry32(seed);
@@ -58,37 +60,41 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
       sun = randomArchived(rand);
       notice = "We couldn't reach NASA just now, so this trip uses saved real NASA records instead.";
     }
-    const weather = MARS_WEATHER[Math.floor(rand() * MARS_WEATHER.length)]!;
+    const pool = place === "moon" ? MOON_WEATHER : MARS_WEATHER;
+    const weather = pool[Math.floor(rand() * pool.length)]!;
     const schedule = buildSchedule(sun);
-    const g = createGame(seed, crates);
+    const g = createGame(seed, crates, place);
     setMission({ sun, schedule, weather, notice });
     setState(g);
     setLoading(false);
     startSol(g, schedule);
   };
 
-  const linkFor = (sol: number, sched = mission?.schedule) =>
-    earthMars(new Date((sched?.[Math.min(sol, sched.length) - 1]?.date ?? new Date().toISOString().slice(0, 10)) + "T12:00:00Z"));
+  const linkFor = (sol: number, sched = mission?.schedule, place = state?.place) =>
+    place === "moon" ? earthMoon() : earthMars(new Date((sched?.[Math.min(sol, sched.length) - 1]?.date ?? new Date().toISOString().slice(0, 10)) + "T12:00:00Z"));
 
   const startSol = (g: GameState, sched: SolSpaceWeather[]) => {
     setAlloc(suggestedAlloc());
     setShelter("none");
     setCleaned(false);
     const i = g.sol - 1;
-    const link = linkFor(g.sol, sched);
+    const link = linkFor(g.sol, sched, g.place);
     const ev = eventForSol(g, { space: sched[i]!, prevSpace: sched[i - 1] }, link.oneWayMinutes);
     setEvent(ev);
   };
 
   const choose = (opt: EventOption, shelterOverride?: "full" | "late") => {
     if (!state || !event) return;
-    let g = markSeen(state, event.id);
-    g = applyEffect(g, opt.effect);
+    const g = chooseOption(state, event, opt);
     const sh = shelterOverride ?? opt.effect.shelter;
     if (sh) setShelter(sh);
     setState(g);
+    return g;
+  };
+
+  const closeEvent = () => {
     setEvent(null);
-    if (g.over) setShowReport(true);
+    if (state?.over) setShowReport(true);
   };
 
   const sol = state?.sol ?? 1;
@@ -105,9 +111,9 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
 
   const delays = useMemo<[number, number]>(() => {
     if (!mission) return [0, 0];
-    const m = mission.schedule.map((d) => earthMars(new Date(d.date + "T12:00:00Z")).oneWayMinutes);
+    const m = mission.schedule.map((d) => (state?.place === "moon" ? earthMoon() : earthMars(new Date(d.date + "T12:00:00Z")).oneWayMinutes));
     return [Math.min(...m), Math.max(...m)];
-  }, [mission]);
+  }, [mission, state?.place]);
 
   const reset = () => {
     setMission(null);
@@ -125,6 +131,7 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
     return <MissionReport state={state} schedule={mission.schedule} sun={mission.sun} delays={delays} onAgain={reset} />;
   }
 
+  const P = placeWords(state.place);
   const power = powerToday(state);
   const plan = fitAlloc(alloc, power.available);
   const fc = forecast(state, plan, ctx);
@@ -159,9 +166,12 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
     <div className="mx-auto max-w-7xl px-3 py-4 sm:px-6">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-data text-xs uppercase tracking-widest text-primary">Outpost Ares · on Mars</p>
+          <Button variant="panel" size="sm" asChild className="mb-2">
+            <Link to="/">🏠 Back to home</Link>
+          </Button>
+          <p className="text-data text-xs uppercase tracking-widest text-primary">{P.base} · {P.on}</p>
           <h1 className="text-3xl font-bold sm:text-4xl">
-            <Term k="sol">Mars day</Term> {Math.min(state.sol, state.totalSols)} <span className="text-muted-foreground">of {state.totalSols}</span>
+            {state.place === "moon" ? "Day" : <Term k="sol">Mars day</Term>} {Math.min(state.sol, state.totalSols)} <span className="text-muted-foreground">of {state.totalSols}</span>
           </h1>
         </div>
         <SourceBadge sun={mission.sun} />
@@ -194,7 +204,7 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-[22rem_1fr]">
-        <TodayPanel sol={state.sol} space={ctx.space} upcoming={upcoming} weather={ctx.weather} link={link} />
+        <TodayPanel place={state.place} sol={state.sol} space={ctx.space} upcoming={upcoming} weather={ctx.weather} link={link} />
         <PowerPlanner
           state={state}
           alloc={plan}
@@ -215,7 +225,7 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
         </Button>
       </div>
 
-      {event && !summary && <EventOverlay event={event} state={state} link={link} onChoose={choose} />}
+      {event && !summary && <EventOverlay event={event} state={state} link={link} onChoose={choose} onClose={closeEvent} />}
       {summary && <SummaryOverlay sol={summary.sol} report={summary.report} state={state} onNext={nextSol} />}
     </div>
   );

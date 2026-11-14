@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ARCHIVED_SUN } from "@/game/data/sun-archive";
 import { CRATES, CRATE_PICKS } from "@/game/engine";
-import type { CrateId } from "@/game/types";
+import type { CrateId, Place } from "@/game/types";
 import { cn } from "@/lib/utils";
 
 export type SunChoice = { kind: "recent" } | { kind: "random" } | { kind: "archived"; id: string };
@@ -14,10 +14,11 @@ export function MissionSetup({
 }: {
   initialStorm?: string | undefined;
   loading: boolean;
-  onLaunch: (sun: SunChoice, crates: CrateId[]) => void;
+  onLaunch: (place: Place, sun: SunChoice, crates: CrateId[]) => void;
 }) {
   const [sun, setSun] = useState<SunChoice>(initialStorm ? { kind: "archived", id: initialStorm } : { kind: "recent" });
   const [crates, setCrates] = useState<CrateId[]>([]);
+  const [place, setPlace] = useState<Place>("mars");
 
   const toggle = (id: CrateId) =>
     setCrates((c) => (c.includes(id) ? c.filter((x) => x !== id) : c.length < CRATE_PICKS ? [...c, id] : [c[1]!, id]));
@@ -28,7 +29,29 @@ export function MissionSetup({
   return (
     <div className="mx-auto max-w-5xl space-y-10 px-4 py-8 animate-float-in">
       <section>
-        <p className="text-data text-xs uppercase tracking-widest text-primary">Step 1 of 2</p>
+        <p className="text-data text-xs uppercase tracking-widest text-primary">Step 1 of 3</p>
+        <h2 className="mt-1 text-3xl font-bold sm:text-4xl">Where is your base? 🚀</h2>
+        <p className="mt-2 max-w-2xl text-muted-foreground">Each place has its own real NASA facts, dangers and message wait.</p>
+        <div className="mt-5 grid gap-3 md:grid-cols-2">
+          <button type="button" aria-pressed={place === "moon"} className={sunCard(place === "moon")} onClick={() => setPlace("moon")}>
+            <p className="font-display text-xl font-semibold">🌕 Moon base</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Close to home: messages reach Earth in about 1 second. But the Moon has no air at all, so radiation is about twice as strong as on Mars.
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">Uses NASA's Moon orbiter, Apollo and Artemis facts.</p>
+          </button>
+          <button type="button" aria-pressed={place === "mars"} className={sunCard(place === "mars")} onClick={() => setPlace("mars")}>
+            <p className="font-display text-xl font-semibold">🔴 Mars base</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Far away: messages take many minutes, so you must decide alone. Thin air blocks a little radiation, but dust storms can hide the Sun.
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">Uses real weather from NASA's Curiosity rover.</p>
+          </button>
+        </div>
+      </section>
+
+      <section>
+        <p className="text-data text-xs uppercase tracking-widest text-primary">Step 2 of 3</p>
         <h2 className="mt-1 text-3xl font-bold sm:text-4xl">Pick your Sun ☀️</h2>
         <p className="mt-2 max-w-2xl text-muted-foreground">
           Each day of your trip uses what the <strong>real Sun</strong> did on a real day. NASA keeps a log of
@@ -62,7 +85,7 @@ export function MissionSetup({
       </section>
 
       <section>
-        <p className="text-data text-xs uppercase tracking-widest text-primary">Step 2 of 2</p>
+        <p className="text-data text-xs uppercase tracking-widest text-primary">Step 3 of 3</p>
         <h2 className="mt-1 text-3xl font-bold sm:text-4xl">Pack your rocket 🚀</h2>
         <p className="mt-2 max-w-2xl text-muted-foreground">
           Rockets can only carry so much. Choose <strong>{CRATE_PICKS} boxes</strong> to bring. Every box you
@@ -100,7 +123,7 @@ export function MissionSetup({
           variant="mission"
           size="xl"
           disabled={crates.length !== CRATE_PICKS || loading}
-          onClick={() => onLaunch(sun, crates)}
+          onClick={() => onLaunch(place, sun, crates)}
         >
           {loading ? "Asking NASA about the Sun…" : "🚀 Blast off!"}
         </Button>
