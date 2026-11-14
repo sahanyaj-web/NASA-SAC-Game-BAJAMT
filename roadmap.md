@@ -1,7 +1,7 @@
 # Roadmap
-- [ ] End the game when air, food, power or radiation safety reaches zero
-- [ ] Replace the power plan with daily story decisions and automatic supply changes
-- [ ] Rename the home-screen game Junior Astronaut Mission Trainer
+- [x] End the game when air, food, power or radiation safety reaches zero
+- [x] Replace the power plan with daily story decisions and automatic supply changes
+- [x] Rename the home-screen game Junior Astronaut Mission Trainer
 - [x] Home button in the game
 - [x] Remove "Free · no download…" line under Start button
 - [x] Choose Moon or Mars base at start; Moon uses Moon data (NASA)
