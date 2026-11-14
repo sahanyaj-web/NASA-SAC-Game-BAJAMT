@@ -58,7 +58,7 @@ const DATASETS = [
   {
     name: "NASA life-support baselines (BVAD) and mission history",
     tag: "PUBLISHED VALUES",
-    url: "https://ntrs.nasa.gov/citations/20210024855",
+    url: "https://ntrs.nasa.gov/search?q=%22Baseline%20Values%20and%20Assumptions%20Document%22",
     what: "~0.84 kg oxygen per astronaut per day; MOXIE oxygen experiment; InSight and Opportunity dust power loss; Kilopower reactor test.",
     how: "Shape the rules: the crew always uses 1 day of air and food per sol, dust lowers solar power every sol, a reactor ignores dust storms.",
   },
