@@ -91,13 +91,13 @@ export function TodayPanel({
           </p>
         ) : (
           <p className="mt-2 text-sm">
-            Earth is <strong>{(link.distanceKm / 1e6).toFixed(0)} million km</strong> away on {"this date"}. Each message takes{" "}
+            Earth is <strong>{(link.distanceKm / 1e6).toFixed(0)} million km</strong> away on {space.date}. Each message takes{" "}
             <strong className="text-accent">{formatMinutes(link.oneWayMinutes)}</strong> to arrive. That's the{" "}
             <Term k="delay">communication delay</Term>.
           </p>
         )}
         <p className="mt-2 text-xs text-muted-foreground">
-          Worked out from where Earth and Mars really were on {"that"} date (NASA JPL planet positions).
+          Worked out from where Earth and Mars really were on that date (NASA JPL planet positions).
         </p>
       </section>
     </aside>
