@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createGame } from "./engine";
-import { buyItem, milestoneCoins } from "./shop";
+import { buyItem, milestoneCoins, SHOP } from "./shop";
 
 describe("NASA Commodities coins", () => {
   it("pays 1 coin every 2 survived days", () => {
