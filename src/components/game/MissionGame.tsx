@@ -5,8 +5,9 @@ import { MARS_WEATHER } from "@/game/data/mars-weather";
 import { MOON_WEATHER } from "@/game/data/moon-weather";
 import {
   chooseOption, createGame, endStoryDay, eventForSol, mulberry32, resourcePercentages,
-  type Shelter, type SolReport,
+  stormEvent, type Shelter, type SolReport,
 } from "@/game/engine";
+import { DECK, firstDayEvent } from "@/game/events";
 import { earthMars, earthMoon } from "@/game/orbit";
 import {
   archived, buildSchedule, fetchDonkiWindow, randomArchived, randomWindowDates, recentWindowDates, recordForDay,
@@ -63,7 +64,15 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
         setState(saved.state);
         setShelter(saved.shelter);
         setSummary(saved.summary);
-        setEvent(saved.event);
+        // Refresh pending choices from current rules without erasing the trip.
+        const space = recordForDay(saved.mission.schedule, saved.state.sol);
+        const wait = saved.state.place === "moon" ? earthMoon().oneWayMinutes : earthMars(new Date((space?.date ?? saved.mission.sun.start) + "T12:00:00Z")).oneWayMinutes;
+        const currentEvent = !saved.event ? null : saved.event.id === "landing"
+          ? firstDayEvent(saved.state)
+          : saved.event.kind === "deck"
+            ? DECK.find((card) => card.id === saved.event?.id)?.build(saved.state, wait) ?? null
+            : space ? stormEvent({ space, prevSpace: recordForDay(saved.mission.schedule, saved.state.sol - 1) }, wait, saved.state.place) : null;
+        setEvent(currentEvent);
       }
     } catch {
       // A broken or old save is ignored.
