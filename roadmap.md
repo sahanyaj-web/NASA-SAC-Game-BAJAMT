@@ -20,4 +20,4 @@
 - [x] Verify navigation and four-system missions
 - [x] Refresh the graphic theme and Moon/Mars imagery without changing gameplay
 - [x] Check the new look and unchanged mission flow on desktop and phone
-- [ ] Replace the child faces in both space illustrations with smiling robot faces
+- [x] Replace the child faces in both space illustrations with smiling robot faces
