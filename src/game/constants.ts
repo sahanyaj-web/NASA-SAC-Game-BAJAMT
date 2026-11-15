@@ -74,6 +74,6 @@ export const KM_PER_AU = 149_597_870.7;
 export const SEP_ARRIVAL_MINUTES = 30;
 export const SECONDS_PER_GAME_MINUTE = 0.5;
 
-/** Game scale (not a NASA value): every 5 survived days earns coins, growing each milestone (10, 20, 30...). */
-export const COIN_MILESTONE_DAYS = 5;
-export const COINS_PER_MILESTONE = 10;
+/** Game scale (not a NASA value): every 2 survived days earns 1 coin. */
+export const COIN_MILESTONE_DAYS = 2;
+export const COINS_PER_MILESTONE = 1;

@@ -330,7 +330,7 @@ export function endStoryDay(s: GameState, ctx: SolContext) {
   if (!reward) return out;
   return {
     state: { ...out.state, coins: (out.state.coins ?? 0) + reward },
-    report: { ...out.report, notes: [...out.report.notes, `🪙 You survived ${out.state.log.length} days and earned ${reward} coins! Spend them in NASA Commodities.`] },
+    report: { ...out.report, notes: [...out.report.notes, `🪙 You survived ${out.state.log.length} days and earned ${reward} coin${reward === 1 ? "" : "s"}! Spend them in NASA Commodities.`] },
   };
 }
 
