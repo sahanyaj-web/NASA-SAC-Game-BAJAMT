@@ -15,9 +15,9 @@ describe("NASA Commodities coins", () => {
     expect(r.crates).toContain("rover");
     expect(buyItem(r, "watertank")).toBe(r);
     expect(buyItem({ ...r, coins: 99 }, "rover").coins).toBe(99);
+  });
   it("keeps every price between 3 and 8 coins", () => {
     for (const i of SHOP) { expect(i.price).toBeGreaterThanOrEqual(3); expect(i.price).toBeLessThanOrEqual(8); }
     expect(Math.max(...SHOP.map((i) => i.price))).toBe(8);
-  });
   });
 });
