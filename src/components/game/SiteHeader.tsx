@@ -13,7 +13,7 @@ export function SiteHeader() {
         <nav className="flex shrink-0 items-center gap-1">
           <Link to="/" className={link} activeProps={active} activeOptions={{ exact: true }}>Home</Link>
           <Link to="/play" className={link} activeProps={active}>Play</Link>
-          <Link to="/science" className={link} activeProps={active}>Real facts</Link>
+          <Link to="/science" className={link} activeProps={active}>NASA Data</Link>
         </nav>
       </div>
     </header>
