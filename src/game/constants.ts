@@ -73,3 +73,7 @@ export const KM_PER_AU = 149_597_870.7;
 /** Real SEP particles reach Mars ~30 min after a flare; in the game 1 real minute = 0.5 s. */
 export const SEP_ARRIVAL_MINUTES = 30;
 export const SECONDS_PER_GAME_MINUTE = 0.5;
+
+/** Game scale (not a NASA value): every 5 survived days earns coins, growing each milestone (10, 20, 30...). */
+export const COIN_MILESTONE_DAYS = 5;
+export const COINS_PER_MILESTONE = 10;

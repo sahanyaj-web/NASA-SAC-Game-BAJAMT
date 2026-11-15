@@ -60,6 +60,8 @@ export function createGame(seed: number, crates: CrateId[], place: Place = "mars
     over: null,
     seed,
     place,
+    coins: 0,
+    purchases: [],
   };
 }
 
@@ -295,6 +297,8 @@ export function endSol(s: GameState, alloc: Allocation, ctx: SolContext): { stat
   return { state: checkOver(n), report: { forecast: f, notes } };
 }
 
+import { milestoneCoins } from "./shop";
+
 export function checkOver(s: GameState): GameState {
   if (s.over) return s;
   if (s.air <= 0) return { ...s, over: { result: "air", message: "The air ran out. The crew had to fly home early in their rocket." } };
@@ -321,7 +325,13 @@ export function chooseOption(s: GameState, event: GameEvent, opt: EventOption): 
 export function endStoryDay(s: GameState, ctx: SolContext) {
   if (s.over) return { state: s, report: { forecast: forecast(s, emptyAlloc(), ctx), notes: [] } };
   const automatic = fitAlloc({ air: 2, greenhouse: 3, shield: 1 }, powerToday(s).available);
-  return endSol(s, automatic, ctx);
+  const out = endSol(s, automatic, ctx);
+  const reward = out.state.over ? 0 : milestoneCoins(out.state.log.length);
+  if (!reward) return out;
+  return {
+    state: { ...out.state, coins: (out.state.coins ?? 0) + reward },
+    report: { ...out.report, notes: [...out.report.notes, `🪙 You survived ${out.state.log.length} days and earned ${reward} coins! Spend them in NASA Commodities.`] },
+  };
 }
 
 /** Short, kid-friendly list of what a choice changed, e.g. "−0.5 days of air". */
