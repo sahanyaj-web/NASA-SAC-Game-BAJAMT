@@ -13,7 +13,6 @@ const ROWS: { key: Key; emoji: string; name: ReactNode; rule: string; dot: strin
   { key: "air", emoji: "🫁", name: <Term k="moxie">Oxygen maker</Term>, rule: "2⚡ makes 1 day of air. The crew uses 1 day of air every day.", dot: "bg-air" },
   { key: "greenhouse", emoji: "🌱", name: "Plant room lights", rule: "3⚡ grows 1 day of food. The crew eats 1 day of food every day.", dot: "bg-food" },
   { key: "shield", emoji: "🛡️", name: <Term k="waterwall">Water walls</Term>, rule: "Each ⚡ keeps more water from freezing, so it can block radiation.", dot: "bg-radiation" },
-  { key: "science", emoji: "🔬", name: "Science lab", rule: "1⚡ makes 1 science point. Discovering things is why you came!", dot: "bg-science" },
 ];
 
 export function PowerPlanner({
@@ -50,7 +49,6 @@ export function PowerPlanner({
     air: `+${forecast.airMade.toFixed(1)} days of air${state.statuses.airClog ? " (clogged: half speed)" : ""}`,
     greenhouse: `+${forecast.foodMade.toFixed(1)} days of food${shelter === "full" ? " (half care: the crew is hiding)" : ""}`,
     shield: `Blocking level ${forecast.shieldLevel}${state.shieldBonus ? ` (${state.shieldBonus} free from your water)` : ""} · radiation today: ${forecast.doseToday.toFixed(2)} units`,
-    science: shelter === "full" ? "No science while hiding in the shelter" : `+${forecast.scienceMade} science`,
   };
 
   return (

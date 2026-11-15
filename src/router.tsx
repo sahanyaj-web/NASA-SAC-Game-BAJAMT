@@ -9,7 +9,9 @@ export const getRouter = () => {
   const router = createRouter({
     routeTree,
     context: { queryClient },
-    scrollRestoration: true,
+    // Return visits open at the top too; mission progress is saved separately.
+    scrollRestoration: false,
+    scrollRestorationBehavior: "instant",
     // Lets Query own freshness; set caching defaults on the QueryClient, not the router.
     defaultPreloadStaleTime: 0,
   });

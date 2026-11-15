@@ -3,8 +3,6 @@
 
 // NASA records are read in short windows; this is not a mission time limit.
 export const DATA_WINDOW_DAYS = 15;
-// Game-scale research readiness, not a NASA measurement.
-export const RESEARCH_CAP = 20;
 export const CREW = 4;
 
 /** One Mars day (sol) = 24 h 39 m 35 s. Source: NASA Mars Fact Sheet. */
@@ -40,9 +38,8 @@ export const DUST_STORM_FACTOR = 0.4;
 /** Conversions (game scale): */
 export const AIR_PER_POWER = 0.5; // 2⚡ → 1 crew-day of oxygen
 export const FOOD_PER_POWER = 1 / 3; // 3⚡ → 1 crew-day of food
-export const SCIENCE_PER_POWER = 1;
 
-export const MAX_ALLOC = { air: 6, greenhouse: 6, shield: 3, science: 6 } as const;
+export const MAX_ALLOC = { air: 6, greenhouse: 6, shield: 3 } as const;
 
 /** Fraction of radiation that gets through for each water-wall level. Water is a good radiation shield (NASA HRP). Game scale. */
 export const SHIELD_FACTOR = [1, 0.65, 0.45, 0.3, 0.2, 0.15];

@@ -39,5 +39,8 @@ use the editor.
 - The base location (`place`: mars | moon) lives in GameState; place-specific wording comes from `placeWords()` in `src/game/words.ts` and place-specific facts are chosen inside each event's `build`. Why: one rule set, two worlds.
 - Story (deck) choices never cost battery (enforced by a test), so both options are always selectable. Why: choices are trade-offs, never blocked.
 - Active missions advance through story choices and `endStoryDay`; automatic life support stays in the pure engine. Why: supply changes need no manual power planner and remain testable.
-- Keep physical resource units and capacity caps in the pure engine; use `resourcePercentages` for all visible system values, including research readiness. Why: percentage displays retain NASA-grounded physical calculations and cargo trade-offs.
+- Keep physical resource units and capacity caps in the pure engine; use `resourcePercentages` for all visible system values, for the four survival systems. Why: percentage displays retain NASA-grounded physical calculations and cargo trade-offs.
 - Endless missions access finite NASA windows through `recordForDay`, retaining original dates and labeling repeated windows SAVED. Why: continued play must not invent live observations.
+
+- Disable scroll-position restoration in the router; page navigation always starts at the top while mission saves remain independent. Why: returning from facts must not open mid-page.
+- Story costs and automatic production use only survival resources; crew morale affects plant care and rover cargo helps food production. Why: no removed research score can influence mission survival.
