@@ -84,7 +84,7 @@ export function EventOverlay({
         </div>
       ) : (
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
-          {event.options.map((o) => (
+          {event.options.map((o, index) => (
             <Button
               key={o.id}
               type="button"
@@ -92,6 +92,7 @@ export function EventOverlay({
               variant="panel"
               className="h-auto min-w-0 flex-col items-start whitespace-normal p-4 text-left transition-all hover:border-primary hover:shadow-glow"
             >
+              <span aria-hidden className="mb-2 grid size-9 place-items-center rounded-full bg-secondary font-display text-xl font-bold text-primary">{index === 0 ? "A" : "B"}</span>
               <p className="font-display text-lg font-semibold">{o.label}</p>
               <p className="mt-2 text-sm"><span className="font-bold text-radiation">You give up:</span> {o.cost}</p>
               <p className="mt-1 text-sm"><span className="font-bold text-food">You get:</span> {o.gain}</p>
@@ -122,6 +123,6 @@ export function EventOverlay({
     </>
   );
   return inline
-    ? <section className="min-w-0 p-4 sm:p-6" aria-label={event.title}>{content}</section>
+    ? <section className="story-screen min-w-0 p-4 sm:p-6" aria-label={event.title}>{content}</section>
     : <Overlay label={event.title} alert={urgent}>{content}</Overlay>;
 }

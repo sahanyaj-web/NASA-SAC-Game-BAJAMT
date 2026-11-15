@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import hero from "@/assets/mars-outpost-hero.jpg";
+import hero from "@/assets/mars-adventure.jpg";
 import { Button } from "@/components/ui/button";
 import { LiveStrip } from "@/components/game/LiveStrip";
 import { SiteHeader } from "@/components/game/SiteHeader";
@@ -43,10 +43,10 @@ function Index() {
       <SiteHeader />
       <main>
         <section className="relative overflow-hidden">
-          <img src={hero} alt="Illustrated Mars outpost with habitat domes, a glowing greenhouse, solar panels and astronauts at sunset" width={1600} height={912} className="absolute inset-0 h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/10" />
-          <div className="relative mx-auto flex min-h-[78vh] max-w-6xl flex-col justify-end px-4 pb-14 pt-32">
-            <p className="text-data text-sm uppercase tracking-[0.3em] text-primary">A Moon or Mars mission game · ages 7–12</p>
+          <img src={hero} alt="A friendly astronaut and rover exploring a bright Mars base with solar panels and a plant room" width={1536} height={864} className="absolute inset-0 h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-scene-shade via-scene-shade/60 to-scene-shade/10" />
+          <div className="relative mx-auto flex min-h-[min(78vh,800px)] max-w-6xl flex-col justify-end px-4 pb-10 pt-28 text-scene-foreground">
+            <p className="text-data text-sm uppercase tracking-widest text-sunshine">A Moon or Mars mission game · ages 7–12</p>
             <h1 className="mt-3 max-w-4xl text-4xl font-bold leading-tight sm:text-6xl">Junior Astronaut Mission Trainer</h1>
             <p className="mt-4 max-w-2xl text-lg sm:text-xl">
               How long can your Moon or Mars crew survive? Start every system at 100%. Each problem has two choices. Keep air, food, power and radiation safety above zero! The Sun's storms come
@@ -85,7 +85,7 @@ function Index() {
         </section>
 
         <section className="mx-auto max-w-6xl px-4 py-12">
-          <div className="panel grid gap-6 p-6 sm:p-10 md:grid-cols-[1fr_1.3fr]">
+          <div className="grid gap-6 py-6 sm:py-10 md:grid-cols-[1fr_1.3fr]">
             <div>
               <h2 className="text-3xl font-bold">No choice is free</h2>
               <p className="mt-3 text-muted-foreground">
