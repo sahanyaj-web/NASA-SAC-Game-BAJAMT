@@ -238,7 +238,8 @@ export function drawDeckEvent(s: GameState, oneWayMin: number): GameEvent | null
   const rng = mulberry32(s.seed * 31 + s.sol * 977);
   const eligible = DECK.filter((c) => !c.when || c.when(s));
   const unseen = eligible.filter((c) => !s.seenEvents.includes(c.id));
-  const previousId = s.seenEvents[s.seenEvents.length - 1];
+  const previousTitle = s.story[s.story.length - 1]?.title;
+  const previousId = eligible.find((card) => card.build(s, oneWayMin).title === previousTitle)?.id ?? s.seenEvents[s.seenEvents.length - 1];
   const different = eligible.filter((card) => card.id !== previousId);
   const pool = (unseen.length ? unseen : different.length ? different : eligible)
     .map((c) => ({ c, e: c.build(s, oneWayMin) }));

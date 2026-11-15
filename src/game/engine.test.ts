@@ -20,7 +20,7 @@ describe("rotating daily stories", () => {
       expect(event.id).not.toBe(previous);
       expect(event.options).toHaveLength(2);
       previous = event.id;
-      state = { ...state, seenEvents: [...state.seenEvents.filter((id) => id !== event.id), event.id] };
+      state = { ...state, seenEvents: [...new Set([...state.seenEvents, event.id])], story: [...state.story, { sol: day, emoji: event.emoji, title: event.title, choice: "test" }] };
     }
   });
 
