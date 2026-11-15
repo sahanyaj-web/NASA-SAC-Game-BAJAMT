@@ -27,3 +27,4 @@
 - [x] Blend realistic Moon and Mars outposts into one matching front-page picture
 - [x] Match setup and mission colors to the selected Moon or Mars world without changing rules
 - [ ] Restrict editor access to invited collaborators — blocked: invite-only project access requires Business or Enterprise; user must choose a sharing alternative
+- [x] Coins at every 5 survived days + NASA Commodities shop (water tanks, rover…)

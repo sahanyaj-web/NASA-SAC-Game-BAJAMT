@@ -17,6 +17,8 @@ import { EventOverlay } from "./EventOverlay";
 import { Gauge } from "./Gauge";
 import { MissionReport } from "./MissionReport";
 import { MissionSetup, type SunChoice } from "./MissionSetup";
+import { ShopPanel } from "./ShopPanel";
+import { buyItem } from "@/game/shop";
 import { SourceBadge } from "./SourceBadge";
 import { SummaryOverlay } from "./SummaryOverlay";
 import { Term } from "./Term";
@@ -286,6 +288,8 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
         <TodayPanel place={state.place} sol={state.sol} space={ctx.space} upcoming={upcoming} weather={ctx.weather} link={link} />
         {event && !summary && <EventOverlay key={`${state.sol}-${event.id}`} inline event={event} state={state} link={link} onChoose={choose} onClose={closeEvent} />}
       </div>
+
+      <ShopPanel state={state} onBuy={(id) => setState(buyItem(state, id))} />
 
       <div className="mt-6 flex justify-center">
         <Button variant="link" asChild>
