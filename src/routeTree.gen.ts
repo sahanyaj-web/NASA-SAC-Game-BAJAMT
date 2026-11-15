@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as OutpostRouteImport } from './routes/outpost'
 import { Route as PlayRouteImport } from './routes/play'
 import { Route as ScienceRouteImport } from './routes/science'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OutpostRoute = OutpostRouteImport.update({
+  id: '/outpost',
+  path: '/outpost',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlayRoute = PlayRouteImport.update({
@@ -31,30 +37,34 @@ const ScienceRoute = ScienceRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/outpost': typeof OutpostRoute
   '/play': typeof PlayRoute
   '/science': typeof ScienceRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/outpost': typeof OutpostRoute
   '/play': typeof PlayRoute
   '/science': typeof ScienceRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/outpost': typeof OutpostRoute
   '/play': typeof PlayRoute
   '/science': typeof ScienceRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/play' | '/science'
+  fullPaths: '/' | '/outpost' | '/play' | '/science'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/play' | '/science'
-  id: '__root__' | '/' | '/play' | '/science'
+  to: '/' | '/outpost' | '/play' | '/science'
+  id: '__root__' | '/' | '/outpost' | '/play' | '/science'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  OutpostRoute: typeof OutpostRoute
   PlayRoute: typeof PlayRoute
   ScienceRoute: typeof ScienceRoute
 }
@@ -66,6 +76,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/outpost': {
+      id: '/outpost'
+      path: '/outpost'
+      fullPath: '/outpost'
+      preLoaderRoute: typeof OutpostRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/play': {
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  OutpostRoute: OutpostRoute,
   PlayRoute: PlayRoute,
   ScienceRoute: ScienceRoute,
 }
