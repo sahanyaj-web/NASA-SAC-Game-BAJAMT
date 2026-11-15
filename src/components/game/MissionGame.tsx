@@ -5,8 +5,9 @@ import { MARS_WEATHER } from "@/game/data/mars-weather";
 import { MOON_WEATHER } from "@/game/data/moon-weather";
 import {
   chooseOption, createGame, endStoryDay, eventForSol, mulberry32, resourcePercentages,
-  type Shelter, type SolReport,
+  stormEvent, type Shelter, type SolReport,
 } from "@/game/engine";
+import { DECK, firstDayEvent } from "@/game/events";
 import { earthMars, earthMoon } from "@/game/orbit";
 import {
   archived, buildSchedule, fetchDonkiWindow, randomArchived, randomWindowDates, recentWindowDates, recordForDay,
@@ -63,7 +64,15 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
         setState(saved.state);
         setShelter(saved.shelter);
         setSummary(saved.summary);
-        setEvent(saved.event);
+        // Refresh pending choices from current rules without erasing the trip.
+        const space = recordForDay(saved.mission.schedule, saved.state.sol);
+        const wait = saved.state.place === "moon" ? earthMoon().oneWayMinutes : earthMars(new Date((space?.date ?? saved.mission.sun.start) + "T12:00:00Z")).oneWayMinutes;
+        const currentEvent = !saved.event ? null : saved.event.id === "landing"
+          ? firstDayEvent(saved.state)
+          : saved.event.kind === "deck"
+            ? DECK.find((card) => card.id === saved.event?.id)?.build(saved.state, wait) ?? null
+            : space ? stormEvent({ space, prevSpace: recordForDay(saved.mission.schedule, saved.state.sol - 1) }, wait, saved.state.place) : null;
+        setEvent(currentEvent);
       }
     } catch {
       // A broken or old save is ignored.
@@ -238,11 +247,11 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
       {mission.notice && <p className="mb-4 rounded-xl border border-power/50 bg-power/10 p-3 text-sm">{mission.notice}</p>}
       {shelter !== "none" && (
         <p className="mb-4 rounded-xl border border-radiation/60 bg-radiation/10 p-3 text-sm font-semibold">
-          🛡️ {shelter === "full" ? "The crew is hiding in the storm shelter today: most storm radiation is blocked, but no science and the plants get half the care." : "The crew got to the shelter late: some storm radiation got through."}
+          🛡️ {shelter === "full" ? "The crew is hiding in the storm shelter today: most storm radiation is blocked, but the plants get half the care." : "The crew got to the shelter late: some storm radiation got through."}
         </p>
       )}
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <Gauge tone="air" emoji="🫁" label="Air" value={pct.air} unit="%" max={100} danger={pct.air < 25} />
         <Gauge tone="food" emoji="🥬" label="Food" value={pct.food} unit="%" max={100} danger={pct.food < 25} />
         <Gauge tone="power" emoji="🔋" label="Power" value={pct.power} unit="%" max={100} danger={pct.power < 25} />
@@ -256,7 +265,6 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
           danger={pct.safety < 25}
           hint={<Term k="waterwall">Water walls block radiation</Term>}
         />
-        <Gauge tone="science" emoji="🔬" label="Research" value={pct.research} unit="%" max={100} danger={pct.research < 25} hint="The crew's science work" />
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-[22rem_1fr]">

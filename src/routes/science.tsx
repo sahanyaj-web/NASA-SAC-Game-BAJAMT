@@ -78,8 +78,8 @@ const SOURCES = [
 ];
 
 const SIMPLER = [
-  "All five systems start at 100% and stay between 0% and 100%. These percentages are a game scale, not NASA measurements. Bigger cargo tanks still start full but hold more.",
-  "The base runs its air maker, plant lights and water walls by itself. Your story choices change supplies and how well the machines work. If air, food, stored power, radiation safety or research reaches 0%, the mission ends. Research wears down each day and recovers through your choices. The goal is to survive as many full days as possible, with no time limit.",
+  "All four systems start at 100% and stay between 0% and 100%. These percentages are a game scale, not NASA measurements. Bigger cargo tanks still start full but hold more.",
+  "The base runs its air maker, plant lights and water walls by itself. Your story choices change supplies and how well the machines work. If air, food, stored power or radiation safety reaches 0%, the mission ends. The goal is to survive as many full days as possible, with no time limit.",
   "NASA saw the Sun flashes and radiation storms from near Earth. Mars is usually in a different spot, so in the game we pretend the Sun was pointing at Mars too.",
   "Storm radiation in the game is a \"be ready for the worst\" amount. Mars's air blocks some radiation, and real storms can be bigger or smaller.",
   "The danger line of 25 radiation units is just for this game. NASA's real lifetime limit for an astronaut is 600.",

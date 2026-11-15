@@ -13,7 +13,6 @@ const LESSON: Record<string, string> = {
   food: "Growing food takes lots of power for the lights. Real Mars trips will bring most of their food from Earth and grow fresh plants as a treat.",
   dose: "Radiation adds up day after day, and storms add a lot all at once. That's why NASA watches the Sun all day and night, and plans safe shelters for crews.",
   power: "When power runs out, air machines, plant lights and heaters cannot work. NASA teams bring spare power and protect their solar panels.",
-  science: "Research needs care too. Fixing other systems takes time away from science. Exploring and caring for the crew can help the research system recover.",
 };
 
 export function MissionReport({
@@ -36,7 +35,7 @@ export function MissionReport({
   const pct = resourcePercentages(state);
   const data = state.log.map((l) => {
     const p = resourcePercentages({ ...state, ...l });
-    return { sol: l.sol, Air: p.air, Food: p.food, Power: p.power, Safety: p.safety, Research: p.research };
+    return { sol: l.sol, Air: p.air, Food: p.food, Power: p.power, Safety: p.safety };
   });
 
   return (
@@ -51,7 +50,7 @@ export function MissionReport({
           ))}
         </p>
         <p className="mt-2 text-sm text-muted-foreground">
-          Survived {state.log.length} full days · Research {pct.research}% · Radiation safety {pct.safety}%
+          Survived {state.log.length} full days · Radiation safety {pct.safety}%
         </p>
         {r.badges.length > 0 && (
           <div className="mt-5 flex flex-wrap justify-center gap-2">
@@ -107,7 +106,6 @@ export function MissionReport({
                 <Line type="monotone" dataKey="Food" stroke="var(--food)" strokeWidth={3} dot={false} />
                 <Line type="monotone" dataKey="Power" stroke="var(--power)" strokeWidth={3} dot={false} />
                 <Line type="monotone" dataKey="Safety" stroke="var(--radiation)" strokeWidth={3} dot={false} />
-                <Line type="monotone" dataKey="Research" stroke="var(--science)" strokeWidth={3} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>

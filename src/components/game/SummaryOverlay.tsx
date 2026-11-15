@@ -14,7 +14,6 @@ export function SummaryOverlay({ sol, report, state, onNext }: { sol: number; re
     ["🫁 Air", `${pct.air}%`],
     ["🥬 Food", `${pct.food}%`],
     ["☢️ Radiation safety", `${pct.safety}%`],
-    ["🔬 Research", `${pct.research}%`],
     ["🔋 Power", `${pct.power}%`],
   ];
   return (

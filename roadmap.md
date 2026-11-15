@@ -1,6 +1,6 @@
 # Roadmap
-- [x] Start all five systems at 100% and cap increases at 100%
-- [x] Continue missions without a day limit; end when any system including research reaches zero
+- [x] Start all four survival systems at 100% and cap increases at 100%
+- [x] Continue missions without a day limit; end when any survival system reaches zero
 - [x] Update choices, reports and NASA record labels; test survival on both worlds
 - [x] End the game when air, food, power or radiation safety reaches zero
 - [x] Replace the power plan with daily story decisions and automatic supply changes
@@ -14,3 +14,7 @@
 - [x] Restart mission button with a confirm step that clears the saved mission
 - [x] Reset choices button on the pick-your-base screen
 - [x] Keep Back to home + Restart mission pinned to the top during a mission
+
+- [x] Open every page at the top, including return visits
+- [x] Remove research and replace its choice costs with remaining supplies
+- [x] Verify navigation and four-system missions

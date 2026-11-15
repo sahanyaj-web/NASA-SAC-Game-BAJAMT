@@ -51,7 +51,6 @@ export interface Allocation {
   air: number;
   greenhouse: number;
   shield: number;
-  science: number;
 }
 
 export type StatusId = "dustStorm" | "panelsAway" | "airClog" | "fatigue" | "moldRisk" | "earthFix" | "happyCrew";
@@ -60,7 +59,6 @@ export interface Effect {
   air?: number;
   food?: number;
   battery?: number;
-  science?: number;
   dose?: number;
   panel?: number; // change to panel cleanliness 0..1
   setPanel?: number;
@@ -102,7 +100,6 @@ export interface SolLog {
   food: number;
   battery: number;
   dose: number;
-  science: number;
   solar: number;
   notes: string[];
 }
@@ -117,8 +114,6 @@ export interface GameState {
   batteryCap: number;
   dose: number; // mSv (simplified)
   doseLimit: number;
-  science: number;
-  scienceCap: number; // research system readiness, not accumulated points
   panel: number; // 0..1 cleanliness
   shieldBonus: number;
   crates: CrateId[];
@@ -127,7 +122,7 @@ export interface GameState {
   /** The choices the player made, in order — retold at the end. */
   story: { sol: number; emoji: string; title: string; choice: string }[];
   log: SolLog[];
-  over: null | { result: "air" | "food" | "power" | "dose" | "science"; message: string };
+  over: null | { result: "air" | "food" | "power" | "dose"; message: string };
   seed: number;
   place: Place;
 }
