@@ -17,34 +17,13 @@ import { EventOverlay } from "./EventOverlay";
 import { Gauge } from "./Gauge";
 import { MissionReport } from "./MissionReport";
 import { MissionSetup, type SunChoice } from "./MissionSetup";
-import { OutpostView } from "./OutpostView";
-import { ShopPanel } from "./ShopPanel";
-import { buyItem } from "@/game/shop";
 import { SourceBadge } from "./SourceBadge";
 import { SummaryOverlay } from "./SummaryOverlay";
 import { Term } from "./Term";
 import { TodayPanel } from "./TodayPanel";
 import { placeWords } from "@/game/words";
 
-interface Mission {
-  sun: SunWindow;
-  schedule: SolSpaceWeather[];
-  weather: MarsWeatherWindow;
-  notice?: string | undefined;
-}
-
-// Only this open page keeps progress. In-app navigation retains it;
-// closing or reloading the document discards it, with nothing to restore.
-let activeSave: SaveData | null = null;
-
-interface SaveData {
-  mission: Mission;
-  state: GameState;
-  shelter: Shelter;
-  summary: { sol: number; report: SolReport } | null;
-  showReport: boolean;
-  event: GameEvent | null;
-}
+import { getActiveSave, setActiveSave, type Mission } from "./active-save";
 
 export function MissionGame({ initialStorm }: { initialStorm?: string | undefined }) {
   const [mission, setMission] = useState<Mission | null>(null);
@@ -55,7 +34,6 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
   const [summary, setSummary] = useState<{ sol: number; report: SolReport } | null>(null);
   const [showReport, setShowReport] = useState(false);
   const [askRestart, setAskRestart] = useState(false);
-  const [viewOutpost, setViewOutpost] = useState(false);
 
   useEffect(() => {
     if (!state?.place) return;
@@ -73,7 +51,7 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
   useEffect(() => {
     try {
       window.localStorage.removeItem("jam-mission-save");
-      const saved = activeSave;
+      const saved = getActiveSave();
       if (!saved) return;
       if (saved.mission && saved.state && !saved.state.over) {
         setMission(saved.mission);
@@ -109,7 +87,7 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
 
   // Remember progress only within this open document, never in browser storage.
   useEffect(() => {
-    activeSave = mission && state ? { mission, state, shelter, summary, showReport, event } : null;
+    setActiveSave(mission && state ? { mission, state, shelter, summary, showReport, event } : null);
   }, [mission, state, shelter, summary, showReport, event]);
 
   const launch = async (place: Place, choice: SunChoice, crates: CrateId[]) => {
@@ -242,8 +220,8 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
           <Button variant="panel" size="sm" onClick={() => setAskRestart(true)}>
             🔁 Restart mission
           </Button>
-          <Button variant="panel" size="sm" onClick={() => setViewOutpost((v) => !v)}>
-            {viewOutpost ? "✖ Close outpost view" : "🔭 View outpost"}
+          <Button variant="panel" size="sm" asChild>
+            <Link to="/outpost">🔭 Outpost & shop</Link>
           </Button>
           {askRestart && (
             <span className="flex flex-wrap items-center gap-2 rounded-xl border border-radiation/60 bg-radiation/10 p-2 text-sm">
@@ -294,8 +272,6 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
         {event && !summary && <EventOverlay key={`${state.sol}-${event.id}`} inline event={event} state={state} link={link} onChoose={choose} onClose={closeEvent} />}
       </div>
 
-      {viewOutpost && <OutpostView state={state} />}
-      <ShopPanel state={state} onBuy={(id) => setState(buyItem(state, id))} />
 
       <div className="mt-6 flex justify-center">
         <Button variant="link" asChild>
