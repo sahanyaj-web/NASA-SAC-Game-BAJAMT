@@ -21,3 +21,5 @@
 - [x] Refresh the graphic theme and Moon/Mars imagery without changing gameplay
 - [x] Check the new look and unchanged mission flow on desktop and phone
 - [x] Replace the child faces in both space illustrations with smiling robot faces
+- [ ] Restore the realistic Mars visuals without changing gameplay
+- [ ] Check shared-link editing access and explain how to restrict editing to invited people

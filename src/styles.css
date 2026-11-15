@@ -10,8 +10,8 @@
  * power = amber, radiation = hazard red, science = teal.
  */
 @theme inline {
-  --font-display: "Fredoka", ui-rounded, system-ui, sans-serif;
-  --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
+  --font-display: ui-sans-serif, system-ui, sans-serif;
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Space Mono", ui-monospace, monospace;
 
   --radius-sm: calc(var(--radius) - 4px);
@@ -68,36 +68,36 @@
 
 :root {
   --radius: 0.5rem;
-  --background: oklch(0.97 0.014 175);
-  --foreground: oklch(0.27 0.045 190);
-  --card: oklch(1 0 0);
+  --background: oklch(0.18 0.005 260);
+  --foreground: oklch(0.94 0.008 80);
+  --card: oklch(0.23 0.006 260);
   --card-foreground: var(--foreground);
   --popover: var(--card);
   --popover-foreground: var(--foreground);
-  --primary: oklch(0.44 0.085 185);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.91 0.045 177);
+  --primary: oklch(0.72 0.16 40);
+  --primary-foreground: oklch(0.16 0.01 40);
+  --secondary: oklch(0.29 0.008 260);
   --secondary-foreground: var(--foreground);
-  --muted: oklch(0.94 0.025 180);
-  --muted-foreground: oklch(0.46 0.034 190);
-  --accent: oklch(0.43 0.105 235);
+  --muted: oklch(0.27 0.006 260);
+  --muted-foreground: oklch(0.72 0.012 260);
+  --accent: oklch(0.76 0.12 200);
   --accent-foreground: var(--primary-foreground);
-  --destructive: oklch(0.51 0.19 22);
+  --destructive: oklch(0.72 0.18 22);
   --destructive-foreground: var(--primary-foreground);
-  --border: oklch(0.83 0.04 185);
+  --border: oklch(0.36 0.008 260);
   --input: var(--border);
   --ring: var(--primary);
-  --air: oklch(0.45 0.12 235);
-  --food: oklch(0.43 0.12 145);
-  --power: oklch(0.47 0.1 75);
+  --air: oklch(0.76 0.12 235);
+  --food: oklch(0.78 0.15 145);
+  --power: oklch(0.85 0.15 85);
   --radiation: var(--destructive);
   --science: var(--accent);
   --panel: var(--card);
-  --panel-raised: oklch(0.985 0.013 180);
+  --panel-raised: oklch(0.28 0.007 260);
   --live: var(--food);
   --mars: oklch(0.53 0.17 35);
   --scene-foreground: oklch(1 0 0);
-  --scene-shade: oklch(0.17 0.03 190);
+  --scene-shade: oklch(0.15 0.005 260);
   --sunshine: oklch(0.89 0.16 90);
   --chart-1: var(--air);
   --chart-2: var(--food);
@@ -113,10 +113,10 @@
   --sidebar-border: var(--border);
   --sidebar-ring: var(--primary);
   --gradient-sky: linear-gradient(180deg, var(--background), var(--muted));
-  --gradient-primary: linear-gradient(135deg, var(--primary), oklch(0.39 0.075 195));
+  --gradient-primary: linear-gradient(135deg, var(--primary), oklch(0.65 0.17 30));
   --gradient-alert: linear-gradient(135deg, var(--radiation), oklch(0.4 0.14 20));
-  --shadow-panel: 0 3px 0 var(--border), 0 10px 24px -16px color-mix(in oklab, var(--foreground) 20%, transparent);
-  --shadow-glow: 0 3px 0 color-mix(in oklab, var(--primary) 70%, var(--foreground)), 0 8px 20px -12px var(--primary);
+  --shadow-panel: 0 8px 24px -12px color-mix(in oklab, var(--background) 80%, transparent);
+  --shadow-glow: 0 0 20px -8px var(--primary);
 }
 
 @layer base {
@@ -124,7 +124,7 @@
     border-color: var(--color-border);
   }
   html {
-    color-scheme: light;
+    color-scheme: dark;
   }
   body {
     background: var(--gradient-sky);
@@ -201,13 +201,4 @@
   --color-sunshine: var(--sunshine);
 }
 
-.adventure-scene { position: relative; overflow: hidden; }
-.adventure-scene img { width: 100%; height: 100%; object-fit: cover; }
-.mission-scene { height: 220px; border-radius: var(--radius); margin-bottom: 1.5rem; }
-.mission-scene img { object-position: center 48%; }
-.story-screen { border-top: 4px solid var(--primary); background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow-panel); }
-.resource-gauge { border-top-width: 4px; }
-.resource-gauge [role="meter"] { height: 14px; }
-.resource-gauge [role="meter"] > div { background-image: repeating-linear-gradient(90deg, transparent 0, transparent 18px, color-mix(in oklab, var(--card) 35%, transparent) 18px, color-mix(in oklab, var(--card) 35%, transparent) 21px); }
-@media (max-width: 640px) { .mission-scene { height: 170px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }

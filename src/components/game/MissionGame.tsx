@@ -22,8 +22,6 @@ import { SummaryOverlay } from "./SummaryOverlay";
 import { Term } from "./Term";
 import { TodayPanel } from "./TodayPanel";
 import { placeWords } from "@/game/words";
-import marsScene from "@/assets/mars-adventure.jpg";
-import moonScene from "@/assets/moon-adventure.jpg";
 
 interface Mission {
   sun: SunWindow;
@@ -241,9 +239,6 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
         </div>
       </div>
 
-      <div className="adventure-scene mission-scene">
-        <img src={state.place === "moon" ? moonScene : marsScene} alt={state.place === "moon" ? "Your illustrated Moon base with an astronaut, rover and Earth above" : "Your illustrated Mars base with an astronaut, rover and plant room"} width={1536} height={864} />
-      </div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-data text-xs uppercase tracking-widest text-primary">{P.base} · {P.on}</p>
