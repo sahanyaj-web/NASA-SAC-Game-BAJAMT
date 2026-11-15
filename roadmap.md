@@ -21,5 +21,5 @@
 - [x] Refresh the graphic theme and Moon/Mars imagery without changing gameplay
 - [x] Check the new look and unchanged mission flow on desktop and phone
 - [x] Replace the child faces in both space illustrations with smiling robot faces
-- [ ] Restore the realistic Mars visuals without changing gameplay
-- [ ] Check shared-link editing access and explain how to restrict editing to invited people
+- [x] Restore the realistic Mars visuals without changing gameplay
+- [ ] Restrict editor access to invited collaborators — blocked: invite-only project access requires Business or Enterprise; user must choose a sharing alternative
