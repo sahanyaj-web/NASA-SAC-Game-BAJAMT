@@ -25,9 +25,19 @@ export const Route = createFileRoute("/")({
 });
 
 const STEPS = [
-  { emoji: "☀️", title: "Pick a real Sun", text: "Every Sun flash and radiation storm in your trip really happened. NASA wrote them all down." },
-  { emoji: "📖", title: "Choose what happens next", text: "A problem appears. You have two choices. What will your crew do?" },
-  { emoji: "📡", title: "Earth is far away", text: "Messages take many minutes to reach Earth. In an emergency, YOU have to decide." },
+  { emoji: "🚀", title: "Choose your space home", text: "Press Start a mission. Pick a Moon base or a Mars base. The Moon is closer to Earth. Mars is farther away and has dust storms." },
+  { emoji: "☀️", title: "Choose your Sun days", text: "Pick Today's Sun for recent NASA records, Surprise me for a random set, or a saved famous storm. These are real records of what the Sun did, not made-up storms." },
+  { emoji: "📦", title: "Pack two boxes", text: "Choose two supply boxes for your crew. Read what each box helps with. You cannot take every box! When you have picked two, press Blast off." },
+  { emoji: "📖", title: "Read the day's problem", text: "Your crew will tell you what happened. Maybe dust is covering the power panels, or air is leaking. Look at your four supply bars before deciding." },
+  { emoji: "🤔", title: "Pick one of two choices", text: "Read You give up and You get for BOTH choices. Each choice helps in one way but costs something else. You can always pick either one. Choose what your crew needs most." },
+  { emoji: "📅", title: "See what happens and keep going", text: "Read what happened after your choice. Press Continue to see how your supplies changed that day, then move to the next day. Try to keep your crew safe for as many days as you can!" },
+];
+
+const SUPPLIES = [
+  { emoji: "🫁", title: "Air", text: "The air your crew needs to breathe.", tone: "text-air" },
+  { emoji: "🥬", title: "Food", text: "The meals your crew needs to eat.", tone: "text-food" },
+  { emoji: "🔋", title: "Power", text: "The stored energy that keeps your base's machines working.", tone: "text-power" },
+  { emoji: "🛡️", title: "Radiation safety", text: "How much protection your crew has left from harmful space rays. Water walls help protect them.", tone: "text-radiation" },
 ];
 
 const TRADES = [
@@ -49,8 +59,8 @@ function Index() {
             <p className="text-data text-sm uppercase tracking-widest text-sunshine">A Moon or Mars mission game · ages 7–12</p>
             <h1 className="mt-3 max-w-4xl text-4xl font-bold leading-tight sm:text-6xl">Junior Astronaut Mission Trainer</h1>
             <p className="mt-4 max-w-2xl text-lg sm:text-xl">
-              How long can your Moon or Mars crew survive? Start every system at 100%. Each problem has two choices. Keep air, food, power and radiation safety above zero! The Sun's storms come
-              from <strong>real NASA records</strong>.
+              You are in charge of a crew on the Moon or Mars! Help them solve a new problem each day.
+              Every choice helps something and costs something else. Keep your crew safe for as many days as you can.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button variant="mission" size="xl" asChild>
@@ -72,6 +82,7 @@ function Index() {
 
         <section className="mx-auto max-w-6xl px-4 py-6">
           <h2 className="text-3xl font-bold">How to play</h2>
+          <p className="mt-3 max-w-3xl text-lg text-muted-foreground">Your goal: survive as long as you can. There is no last day to reach—each new day is another chance to make a good choice.</p>
           <div className="mt-5 grid gap-4 md:grid-cols-3">
             {STEPS.map((s, i) => (
               <div key={s.title} className="panel p-6">
@@ -82,14 +93,28 @@ function Index() {
               </div>
             ))}
           </div>
+          <div className="mt-10 border-t pt-8">
+            <h3 className="text-2xl font-bold">Watch your four supply bars</h3>
+            <p className="mt-3 max-w-3xl text-muted-foreground">All four start at 100%. That means they are full. Your choices and the base's daily needs can make them go down or fill back up, but never above 100%.</p>
+            <dl className="mt-5 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {SUPPLIES.map((s) => (
+                <div key={s.title}>
+                  <dt className={`font-bold ${s.tone}`}><span aria-hidden>{s.emoji}</span> {s.title}</dt>
+                  <dd className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.text}</dd>
+                </div>
+              ))}
+            </dl>
+            <p className="mt-6 border-l-4 border-radiation pl-4 font-semibold">If ANY bar reaches 0%, your mission ends. Try again and see if different choices help you last longer!</p>
+            <p className="mt-4 max-w-3xl text-sm text-muted-foreground">Want to read the NASA facts? You can visit NASA Data and return to Play without losing your mission on this browser. Restart mission lets you start over—it asks you first.</p>
+          </div>
         </section>
 
         <section className="mx-auto max-w-6xl px-4 py-12">
           <div className="grid gap-6 py-6 sm:py-10 md:grid-cols-[1fr_1.3fr]">
             <div>
-              <h2 className="text-3xl font-bold">No choice is free</h2>
+              <h2 className="text-3xl font-bold">Every choice gives and takes</h2>
               <p className="mt-3 text-muted-foreground">
-                 Real NASA teams have to make the same kinds of choices. Protecting one supply can mean giving up something else.
+                 There is not always a perfect answer. For example, putting power panels away protects them from dust, but they cannot collect sunlight while packed away. Look at what your crew has left before you choose.
               </p>
             </div>
             <ul className="space-y-3">
