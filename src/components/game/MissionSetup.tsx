@@ -27,8 +27,8 @@ export function MissionSetup({
   const [place, setPlace] = useState<Place>("mars");
 
   useEffect(() => {
-    document.documentElement.dataset.missionWorld = place;
-    return () => { delete document.documentElement.dataset.missionWorld; };
+    document.documentElement.dataset['missionWorld'] = place;
+    return () => { delete document.documentElement.dataset['missionWorld']; };
   }, [place]);
 
   // The reset button only shows once the player has changed something.

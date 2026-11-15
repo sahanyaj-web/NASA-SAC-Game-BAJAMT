@@ -55,8 +55,8 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
 
   useEffect(() => {
     if (!state?.place) return;
-    document.documentElement.dataset.missionWorld = state.place;
-    return () => { delete document.documentElement.dataset.missionWorld; };
+    document.documentElement.dataset['missionWorld'] = state.place;
+    return () => { delete document.documentElement.dataset['missionWorld']; };
   }, [state?.place]);
 
   // Blast off changes the view on this same page, so router scrolling does not run.

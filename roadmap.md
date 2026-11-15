@@ -22,6 +22,6 @@
 - [x] Check the new look and unchanged mission flow on desktop and phone
 - [x] Replace the child faces in both space illustrations with smiling robot faces
 - [x] Restore the realistic Mars visuals without changing gameplay
-- [ ] Blend realistic Moon and Mars outposts into one matching front-page picture
-- [ ] Match setup and mission colors to the selected Moon or Mars world without changing rules
+- [x] Blend realistic Moon and Mars outposts into one matching front-page picture
+- [x] Match setup and mission colors to the selected Moon or Mars world without changing rules
 - [ ] Restrict editor access to invited collaborators — blocked: invite-only project access requires Business or Enterprise; user must choose a sharing alternative
