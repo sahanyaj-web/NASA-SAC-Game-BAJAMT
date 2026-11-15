@@ -28,6 +28,11 @@ export const SHOP: ShopItem[] = [
   { id: "battery", name: "Extra battery", emoji: "🔋", price: 20, what: "Saves more power for cold nights and fills it.", apply: (s) => ({ ...s, batteryCap: s.batteryCap + 4, battery: s.battery + 4 }) },
   { id: "solar", name: "Bigger solar panels", emoji: "☀️", price: 25, once: true, what: "Makes more power every day.", apply: (s) => addCrate(s, "solar") },
   { id: "rover", name: "Rover", emoji: "🚙", price: 25, once: true, what: "A robot car that helps grow food every day.", apply: (s) => addCrate(s, "rover") },
+  { id: "brushbot", name: "Dust brush robot", emoji: "🧹", price: 10, what: "Brushes all the dust off your solar panels right now.", apply: (s) => ({ ...s, panel: 1 }) },
+  { id: "supplyrocket", name: "Supply rocket", emoji: "🚀", price: 12, what: "A rocket from Earth drops off air and food, filling both up.", apply: (s) => ({ ...s, air: s.airCap, food: s.foodCap }) },
+  { id: "radiodish", name: "Big radio dish", emoji: "📡", price: 20, once: true, what: "A bigger battery room comes with the dish: stores more power and fills it.", apply: (s) => ({ ...s, batteryCap: s.batteryCap + 3, battery: s.batteryCap + 3 }) },
+  { id: "livingdome", name: "Extra living dome", emoji: "🏠", price: 30, once: true, what: "More room for air tanks and food shelves: holds more of both and fills them.", apply: (s) => ({ ...s, airCap: s.airCap + 1, air: s.airCap + 1, foodCap: s.foodCap + 2, food: s.foodCap + 2 }) },
+  { id: "bermwall", name: "Dirt wall", emoji: "🧱", price: 25, once: true, what: "Robots pile dirt around the base to block more radiation.", apply: (s) => ({ ...s, shieldBonus: Math.min(SHIELD_FACTOR.length - 1, s.shieldBonus + 1) }) },
 ];
 
 export function canBuy(s: GameState, item: ShopItem): boolean {

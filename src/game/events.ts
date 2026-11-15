@@ -534,4 +534,88 @@ export const DECK: DeckCard[] = [
       ],
     }),
   },
+  {
+    id: "lunarnight",
+    weight: 3,
+    when: (s) => s.place === "moon",
+    build: () => ({
+      id: "lunarnight", kind: "deck", who: "leo", title: "The long Moon night is coming", emoji: "🌑",
+      text: `"Night on the Moon lasts about two Earth weeks," says the engineer. "It gets colder than a freezer. How do we keep warm?"`,
+      fact: { text: "One day-and-night on the Moon lasts about 29 Earth days, so night lasts about two weeks and gets super cold.", source: "NASA — Moon facts", url: "https://science.nasa.gov/moon/facts/" },
+      options: [
+        { id: "heat", label: "Burn extra oxygen in the heaters", cost: "Some stored air", gain: "The crew stays cozy", effect: { air: -0.8 }, outcome: "The heaters hum all night. Everyone sleeps warm and toasty." },
+        { id: "blankets", label: "Turn heat down and use blankets", cost: "Cold plants grow slower: some stored food", gain: "Save air", effect: { food: -1 }, outcome: "The crew wraps up like burritos. The plants shiver and grow a little less." },
+      ],
+    }),
+  },
+  {
+    id: "moonquake",
+    weight: 2,
+    when: (s) => s.place === "moon",
+    build: () => ({
+      id: "moonquake", kind: "deck", who: "sam", title: "A moonquake shakes the base!", emoji: "🫨",
+      text: `Rumble! The floor wobbles. "Moonquakes are real," says the scientist. "Something may have cracked."`,
+      fact: { text: "Apollo astronauts left machines on the Moon that felt moonquakes. Some shook for over 10 minutes!", source: "NASA — Moonquakes", url: "https://science.nasa.gov/moon/moonquakes/" },
+      options: [
+        { id: "check", label: "Go outside and check the walls", cost: walkCost, gain: "Cracks fixed before they grow", effect: { air: -EVA_AIR, dose: EVA_DOSE }, outcome: "The crew finds a small crack and seals it. The base is safe." },
+        { id: "stay", label: "Stay inside and hope", cost: "A crack lets air slowly leak out", gain: "Nobody goes outside", effect: { air: -1.2 }, outcome: "A tiny crack hisses all day. The air tanks get lower." },
+      ],
+    }),
+  },
+  {
+    id: "earthrise",
+    weight: 2,
+    when: (s) => s.place === "moon",
+    build: () => ({
+      id: "earthrise", kind: "deck", who: "ada", title: "Earth is shining in the sky", emoji: "🌍",
+      text: `"Look out the window!" says the commander. "You can see our whole home planet. The crew misses their families."`,
+      fact: { text: "Apollo 8 astronauts took the famous \"Earthrise\" photo of Earth rising over the Moon in 1968.", source: "NASA — Earthrise", url: "https://www.nasa.gov/image-article/apollo-8-earthrise/" },
+      options: [
+        { id: "call", label: "Make a long video call home", cost: "Some air is used running the big radio", gain: "Happy crew: more food grown for 2 days", effect: { air: -0.3, status: [{ id: "happyCrew", sols: 2 }] }, outcome: "Everyone waves at their families. Big smiles all around!" },
+        { id: "work", label: "Keep working instead", cost: "Homesick crew: less food grown for 2 days", gain: "No supplies used", effect: { status: [{ id: "fatigue", sols: 2 }] }, outcome: "The crew gets back to work, but they keep peeking at Earth." },
+      ],
+    }),
+  },
+  {
+    id: "dustdevil",
+    weight: 2,
+    when: (s) => s.place === "mars" && s.panel < 0.95,
+    build: () => ({
+      id: "dustdevil", kind: "deck", who: "sam", title: "A dust devil is spinning nearby!", emoji: "🌀",
+      text: `"A twirling tower of wind is coming!" says the scientist. "Sometimes they blow dust OFF solar panels — or knock things over."`,
+      fact: { text: "Mars dust devils sometimes cleaned the solar panels of NASA's Spirit and Opportunity rovers, giving them more power.", source: "NASA — Spirit and Opportunity", url: "https://science.nasa.gov/mission/mars-exploration-rovers-spirit-and-opportunity/" },
+      options: [
+        { id: "let", label: "Leave everything out", cost: "The wind knocks over a plant rack: some stored food", gain: "Panels get blown clean", effect: { setPanel: 1, food: -0.8 }, outcome: "Whoosh! The panels sparkle — but a plant rack tipped over." },
+        { id: "tie", label: "Tie everything down", cost: "Tying down takes work: some stored air", gain: "Nothing breaks", effect: { air: -0.4 }, outcome: "Everything is tied tight. The dust devil spins away." },
+      ],
+    }),
+  },
+  {
+    id: "frost",
+    weight: 2,
+    when: (s) => s.place === "mars",
+    build: () => ({
+      id: "frost", kind: "deck", who: "leo", title: "Frost on everything!", emoji: "❄️",
+      text: `"It got super cold last night," says the engineer. "There's frost on the panels and the air maker is frozen."`,
+      fact: { text: "NASA's Viking 2 lander saw frost on the ground at Mars. Mars nights can be colder than Antarctica.", source: "NASA — Mars facts", url: "https://science.nasa.gov/mars/facts/" },
+      options: [
+        { id: "warm", label: "Warm up the air maker with food-plant heaters", cost: "Plants get colder: some stored food", gain: "Air maker works right away", effect: { food: -0.8 }, outcome: "The air maker thaws out and starts puffing fresh air again." },
+        { id: "wait", label: "Wait for the Sun to melt it", cost: "Half the air today", gain: "Keep the plants warm", effect: { status: [{ id: "airClog", sols: 1 }] }, outcome: "By afternoon the frost melts, but the base made less air today." },
+      ],
+    }),
+  },
+  {
+    id: "salty",
+    weight: 2,
+    when: (s) => s.place === "mars",
+    build: () => ({
+      id: "salty", kind: "deck", who: "mia", title: "Yucky salt in the dirt", emoji: "🧂",
+      text: `"Mars dirt has a salt that's bad for plants and people," says the doctor. "We want to grow food in it."`,
+      fact: { text: "NASA's Phoenix lander found a salt called perchlorate in Mars soil. It must be washed out before growing food.", source: "NASA — Phoenix lander", url: "https://science.nasa.gov/mission/phoenix/" },
+      options: [
+        { id: "wash", label: "Wash the dirt with water", cost: "That water was saved to make air: some stored air", gain: "Plants grow safely: more food", effect: { air: -0.6, food: 0.8 }, outcome: "The crew rinses the dirt clean. Little sprouts pop up!" },
+        { id: "skip", label: "Only use the old plant trays", cost: "Less food grown", gain: "Save water and air", effect: { food: -0.5 }, outcome: "The old trays keep working, but there's less salad this week." },
+      ],
+    }),
+  },
 ];
