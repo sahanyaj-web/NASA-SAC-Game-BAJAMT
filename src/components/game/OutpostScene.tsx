@@ -35,7 +35,7 @@ function rng(seed: number) {
 function Terrain({ moon, tex }: { moon: boolean; tex: THREE.Texture }) {
   const geo = useMemo(() => {
     const g = new THREE.PlaneGeometry(120, 120, 160, 160);
-    const pos = g.attributes.position;
+    const pos = g.getAttribute("position") as THREE.BufferAttribute;
     const r = rng(moon ? 7 : 11);
     const craters = Array.from({ length: moon ? 40 : 14 }, () => ({ x: r() * 110 - 55, y: r() * 110 - 55, rad: 1 + r() * (moon ? 5 : 3) }));
     for (let i = 0; i < pos.count; i++) {
