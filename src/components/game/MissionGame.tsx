@@ -17,6 +17,7 @@ import { EventOverlay } from "./EventOverlay";
 import { Gauge } from "./Gauge";
 import { MissionReport } from "./MissionReport";
 import { MissionSetup, type SunChoice } from "./MissionSetup";
+import { OutpostView } from "./OutpostView";
 import { ShopPanel } from "./ShopPanel";
 import { buyItem } from "@/game/shop";
 import { SourceBadge } from "./SourceBadge";
@@ -54,6 +55,7 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
   const [summary, setSummary] = useState<{ sol: number; report: SolReport } | null>(null);
   const [showReport, setShowReport] = useState(false);
   const [askRestart, setAskRestart] = useState(false);
+  const [viewOutpost, setViewOutpost] = useState(false);
 
   useEffect(() => {
     if (!state?.place) return;
@@ -240,6 +242,9 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
           <Button variant="panel" size="sm" onClick={() => setAskRestart(true)}>
             🔁 Restart mission
           </Button>
+          <Button variant="panel" size="sm" onClick={() => setViewOutpost((v) => !v)}>
+            {viewOutpost ? "✖ Close outpost view" : "🔭 View outpost"}
+          </Button>
           {askRestart && (
             <span className="flex flex-wrap items-center gap-2 rounded-xl border border-radiation/60 bg-radiation/10 p-2 text-sm">
               <span className="font-semibold">Start a brand-new mission? This erases the one you're on.</span>
@@ -289,6 +294,7 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
         {event && !summary && <EventOverlay key={`${state.sol}-${event.id}`} inline event={event} state={state} link={link} onChoose={choose} onClose={closeEvent} />}
       </div>
 
+      {viewOutpost && <OutpostView state={state} />}
       <ShopPanel state={state} onBuy={(id) => setState(buyItem(state, id))} />
 
       <div className="mt-6 flex justify-center">
