@@ -53,6 +53,12 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
   const [showReport, setShowReport] = useState(false);
   const [askRestart, setAskRestart] = useState(false);
 
+  useEffect(() => {
+    if (!state?.place) return;
+    document.documentElement.dataset.missionWorld = state.place;
+    return () => { delete document.documentElement.dataset.missionWorld; };
+  }, [state?.place]);
+
   // Blast off changes the view on this same page, so router scrolling does not run.
   // Wait until the mission has rendered before resetting the setup's scroll position.
   useEffect(() => {
