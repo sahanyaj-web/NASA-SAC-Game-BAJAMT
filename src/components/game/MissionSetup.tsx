@@ -4,6 +4,8 @@ import { ARCHIVED_SUN } from "@/game/data/sun-archive";
 import { CRATES, CRATE_PICKS } from "@/game/engine";
 import type { CrateId, Place } from "@/game/types";
 import { cn } from "@/lib/utils";
+import marsScene from "@/assets/mars-adventure.jpg";
+import moonScene from "@/assets/moon-adventure.jpg";
 
 export type SunChoice = { kind: "recent" } | { kind: "random" } | { kind: "archived"; id: string };
 
@@ -55,20 +57,22 @@ export function MissionSetup({
         <h2 className="mt-1 text-3xl font-bold sm:text-4xl">Where is your base? 🚀</h2>
         <p className="mt-2 max-w-2xl text-muted-foreground">Each place has its own real NASA facts, dangers and message wait.</p>
         <div className="mt-5 grid gap-3 md:grid-cols-2">
-          <button type="button" aria-pressed={place === "moon"} className={sunCard(place === "moon")} onClick={() => setPlace("moon")}>
+          <Button variant="panel" type="button" aria-pressed={place === "moon"} className={cn(sunCard(place === "moon"), "h-auto flex-col items-stretch whitespace-normal overflow-hidden")} onClick={() => setPlace("moon")}>
+            <img src={moonScene} alt="A friendly astronaut and rover at a Moon base with Earth overhead" width={1536} height={864} className="mb-4 aspect-[16/8] w-full rounded-md object-cover" />
             <p className="font-display text-xl font-semibold">🌕 Moon base</p>
             <p className="mt-1 text-sm text-muted-foreground">
               Close to home: messages reach Earth in about 1 second. But the Moon has no air at all, so radiation is about twice as strong as on Mars.
             </p>
             <p className="mt-1 text-xs text-muted-foreground">Uses NASA's Moon orbiter, Apollo and Artemis facts.</p>
-          </button>
-          <button type="button" aria-pressed={place === "mars"} className={sunCard(place === "mars")} onClick={() => setPlace("mars")}>
+          </Button>
+          <Button variant="panel" type="button" aria-pressed={place === "mars"} className={cn(sunCard(place === "mars"), "h-auto flex-col items-stretch whitespace-normal overflow-hidden")} onClick={() => setPlace("mars")}>
+            <img src={marsScene} alt="A friendly astronaut and rover beside a Mars base and plant room" width={1536} height={864} className="mb-4 aspect-[16/8] w-full rounded-md object-cover" />
             <p className="font-display text-xl font-semibold">🔴 Mars base</p>
             <p className="mt-1 text-sm text-muted-foreground">
               Far away: messages take many minutes, so you must decide alone. Thin air blocks a little radiation, but dust storms can hide the Sun.
             </p>
             <p className="mt-1 text-xs text-muted-foreground">Uses real weather from NASA's Curiosity rover.</p>
-          </button>
+          </Button>
         </div>
       </section>
 

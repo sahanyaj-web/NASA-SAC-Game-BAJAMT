@@ -18,3 +18,6 @@
 - [x] Open every page at the top, including return visits
 - [x] Remove research and replace its choice costs with remaining supplies
 - [x] Verify navigation and four-system missions
+- [x] Refresh the graphic theme and Moon/Mars imagery without changing gameplay
+- [x] Check the new look and unchanged mission flow on desktop and phone
+- [x] Replace the child faces in both space illustrations with smiling robot faces
