@@ -53,6 +53,12 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
   const [showReport, setShowReport] = useState(false);
   const [askRestart, setAskRestart] = useState(false);
 
+  // Blast off changes the view on this same page, so router scrolling does not run.
+  // Wait until the mission has rendered before resetting the setup's scroll position.
+  useEffect(() => {
+    if (mission) window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [mission]);
+
   // Bring back a saved mission after the page loads (runs once, in the browser only).
   useEffect(() => {
     try {
