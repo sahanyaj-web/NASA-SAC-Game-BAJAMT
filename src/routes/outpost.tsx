@@ -47,7 +47,7 @@ function OutpostPage() {
       <SiteHeader />
       <main className="mx-auto max-w-7xl px-3 py-6 sm:px-6">
         <h1 className="text-3xl font-bold sm:text-4xl">🔭 Your outpost</h1>
-        <p className="mt-2 max-w-3xl text-muted-foreground">Every 2 days you survive in your mission, you earn 🪙 1 coin. Spend your coins in the NASA Commodities shop below, then watch your base grow in the 3D view!</p>
+        <p className="mt-2 max-w-3xl text-muted-foreground">Every 2 days you survive in your mission, you earn 🪙 1 coin. Spend your coins in the commodities shop below, then watch your base grow in the 3D view!</p>
         {!state ? (
           <div className="mt-4 rounded-2xl border border-border bg-card p-6">
             <p className="mb-4">Start a mission first. Then you can see your base here and spend your coins.</p>
