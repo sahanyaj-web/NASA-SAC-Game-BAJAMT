@@ -125,4 +125,7 @@ export interface GameState {
   over: null | { result: "air" | "food" | "power" | "dose"; message: string };
   seed: number;
   place: Place;
+  /** Coins earned at survival milestones, spent in the NASA Commodities shop. */
+  coins: number;
+  purchases: string[];
 }
