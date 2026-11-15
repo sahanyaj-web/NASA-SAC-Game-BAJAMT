@@ -57,7 +57,7 @@ function Index() {
                 <Link to="/play">🚀 Start a mission</Link>
               </Button>
               <Button variant="panel" size="xl" asChild>
-                <Link to="/science">🔭 The real science</Link>
+                <Link to="/science">🔭 NASA Resources</Link>
               </Button>
             </div>
           </div>
