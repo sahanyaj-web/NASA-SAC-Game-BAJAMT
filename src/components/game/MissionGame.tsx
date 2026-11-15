@@ -5,7 +5,7 @@ import { MARS_WEATHER } from "@/game/data/mars-weather";
 import { MOON_WEATHER } from "@/game/data/moon-weather";
 import {
   chooseOption, createGame, endStoryDay, eventForSol, mulberry32, resourcePercentages,
-  stormEvent, type Shelter, type SolReport,
+  returningStory, stormEvent, type Shelter, type SolReport,
 } from "@/game/engine";
 import { DECK, firstDayEvent } from "@/game/events";
 import { earthMars, earthMoon } from "@/game/orbit";
@@ -33,8 +33,11 @@ interface Mission {
 // Progress is kept in the browser so leaving for "Real facts" and coming back
 // does not lose the mission. Cleared when a mission ends and a new one starts.
 const SAVE_KEY = "jam-mission-save";
+// Stays the same across in-app navigation; a reopened page gets a new visit.
+const VISIT_ID = Math.random().toString(36).slice(2);
 
 interface SaveData {
+  visitId?: string;
   mission: Mission;
   state: GameState;
   shelter: Shelter;
@@ -73,7 +76,6 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
       const saved = JSON.parse(raw) as SaveData;
       if (saved.mission && saved.state && !saved.state.over) {
         setMission(saved.mission);
-        setState(saved.state);
         setShelter(saved.shelter);
         setSummary(saved.summary);
         // Refresh pending choices from current rules without erasing the trip.
@@ -84,7 +86,23 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
           : saved.event.kind === "deck"
             ? DECK.find((card) => card.id === saved.event?.id)?.build(saved.state, wait) ?? null
             : space ? stormEvent({ space, prevSpace: recordForDay(saved.mission.schedule, saved.state.sol - 1) }, wait, saved.state.place) : null;
-        setEvent(currentEvent);
+        // A choice already paid for must never be offered (and charged) twice.
+        const alreadyChosen = saved.state.story.some((choice) => choice.sol === saved.state.sol);
+        if (currentEvent && alreadyChosen && !saved.summary && space) {
+          const weather = recordForDay(saved.mission.weather.sols, saved.state.sol);
+          if (weather) {
+            const next = endStoryDay(saved.state, { weather, space, prevSpace: recordForDay(saved.mission.schedule, saved.state.sol - 1), shelter: saved.shelter });
+            setState(next.state);
+            setSummary({ sol: saved.state.sol, report: next.report });
+            setEvent(null);
+            return;
+          }
+        }
+        const resumed = currentEvent && !saved.summary && saved.visitId !== VISIT_ID
+          ? returningStory(saved.state, currentEvent, wait, Math.random())
+          : { state: saved.state, event: currentEvent };
+        setState(resumed.state);
+        setEvent(resumed.event);
       }
     } catch {
       // A broken or old save is ignored.
@@ -98,7 +116,7 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
         window.localStorage.removeItem(SAVE_KEY);
         return;
       }
-      const data: SaveData = { mission, state, shelter, summary, showReport, event };
+      const data: SaveData = { visitId: VISIT_ID, mission, state, shelter, summary, showReport, event };
       window.localStorage.setItem(SAVE_KEY, JSON.stringify(data));
     } catch {
       // Storage full or unavailable: the game still works, it just won't save.

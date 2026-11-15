@@ -4,7 +4,7 @@ import {
   FOOD_PER_POWER, LATE_SHELTER_FACTOR, MARS_SURFACE_MSV_PER_SOL, MAX_ALLOC, MISSION_DOSE_LIMIT,
   MOON_DUST_PER_DAY, MOON_SURFACE_MSV_PER_DAY, SHELTER_FACTOR, SHIELD_FACTOR, heaterCost, stormDoseFor,
 } from "./constants";
-import { DECK, firstDayEvent } from "./events";
+import { DECK } from "./events";
 import { flarePhrase, placeWords } from "./words";
 import type { Allocation, CrateId, Place, Effect, EventOption, GameEvent, GameState, MarsWeatherSol, SolSpaceWeather } from "./types";
 
@@ -233,9 +233,8 @@ export function stormEvent(ctx: Pick<SolContext, "space" | "prevSpace">, _oneWay
   };
 }
 
-/** Every day tells a story: day 1 is the landing, later days draw a new problem from the deck. */
+/** Every day, including the first, draws a problem from the story deck. */
 export function drawDeckEvent(s: GameState, oneWayMin: number): GameEvent | null {
-  if (s.sol === 1) return firstDayEvent(s);
   const rng = mulberry32(s.seed * 31 + s.sol * 977);
   const eligible = DECK.filter((c) => !c.when || c.when(s));
   const unseen = eligible.filter((c) => !s.seenEvents.includes(c.id));
@@ -253,6 +252,18 @@ export function drawDeckEvent(s: GameState, oneWayMin: number): GameEvent | null
 
 export function eventForSol(s: GameState, ctx: Pick<SolContext, "space" | "prevSpace">, oneWayMin: number) {
   return stormEvent(ctx, oneWayMin, s.place) ?? drawDeckEvent(s, oneWayMin);
+}
+
+/** New browser visits rotate unanswered stories, not NASA emergencies or completed choices. */
+export function returningStory(s: GameState, previous: GameEvent, oneWayMin: number, random: number) {
+  if (previous.kind !== "deck" || s.story.some((choice) => choice.sol === s.sol)) {
+    return { state: s, event: previous };
+  }
+  const eligible = DECK.filter((card) => card.id !== previous.id && (!card.when || card.when(s)));
+  const unseen = eligible.filter((card) => !s.seenEvents.includes(card.id));
+  const pool = unseen.length ? unseen : eligible;
+  const card = pool[Math.min(pool.length - 1, Math.max(0, Math.floor(random * pool.length)))];
+  return card ? { state: markSeen(s, previous.id), event: card.build(s, oneWayMin) } : { state: s, event: previous };
 }
 
 export interface SolReport {

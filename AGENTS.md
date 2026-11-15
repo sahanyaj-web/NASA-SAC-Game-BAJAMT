@@ -35,6 +35,7 @@ use the editor.
 - Set the document's mission-world theme only while setup or gameplay is mounted and derive it from the current place; global CSS owns world palettes and resource colors remain stable. Why: selection, restored missions and reports match their world without leaking the theme to other pages.
 
 - Game rules live in pure modules under `src/game/` (engine, events, orbit, space-weather); UI components never compute outcomes themselves. Why: keeps rules testable in `src/game/engine.test.ts`.
+- Rotate unanswered story cards through the pure engine on a new document visit, retaining supplies, completed choices and NASA emergencies; in-app navigation retains the current card. Why: returning players get variety without losing progress or paying for a choice twice.
 - Every real-world number in the game is defined once in `src/game/constants.ts` with its source in a comment. Why: judges and teachers must be able to trace each value.
 - Live NASA DONKI data is fetched directly from the browser (`ccmc.gsfc.nasa.gov/DONKI/WS/get`, CORS-enabled, no key); any failure falls back to the embedded archive and the UI must label it SAVED (never LIVE). Why: never present static data as live.
 - Embedded datasets in `src/game/data/` are generated snapshots of real NASA sources; regenerate rather than hand-edit values. Why: data authenticity.

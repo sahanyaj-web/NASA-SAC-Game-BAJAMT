@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyEffect, checkOver, chooseOption, createGame, endSol, endStoryDay, eventForSol, forecast, powerToday, resourcePercentages, stormEvent } from "./engine";
+import { applyEffect, checkOver, chooseOption, createGame, endSol, endStoryDay, eventForSol, forecast, powerToday, resourcePercentages, returningStory, stormEvent } from "./engine";
 import { CREW_CAST, DECK, firstDayEvent } from "./events";
 import { earthMars, earthMoon } from "./orbit";
 import { buildSchedule, recordForDay } from "./space-weather";
@@ -9,6 +9,45 @@ import type { SolContext } from "./engine";
 const quietDay = { date: "2020-01-01", flares: [], strongestFlare: null, sep: false, cmeLaunches: [], cmeArrival: null };
 const mild = { sol: 1, min: -70, max: -10, pressure: 800, uv: "Moderate" };
 const ctx = (over: Partial<SolContext> = {}): SolContext => ({ weather: mild, space: quietDay, shelter: "none", ...over });
+
+describe("different stories on return", () => {
+  it.each(["mars", "moon"] as const)("never repeats the pending story on %s and keeps supplies and days", (place) => {
+    let state = createGame(42, [], place);
+    let event = firstDayEvent(state);
+    for (let visit = 0; visit < 40; visit++) {
+      const next = returningStory(state, event, 10, (visit % 10) / 10);
+      expect(next.event.id).not.toBe(event.id);
+      expect(next.event.options).toHaveLength(2);
+      expect(resourcePercentages(next.state)).toEqual(resourcePercentages(state));
+      expect(next.state.sol).toBe(1);
+      expect(next.state.story).toEqual(state.story);
+      state = next.state;
+      event = next.event;
+    }
+  });
+
+  it("does not replace an already paid choice", () => {
+    const game = createGame(1, []);
+    const event = firstDayEvent(game);
+    const option = event.options[0];
+    if (!option) throw new Error("Missing choice");
+    const chosen = chooseOption(game, event, option);
+    expect(returningStory(chosen, event, 10, 0)).toEqual({ state: chosen, event });
+  });
+
+  it("keeps emergencies tied to actual NASA records", () => {
+    const game = createGame(1, []);
+    const event = stormEvent({ space: { ...quietDay, sep: true } }, 10);
+    if (!event) throw new Error("Missing NASA storm");
+    expect(returningStory(game, event, 10, 0)).toEqual({ state: game, event });
+  });
+
+  it("new missions do not always open with the same landing story", () => {
+    const ids = new Set(Array.from({ length: 20 }, (_, seed) => eventForSol(createGame(seed, []), ctx(), 10)?.id));
+    expect(ids.size).toBeGreaterThan(1);
+    expect(ids.has("landing")).toBe(false);
+  });
+});
 
 describe("life support", () => {
   it.each(["air", "food", "battery"] as const)("zero %s immediately loses the game", (resource) => {
