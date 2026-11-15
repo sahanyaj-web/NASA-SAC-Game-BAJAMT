@@ -1,5 +1,5 @@
 import { Canvas } from "@react-three/fiber";
-import { Environment, Lightformer, OrbitControls, Stars } from "@react-three/drei";
+import { Environment, Html, Lightformer, OrbitControls, Stars } from "@react-three/drei";
 import { useMemo } from "react";
 import * as THREE from "three";
 import type { GameState } from "@/game/types";
