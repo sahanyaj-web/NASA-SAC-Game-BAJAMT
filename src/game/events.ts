@@ -471,7 +471,7 @@ export const DECK: DeckCard[] = [
       fact: { text: "Astronauts on the Space Station often answer questions from school kids.", source: "NASA — Space Station", url: "https://www.nasa.gov/international-space-station/" },
       options: [
         {
-          id: "answer", label: "Record video answers", cost: "Recording takes all morning: Some stored food gives the crew energy to exercise", gain: "Happy crew: more food grown for 2 days",
+          id: "answer", label: "Record video answers", cost: "Some air is used while setting up the camera", gain: "Happy crew: more food grown for 2 days",
           effect: { air: -0.2, status: [{ id: "happyCrew", sols: 2 }] },
           outcome: "The crew answers every question (no, they don't sleep upside down!). Soon, the kids cheer.",
         },
