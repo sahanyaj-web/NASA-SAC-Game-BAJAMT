@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Rotate unanswered scenarios when reopening the game, keep saved progress, and test both worlds
 - [x] Start all four survival systems at 100% and cap increases at 100%
 - [x] Continue missions without a day limit; end when any survival system reaches zero
 - [x] Update choices, reports and NASA record labels; test survival on both worlds
