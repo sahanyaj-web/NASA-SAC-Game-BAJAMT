@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ARCHIVED_SUN } from "@/game/data/sun-archive";
 import { CRATES, CRATE_PICKS } from "@/game/engine";
@@ -25,6 +25,11 @@ export function MissionSetup({
   const [sun, setSun] = useState<SunChoice>(startingSun);
   const [crates, setCrates] = useState<CrateId[]>([]);
   const [place, setPlace] = useState<Place>("mars");
+
+  useEffect(() => {
+    document.documentElement.dataset['missionWorld'] = place;
+    return () => { delete document.documentElement.dataset['missionWorld']; };
+  }, [place]);
 
   // The reset button only shows once the player has changed something.
   const changed = place !== "mars" || !sameSun(sun, startingSun) || crates.length > 0;

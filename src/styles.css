@@ -119,6 +119,35 @@
   --shadow-glow: 0 0 20px -8px var(--primary);
 }
 
+/* World themes change presentation only; resource colors keep their meaning. */
+html[data-mission-world="mars"] {
+  --background: oklch(0.19 0.015 35);
+  --card: oklch(0.24 0.018 35);
+  --secondary: oklch(0.30 0.02 35);
+  --muted: oklch(0.28 0.016 35);
+  --muted-foreground: oklch(0.74 0.022 55);
+  --border: oklch(0.38 0.03 35);
+  --panel-raised: oklch(0.29 0.018 35);
+  --primary: oklch(0.74 0.16 40);
+  --primary-foreground: oklch(0.16 0.01 40);
+  --gradient-primary: linear-gradient(135deg, var(--primary), oklch(0.65 0.17 30));
+}
+
+html[data-mission-world="moon"] {
+  --background: oklch(0.17 0.008 250);
+  --foreground: oklch(0.95 0.008 250);
+  --card: oklch(0.24 0.012 250);
+  --secondary: oklch(0.31 0.015 250);
+  --muted: oklch(0.28 0.012 250);
+  --muted-foreground: oklch(0.77 0.022 245);
+  --border: oklch(0.42 0.022 250);
+  --panel-raised: oklch(0.30 0.015 250);
+  --primary: oklch(0.84 0.045 235);
+  --primary-foreground: oklch(0.18 0.016 250);
+  --accent: oklch(0.78 0.10 230);
+  --gradient-primary: linear-gradient(135deg, var(--primary), oklch(0.73 0.075 235));
+}
+
 @layer base {
   * {
     border-color: var(--color-border);

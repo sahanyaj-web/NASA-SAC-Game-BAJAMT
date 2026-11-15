@@ -32,6 +32,7 @@ use the editor.
 ## Project rules
 
 - Keep mission scenery in presentation components and theme colors in global CSS; no visual refresh may alter the pure game rules. Why: graphics stay independent of mission outcomes.
+- Set the document's mission-world theme only while setup or gameplay is mounted and derive it from the current place; global CSS owns world palettes and resource colors remain stable. Why: selection, restored missions and reports match their world without leaking the theme to other pages.
 
 - Game rules live in pure modules under `src/game/` (engine, events, orbit, space-weather); UI components never compute outcomes themselves. Why: keeps rules testable in `src/game/engine.test.ts`.
 - Every real-world number in the game is defined once in `src/game/constants.ts` with its source in a comment. Why: judges and teachers must be able to trace each value.

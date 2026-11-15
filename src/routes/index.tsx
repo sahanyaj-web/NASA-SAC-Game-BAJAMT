@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import hero from "@/assets/mars-outpost-hero.jpg";
+import hero from "@/assets/moon-mars-outposts.jpg";
 import { Button } from "@/components/ui/button";
 import { LiveStrip } from "@/components/game/LiveStrip";
 import { SiteHeader } from "@/components/game/SiteHeader";
@@ -43,7 +43,7 @@ function Index() {
       <SiteHeader />
       <main>
         <section className="relative overflow-hidden">
-          <img src={hero} alt="Astronauts exploring a realistic Mars outpost with habitats, solar panels, a rover and a plant room" width={1536} height={864} className="absolute inset-0 h-full w-full object-cover" />
+          <img src={hero} alt="Matching Moon and Mars outposts: silver lunar ground and Earth on the left, red Martian ground and sunset on the right" width={1536} height={864} className="absolute inset-0 h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-scene-shade via-scene-shade/60 to-scene-shade/10" />
           <div className="relative mx-auto flex min-h-[min(78vh,800px)] max-w-6xl flex-col justify-end px-4 pb-10 pt-28 text-scene-foreground">
             <p className="text-data text-sm uppercase tracking-widest text-sunshine">A Moon or Mars mission game · ages 7–12</p>
