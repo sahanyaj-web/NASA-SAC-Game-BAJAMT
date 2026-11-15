@@ -238,7 +238,9 @@ export function drawDeckEvent(s: GameState, oneWayMin: number): GameEvent | null
   const rng = mulberry32(s.seed * 31 + s.sol * 977);
   const eligible = DECK.filter((c) => !c.when || c.when(s));
   const unseen = eligible.filter((c) => !s.seenEvents.includes(c.id));
-  const pool = (unseen.length ? unseen : eligible)
+  const previousId = s.seenEvents[s.seenEvents.length - 1];
+  const different = eligible.filter((card) => card.id !== previousId);
+  const pool = (unseen.length ? unseen : different.length ? different : eligible)
     .map((c) => ({ c, e: c.build(s, oneWayMin) }));
   if (!pool.length) return null;
   const total = pool.reduce((t, p) => t + p.c.weight, 0);
@@ -252,18 +254,6 @@ export function drawDeckEvent(s: GameState, oneWayMin: number): GameEvent | null
 
 export function eventForSol(s: GameState, ctx: Pick<SolContext, "space" | "prevSpace">, oneWayMin: number) {
   return stormEvent(ctx, oneWayMin, s.place) ?? drawDeckEvent(s, oneWayMin);
-}
-
-/** New browser visits rotate unanswered stories, not NASA emergencies or completed choices. */
-export function returningStory(s: GameState, previous: GameEvent, oneWayMin: number, random: number) {
-  if (previous.kind !== "deck" || s.story.some((choice) => choice.sol === s.sol)) {
-    return { state: s, event: previous };
-  }
-  const eligible = DECK.filter((card) => card.id !== previous.id && (!card.when || card.when(s)));
-  const unseen = eligible.filter((card) => !s.seenEvents.includes(card.id));
-  const pool = unseen.length ? unseen : eligible;
-  const card = pool[Math.min(pool.length - 1, Math.max(0, Math.floor(random * pool.length)))];
-  return card ? { state: markSeen(s, previous.id), event: card.build(s, oneWayMin) } : { state: s, event: previous };
 }
 
 export interface SolReport {

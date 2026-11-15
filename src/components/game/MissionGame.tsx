@@ -5,7 +5,7 @@ import { MARS_WEATHER } from "@/game/data/mars-weather";
 import { MOON_WEATHER } from "@/game/data/moon-weather";
 import {
   chooseOption, createGame, endStoryDay, eventForSol, mulberry32, resourcePercentages,
-  returningStory, stormEvent, type Shelter, type SolReport,
+  stormEvent, type Shelter, type SolReport,
 } from "@/game/engine";
 import { DECK, firstDayEvent } from "@/game/events";
 import { earthMars, earthMoon } from "@/game/orbit";
@@ -30,14 +30,11 @@ interface Mission {
   notice?: string | undefined;
 }
 
-// Progress is kept in the browser so leaving for "Real facts" and coming back
-// does not lose the mission. Cleared when a mission ends and a new one starts.
-const SAVE_KEY = "jam-mission-save";
-// Stays the same across in-app navigation; a reopened page gets a new visit.
-const VISIT_ID = Math.random().toString(36).slice(2);
+// Only this open page keeps progress. In-app navigation retains it;
+// closing or reloading the document discards it, with nothing to restore.
+let activeSave: SaveData | null = null;
 
 interface SaveData {
-  visitId?: string;
   mission: Mission;
   state: GameState;
   shelter: Shelter;
@@ -71,9 +68,9 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
   // Bring back a saved mission after the page loads (runs once, in the browser only).
   useEffect(() => {
     try {
-      const raw = window.localStorage.getItem(SAVE_KEY);
-      if (!raw) return;
-      const saved = JSON.parse(raw) as SaveData;
+      window.localStorage.removeItem("jam-mission-save");
+      const saved = activeSave;
+      if (!saved) return;
       if (saved.mission && saved.state && !saved.state.over) {
         setMission(saved.mission);
         setShelter(saved.shelter);
@@ -98,29 +95,17 @@ export function MissionGame({ initialStorm }: { initialStorm?: string | undefine
             return;
           }
         }
-        const resumed = currentEvent && !saved.summary && saved.visitId !== VISIT_ID
-          ? returningStory(saved.state, currentEvent, wait, Math.random())
-          : { state: saved.state, event: currentEvent };
-        setState(resumed.state);
-        setEvent(resumed.event);
+        setState(saved.state);
+        setEvent(currentEvent);
       }
     } catch {
       // A broken or old save is ignored.
     }
   }, []);
 
-  // Save progress whenever it changes.
+  // Remember progress only within this open document, never in browser storage.
   useEffect(() => {
-    try {
-      if (!mission || !state) {
-        window.localStorage.removeItem(SAVE_KEY);
-        return;
-      }
-      const data: SaveData = { visitId: VISIT_ID, mission, state, shelter, summary, showReport, event };
-      window.localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-    } catch {
-      // Storage full or unavailable: the game still works, it just won't save.
-    }
+    activeSave = mission && state ? { mission, state, shelter, summary, showReport, event } : null;
   }, [mission, state, shelter, summary, showReport, event]);
 
   const launch = async (place: Place, choice: SunChoice, crates: CrateId[]) => {

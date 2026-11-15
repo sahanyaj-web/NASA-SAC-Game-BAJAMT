@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyEffect, checkOver, chooseOption, createGame, endSol, endStoryDay, eventForSol, forecast, powerToday, resourcePercentages, returningStory, stormEvent } from "./engine";
+import { applyEffect, checkOver, chooseOption, createGame, endSol, endStoryDay, eventForSol, forecast, powerToday, resourcePercentages, stormEvent } from "./engine";
 import { CREW_CAST, DECK, firstDayEvent } from "./events";
 import { earthMars, earthMoon } from "./orbit";
 import { buildSchedule, recordForDay } from "./space-weather";
@@ -10,36 +10,18 @@ const quietDay = { date: "2020-01-01", flares: [], strongestFlare: null, sep: fa
 const mild = { sol: 1, min: -70, max: -10, pressure: 800, uv: "Moderate" };
 const ctx = (over: Partial<SolContext> = {}): SolContext => ({ weather: mild, space: quietDay, shelter: "none", ...over });
 
-describe("different stories on return", () => {
-  it.each(["mars", "moon"] as const)("never repeats the pending story on %s and keeps supplies and days", (place) => {
+describe("rotating daily stories", () => {
+  it.each(["mars", "moon"] as const)("does not repeat consecutive daily problems on %s, even after using the deck", (place) => {
     let state = createGame(42, [], place);
-    let event = firstDayEvent(state);
-    for (let visit = 0; visit < 40; visit++) {
-      const next = returningStory(state, event, 10, (visit % 10) / 10);
-      expect(next.event.id).not.toBe(event.id);
-      expect(next.event.options).toHaveLength(2);
-      expect(resourcePercentages(next.state)).toEqual(resourcePercentages(state));
-      expect(next.state.sol).toBe(1);
-      expect(next.state.story).toEqual(state.story);
-      state = next.state;
-      event = next.event;
+    let previous = "";
+    for (let day = 1; day <= 60; day++) {
+      const event = eventForSol({ ...state, sol: day }, ctx(), 10);
+      if (!event) throw new Error("Missing daily story");
+      expect(event.id).not.toBe(previous);
+      expect(event.options).toHaveLength(2);
+      previous = event.id;
+      state = { ...state, seenEvents: [...state.seenEvents.filter((id) => id !== event.id), event.id] };
     }
-  });
-
-  it("does not replace an already paid choice", () => {
-    const game = createGame(1, []);
-    const event = firstDayEvent(game);
-    const option = event.options[0];
-    if (!option) throw new Error("Missing choice");
-    const chosen = chooseOption(game, event, option);
-    expect(returningStory(chosen, event, 10, 0)).toEqual({ state: chosen, event });
-  });
-
-  it("keeps emergencies tied to actual NASA records", () => {
-    const game = createGame(1, []);
-    const event = stormEvent({ space: { ...quietDay, sep: true } }, 10);
-    if (!event) throw new Error("Missing NASA storm");
-    expect(returningStory(game, event, 10, 0)).toEqual({ state: game, event });
   });
 
   it("new missions do not always open with the same landing story", () => {
