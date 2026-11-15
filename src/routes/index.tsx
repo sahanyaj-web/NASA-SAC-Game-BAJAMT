@@ -105,6 +105,7 @@ function Index() {
               ))}
             </dl>
             <p className="mt-6 border-l-4 border-radiation pl-4 font-semibold">If ANY bar reaches 0%, your mission ends. Try again and see if different choices help you last longer!</p>
+            <p className="mt-4 max-w-3xl border-l-4 border-power pl-4 font-semibold">🪙 Earn coins: every 2 days you survive, you get 1 coin. Open the Outpost tab to spend your coins in the NASA Commodities shop—buy water tanks, plant shelves, bigger solar panels, or even a rover—and see your base grow in 3D!</p>
             <p className="mt-4 max-w-3xl text-sm text-muted-foreground">Want to read the NASA facts? You can visit NASA Data and return to Play without losing your mission on this browser. Restart mission lets you start over—it asks you first.</p>
           </div>
         </section>

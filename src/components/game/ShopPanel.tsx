@@ -9,7 +9,7 @@ export function ShopPanel({ state, onBuy }: { state: GameState; onBuy: (id: stri
         <h2 className="text-xl font-bold">🛒 NASA Commodities</h2>
         <span className="rounded-full bg-power/15 px-3 py-1 font-semibold">🪙 {state.coins ?? 0} coins</span>
       </div>
-      <p className="mb-3 text-sm text-muted-foreground">Survive every 5 days to earn coins (more each time). Spend them to grow your outpost.</p>
+      <p className="mb-3 text-sm text-muted-foreground">Every 2 days you survive, you earn 🪙 1 coin. Spend your coins here to grow your outpost.</p>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {SHOP.map((item) => {
           const owned = item.once && (state.purchases?.includes(item.id) || state.crates.includes(item.id as never));

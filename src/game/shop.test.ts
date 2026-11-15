@@ -3,10 +3,10 @@ import { createGame } from "./engine";
 import { buyItem, milestoneCoins } from "./shop";
 
 describe("NASA Commodities coins", () => {
-  it("pays coins only every 5 survived days", () => {
-    expect(milestoneCoins(4)).toBe(0);
-    expect(milestoneCoins(5)).toBe(10);
-    expect(milestoneCoins(10)).toBe(20);
+  it("pays 1 coin every 2 survived days", () => {
+    expect(milestoneCoins(1)).toBe(0);
+    expect(milestoneCoins(2)).toBe(1);
+    expect(milestoneCoins(4)).toBe(2);
   });
   it("spends coins and refuses when too poor", () => {
     const g = { ...createGame(1, [], "mars"), coins: 30 };
