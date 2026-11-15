@@ -14,3 +14,7 @@
 - [x] Restart mission button with a confirm step that clears the saved mission
 - [x] Reset choices button on the pick-your-base screen
 - [x] Keep Back to home + Restart mission pinned to the top during a mission
+
+- [ ] Open every page at the top, including return visits
+- [ ] Remove research and replace its choice costs with remaining supplies
+- [ ] Verify navigation and four-system missions
