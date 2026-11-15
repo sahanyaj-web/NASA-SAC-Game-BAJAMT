@@ -49,3 +49,4 @@ use the editor.
 
 - Disable scroll-position restoration in the router; page navigation always starts at the top while mission saves remain independent. Why: returning from facts must not open mid-page.
 - Story costs and automatic production use only survival resources; crew morale affects plant care and rover cargo helps food production. Why: no removed research score can influence mission survival.
+- The 3D outpost view (three.js/R3F) is presentation-only, lazy-loaded in the browser, and draws from GameState (crates, shieldBonus, purchases). Why: no SSR canvas and no rule changes from visuals.
