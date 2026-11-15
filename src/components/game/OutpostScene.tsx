@@ -228,12 +228,12 @@ export default function OutpostScene({ state }: { state: GameState }) {
         {has("radiodish") && <Dish x={-7} z={-3} />}
         {has("bermwall") && <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}><torusGeometry args={[9, 0.7, 8, 48, Math.PI * 1.3]} /><meshStandardMaterial color={moon ? "#7d7e82" : "#8a4428"} roughness={1} flatShading /></mesh>}
         {has("brushbot") && <mesh position={[-2, 0.25, -4.2]} castShadow><boxGeometry args={[0.6, 0.3, 0.4]} /><meshStandardMaterial color="#f0b030" /></mesh>}
-        {state.crates.includes("rover") && <><Rover x={5.5} z={5.5} /><Tag pos={[5.5, 2.2, 5.5]} text="🚙 Earth supplies: Robot car" /></>}
-        {state.crates.includes("solar") && <Tag pos={[-2, 2.6, -8.5]} text="🔆 Earth supplies: Extra solar panels" />}
-        {state.crates.includes("reactor") && <><Reactor x={8} z={-4} /><Tag pos={[8, 3, -4]} text="⚛️ Earth supplies: Nuclear power" /></>}
-        {state.crates.includes("water") && <>{[0, 1, 2].map((i) => <Tank key={`cw${i}`} x={-8 + i * 1.3} z={6} color="#2f7fd0" />)}<Tag pos={[-6.7, 3, 6]} text="💧 Earth supplies: Water tanks" /></>}
-        {state.crates.includes("battery") && <><mesh position={[7.5, 0.7, 5]} castShadow><boxGeometry args={[1.6, 1.4, 1.2]} /><meshStandardMaterial color="#2a9d4a" metalness={0.4} roughness={0.4} /></mesh><Tag pos={[7.5, 2.4, 5]} text="🔋 Earth supplies: Big battery" /></>}
-        {state.crates.includes("food") && <><Crate x={-3.5} z={6.5} color="#d9822b" /><Tag pos={[-3.1, 2.4, 6.5]} text="🥫 Earth supplies: Food stash" /></>}
+        {state.crates.includes("rover") && <><Rover x={5.5} z={5.5} /><Tag pos={[5.5, 4.4, 5.5]} text="🚙 Earth supplies: Robot car" /></>}
+        {state.crates.includes("solar") && <Tag pos={[-2, 4.8, -8.5]} text="🔆 Earth supplies: Extra solar panels" />}
+        {state.crates.includes("reactor") && <><Reactor x={8} z={-4} /><Tag pos={[8, 4.8, -4]} text="⚛️ Earth supplies: Nuclear power" /></>}
+        {state.crates.includes("water") && <>{[0, 1, 2].map((i) => <Tank key={`cw${i}`} x={-9 + i * 1.3} z={8.5} color="#2f7fd0" />)}<Tag pos={[-8, 4.6, 8.5]} text="💧 Earth supplies: Water tanks" /></>}
+        {state.crates.includes("battery") && <><mesh position={[7.5, 0.7, 5]} castShadow><boxGeometry args={[1.6, 1.4, 1.2]} /><meshStandardMaterial color="#2a9d4a" metalness={0.4} roughness={0.4} /></mesh><Tag pos={[7.5, 4.2, 5]} text="🔋 Earth supplies: Big battery" /></>}
+        {state.crates.includes("food") && <><Crate x={-3.5} z={6.5} color="#d9822b" /><Tag pos={[-3.1, 4.2, 6.5]} text="🥫 Earth supplies: Food stash" /></>}
         {waterTanks > 0 && <Tag pos={[-7.5, 2.4, 3.5]} text="💧 Water tanks" />}
         {o2 > 0 && <Tag pos={[1.5, 2.4, 5.5]} text={`🫁 Oxygen tanks ×${o2}`} />}
         {shelves > 0 && <Tag pos={[3.2, 2.6, 2.8]} text="🥬 Plant room" />}
