@@ -16,6 +16,7 @@ export function ShopPanel({ state, onBuy }: { state: GameState; onBuy: (id: stri
           return (
             <div key={item.id} className="flex flex-col rounded-xl border border-border p-3">
               <p className="font-semibold">{item.emoji} {item.name}</p>
+              <p className="mt-1 text-xs font-semibold text-primary">Helps: {item.helps}</p>
               <p className="flex-1 text-sm text-muted-foreground">{item.what}</p>
               <Button className="mt-2" size="sm" disabled={!canBuy(state, item)} onClick={() => onBuy(item.id)}>
                 {owned ? "Already have it" : `Buy for 🪙 ${item.price}`}
